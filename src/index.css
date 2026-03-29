@@ -1,0 +1,134 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  /* Fonts */
+  --font-sans: 'Space Grotesk', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+
+  /* Space Grotesque accent palette */
+  --color-accent: #e8ff47;
+  --color-accent-dim: #b8cc2e;
+  --color-accent-muted: #2a2e0a;
+  --color-sg-blue: #4a8cff;
+  --color-sg-blue-dim: #1a3a7a;
+  --color-sg-red: #ff4a4a;
+  --color-sg-red-dim: #7a1a1a;
+
+  /* Grey scale */
+  --color-grey-950: #050505;
+  --color-grey-900: #0a0a0a;
+  --color-grey-800: #141414;
+  --color-grey-700: #1a1a1a;
+  --color-grey-600: #2a2a2a;
+  --color-grey-500: #444444;
+  --color-grey-400: #666666;
+  --color-grey-300: #888888;
+  --color-grey-200: #bbbbbb;
+  --color-grey-100: #eeeeee;
+
+  /* Letter-spacing scale */
+  --tracking-tightest: -0.04em;
+  --tracking-tighter: -0.02em;
+  --tracking-tight: -0.01em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.05em;
+  --tracking-wider: 0.1em;
+  --tracking-widest: 0.2em;
+
+  /* Border radius scale */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+:root {
+  --background: #000000;
+  --foreground: #ffffff;
+  --card: #080808;
+  --card-foreground: #ffffff;
+  --popover: #0f0f0f;
+  --popover-foreground: #ffffff;
+  --primary: #ffffff;
+  --primary-foreground: #000000;
+  --secondary: #1a1a1a;
+  --secondary-foreground: #ffffff;
+  --muted: #1a1a1a;
+  --muted-foreground: #a0a0a0;
+  --accent: #e8ff47;
+  --accent-foreground: #000000;
+  --destructive: #ff4a4a;
+  --destructive-foreground: #ffffff;
+  --border: #1a1a1a;
+  --input: #1a1a1a;
+  --ring: #e8ff47;
+  --radius: 4px;
+}
+
+/* Typed custom property — lets the browser interpolate it as a length in calc() */
+@property --tudio-clip {
+  syntax: '<length>';
+  initial-value: 0px;
+  inherits: false;
+}
+
+@keyframes tudio-expand {
+  /* Both properties share the same easing, so the mask edge
+     tracks the expanding max-width pixel-for-pixel             */
+  from { max-width: 0;    --tudio-clip: 0px;  }
+  to   { max-width: 60vw; --tudio-clip: 60vw; }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes nav-item-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+    scrollbar-width: none; /* Firefox */
+  }
+  *::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Edge */
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+    margin: 0;
+    -ms-overflow-style: none; /* IE/Edge legacy */
+  }
+}
