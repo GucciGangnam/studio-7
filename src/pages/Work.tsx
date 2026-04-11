@@ -1925,26 +1925,38 @@ function drawFrame(ctx: CanvasRenderingContext2D, img: HTMLImageElement) {
   ctx.drawImage(img, 0, 0)
 }
 
-function AnimationsShowcase() {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const canvasRef    = useRef<HTMLCanvasElement>(null)
-  const imagesRef    = useRef<HTMLImageElement[]>([])
-  const frameRef     = useRef(0)
-  const accRef       = useRef(0)
-  const showCopyRef  = useRef(false)
-  const hintRef      = useRef(true)
+// Enough scroll room for intro + all frames + fade + buffer
+const TOTAL_SCROLL = PHASE1_END + FADE_PX + window.innerHeight + 200
 
-  const [loaded,    setLoaded]    = useState(false)
-  const [showCopy,  setShowCopy]  = useState(false)
-  const [hint,      setHint]      = useState(true)
+function AnimationsShowcase() {
+  const canvasRef   = useRef<HTMLCanvasElement>(null)
+  const imagesRef   = useRef<HTMLImageElement[]>([])
+  const frameRef    = useRef(0)
+  const showCopyRef = useRef(false)
+  const hintRef     = useRef(true)
+
+  const [loaded,   setLoaded]   = useState(false)
+  const [showCopy, setShowCopy] = useState(false)
+  const [hint,     setHint]     = useState(true)
+  const isTouch = typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches
+
+  // Scroll to top on mount so animation always starts fresh.
+  // Restore on unmount so other sections aren't offset.
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" })
+    document.documentElement.style.cursor = "ns-resize"
+    return () => {
+      window.scrollTo({ top: 0, behavior: "instant" })
+      document.documentElement.style.cursor = ""
+    }
+  }, [])
 
   // Canvas buffer stays at source resolution (1280×720).
-  // CSS positions it to cover the viewport — GPU handles the upscale cleanly.
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
-    canvas.width        = 1280
-    canvas.height       = 720
+    canvas.width         = 1280
+    canvas.height        = 720
     canvas.style.opacity = "0"
     const position = () => {
       const scale = Math.max(window.innerWidth / 1280, window.innerHeight / 720)
@@ -1983,30 +1995,24 @@ function AnimationsShowcase() {
     imagesRef.current = images
   }, [])
 
-  // Non-passive wheel listener on the container
+  // window.scroll drives the scrub.
+  // pointer-events: none on the canvas lets touches pass through to the body,
+  // so iOS Safari sees real document scroll and hides its toolbar.
   useEffect(() => {
-    const container = containerRef.current
-    if (!container) return
+    const onScroll = () => {
+      const acc = window.scrollY
 
-    const onWheel = (e: WheelEvent) => {
-      e.preventDefault()
-
-      accRef.current = Math.max(0, accRef.current + e.deltaY)
-      const acc = accRef.current
-
-      // Hide prompt on first scroll forward; restore it when back at 0
       if (acc === 0 && !hintRef.current) { hintRef.current = true;  setHint(true)  }
       if (acc  >  0 &&  hintRef.current) { hintRef.current = false; setHint(false) }
+
       const canvas = canvasRef.current
 
-      // Intro: frame 1 fades in from opacity 0 → 1
       if (acc <= INTRO_PX) {
         if (canvas) canvas.style.opacity = String(acc / INTRO_PX)
         if (showCopyRef.current) { showCopyRef.current = false; setShowCopy(false) }
         return
       }
 
-      // Scrub frames
       const frame = Math.min(SCRUB_FRAMES - 1, Math.floor((acc - INTRO_PX) / SCRUB_PX))
       if (frame !== frameRef.current) {
         frameRef.current = frame
@@ -2017,7 +2023,6 @@ function AnimationsShowcase() {
         }
       }
 
-      // Fade out → copy
       if (canvas) {
         if (acc > PHASE1_END) {
           const t = Math.min(1, (acc - PHASE1_END) / FADE_PX)
@@ -2031,17 +2036,21 @@ function AnimationsShowcase() {
       }
     }
 
-    container.addEventListener("wheel", onWheel, { passive: false })
-    return () => container.removeEventListener("wheel", onWheel)
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => window.removeEventListener("scroll", onScroll)
   }, [])
 
   const words = ANIM_COPY.split(" ")
 
   return (
-    <div
-      ref={containerRef}
-      style={{ position: "fixed", inset: 0, background: "#000", zIndex: 10, overflow: "hidden", cursor: "ns-resize" }}
-    >
+    <>
+      {/* Visual layer — fixed, pointer-events off so body scrolls natively */}
+      <div
+        style={{
+          position: "fixed", inset: 0, zIndex: 10,
+          background: "#000", pointerEvents: "none",
+        }}
+      >
       <canvas
         ref={canvasRef}
         style={{ position: "absolute" }}
@@ -2071,25 +2080,40 @@ function AnimationsShowcase() {
               zIndex: 2, pointerEvents: "none",
             }}
           >
-            {/* Mouse outline with bouncing scroll wheel */}
-            <div style={{ position: "relative", width: 26, height: 40 }}>
-              <svg width="26" height="40" viewBox="0 0 26 40" fill="none">
-                <rect x="1" y="1" width="24" height="38" rx="12" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5"/>
-              </svg>
+            {isTouch ? (
+              /* Finger swipe icon for touch devices */
               <motion.div
-                animate={{ y: [0, 10, 0] }}
+                animate={{ y: [0, -10, 0] }}
                 transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
-                style={{
-                  position: "absolute", top: 8, left: "50%", transform: "translateX(-50%)",
-                  width: 2, height: 7, borderRadius: 1, background: "rgba(255,255,255,0.5)",
-                }}
-              />
-            </div>
+              >
+                <svg width="28" height="40" viewBox="0 0 28 40" fill="none">
+                  {/* finger body */}
+                  <rect x="10" y="14" width="8" height="18" rx="4" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5"/>
+                  {/* swipe arc */}
+                  <path d="M6 20 C6 10 22 10 22 20" stroke="rgba(255,255,255,0.2)" strokeWidth="1.2" strokeDasharray="2 2"/>
+                </svg>
+              </motion.div>
+            ) : (
+              /* Mouse outline with bouncing scroll wheel */
+              <div style={{ position: "relative", width: 26, height: 40 }}>
+                <svg width="26" height="40" viewBox="0 0 26 40" fill="none">
+                  <rect x="1" y="1" width="24" height="38" rx="12" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5"/>
+                </svg>
+                <motion.div
+                  animate={{ y: [0, 10, 0] }}
+                  transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
+                  style={{
+                    position: "absolute", top: 8, left: "50%", transform: "translateX(-50%)",
+                    width: 2, height: 7, borderRadius: 1, background: "rgba(255,255,255,0.5)",
+                  }}
+                />
+              </div>
+            )}
             <span style={{
               fontFamily: "Space Mono", fontSize: 9, color: "rgba(255,255,255,0.25)",
               letterSpacing: "0.14em",
             }}>
-              SCROLL
+              {isTouch ? "SWIPE" : "SCROLL"}
             </span>
           </motion.div>
         )}
@@ -2162,7 +2186,11 @@ function AnimationsShowcase() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+      </div>{/* end fixed visual layer */}
+
+      {/* Scroll spacer in normal flow — makes the body tall enough for window.scrollY to reach TOTAL_SCROLL */}
+      <div style={{ height: TOTAL_SCROLL }} />
+    </>
   )
 }
 
@@ -2234,6 +2262,18 @@ function SchemaCard({ table }: { table: SchemaTable }) {
 }
 
 function DatabaseShowcase() {
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 640
+
+  if (isMobile) {
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: 8, width: "100%" }}>
+        {SCHEMA_TABLES.map(table => (
+          <SchemaCard key={table.name} table={table} />
+        ))}
+      </div>
+    )
+  }
+
   return (
     <div style={{ display: "flex", gap: 0, alignItems: "flex-start", maxWidth: 580 }}>
       {SCHEMA_TABLES.map((table, i) => (
@@ -2758,7 +2798,7 @@ export default function Work() {
 
   return (
     <>
-      <div className="min-h-screen flex flex-col justify-center px-10 pt-8 pb-32">
+      <div className="min-h-screen flex flex-col justify-center px-10 pt-20 sm:pt-8 pb-32">
         <div className="max-w-4xl mx-auto w-full">
           <AnimatePresence mode="wait">
             <motion.div
@@ -2795,10 +2835,10 @@ export default function Work() {
       </div>
 
       {/* Dock — fixed bottom */}
-      <div className="fixed bottom-6 left-0 right-0 flex justify-center px-4 z-[50]">
-        <div className="overflow-x-auto" style={{ scrollbarWidth: 'none', maxWidth: '100%' }}>
+      <div className="fixed bottom-6 left-0 right-0 flex justify-center px-2 z-[50]">
+        <div className="overflow-x-auto" style={{ scrollbarWidth: 'none', maxWidth: isMobile ? '98vw' : '100%' }}>
         <TooltipProvider>
-          <Dock direction="middle" iconSize={isMobile ? 28 : 44} iconMagnification={isMobile ? 44 : 66} disableMagnification={isMobile}>
+          <Dock direction="middle" iconSize={isMobile ? 28 : 44} iconMagnification={isMobile ? 44 : 66} disableMagnification={isMobile} className={isMobile ? "px-6 gap-3" : ""}>
             {NAV_ITEMS.map((item) => (
               <DockIcon key={item.id}>
                 <Tooltip>
