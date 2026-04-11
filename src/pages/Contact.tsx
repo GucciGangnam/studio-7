@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 import { motion, AnimatePresence } from 'motion/react'
 import { Mail, Phone, ArrowRight, ArrowLeft, CheckCircle } from 'lucide-react'
@@ -76,13 +76,28 @@ function CardShell({ hasError = false }: { hasError?: boolean }) {
 
 // Tapered comet that travels the card border once on mount, then disappears
 function CardBeam() {
-  const perim = 1461 // perimeter of 480×264 rect with rx=16
-  const dash = 80   // comet tail length
+  const svgRef = useRef<SVGSVGElement>(null)
+  const [dims, setDims] = useState<{ w: number; h: number } | null>(null)
+
+  useEffect(() => {
+    const el = svgRef.current
+    if (!el) return
+    const { width, height } = el.getBoundingClientRect()
+    if (width > 0 && height > 0) setDims({ w: Math.round(width), h: Math.round(height) })
+  }, [])
+
+  const rx   = 16
+  const dash = 80
+  const w    = dims?.w ?? 480
+  const h    = dims?.h ?? 264
+  const perim = 2 * (w - 2 * rx) + 2 * (h - 2 * rx) + 2 * Math.PI * rx
+  const startOffset = (w - 2 * rx) / 2  // distance from path start to centre of top edge
 
   return (
-    <motion.svg
+    <svg
+      ref={svgRef}
       className="absolute inset-0 w-full h-full pointer-events-none"
-      viewBox="0 0 480 264"
+      viewBox={`0 0 ${w} ${h}`}
       fill="none"
       style={{ zIndex: 2 }}
     >
@@ -95,30 +110,32 @@ function CardBeam() {
           </feMerge>
         </filter>
       </defs>
-      <motion.rect
-        x="1" y="1" width="478" height="262" rx="16" ry="16"
-        stroke="#e8ff47"
-        strokeOpacity={0.6}
-        strokeWidth="1"
-        strokeLinecap="round"
-        strokeDasharray={`${dash} ${perim - dash}`}
-        filter="url(#beam-glow)"
-        initial={{ strokeDashoffset: -223, opacity: 0 }}
-        animate={{ strokeDashoffset: -(223 + perim), opacity: [0, 1, 1, 0] }}
-        transition={{
-          strokeDashoffset: { duration: 0.8, delay: 0.9, ease: 'linear' },
-          opacity: { duration: 0.8, delay: 0.9, times: [0, 0.05, 0.9, 1] },
-        }}
-      />
-    </motion.svg>
+      {dims && (
+        <motion.rect
+          x="1" y="1" width={w - 2} height={h - 2} rx={rx} ry={rx}
+          stroke="#e8ff47"
+          strokeOpacity={0.6}
+          strokeWidth="1"
+          strokeLinecap="round"
+          strokeDasharray={`${dash} ${perim - dash}`}
+          filter="url(#beam-glow)"
+          initial={{ strokeDashoffset: -startOffset, opacity: 0 }}
+          animate={{ strokeDashoffset: -(startOffset + perim), opacity: [0, 1, 1, 0] }}
+          transition={{
+            strokeDashoffset: { duration: 0.8, delay: 0.9, ease: 'linear' },
+            opacity: { duration: 0.8, delay: 0.9, times: [0, 0.05, 0.9, 1] },
+          }}
+        />
+      )}
+    </svg>
   )
 }
 
 const inputCls =
-  'w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3.5 py-2 text-[13px] font-sans text-white/85 placeholder:text-white/22 outline-none focus:border-accent/40 focus:bg-white/[0.06] transition-colors duration-150'
+  'w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3.5 py-2 text-base sm:text-[13px] font-sans text-white/85 placeholder:text-white/22 outline-none focus:border-accent/40 focus:bg-white/[0.06] transition-colors duration-150'
 
 const inputErrCls =
-  'w-full bg-[#ff4a4a]/[0.04] border border-[#ff4a4a]/50 rounded-lg px-3.5 py-2 text-[13px] font-sans text-white/85 placeholder:text-[#ff4a4a]/40 outline-none focus:border-[#ff4a4a]/70 transition-colors duration-150'
+  'w-full bg-[#ff4a4a]/[0.04] border border-[#ff4a4a]/50 rounded-lg px-3.5 py-2 text-base sm:text-[13px] font-sans text-white/85 placeholder:text-[#ff4a4a]/40 outline-none focus:border-[#ff4a4a]/70 transition-colors duration-150'
 
 type Errors = { name: boolean; email: boolean; message: boolean }
 
