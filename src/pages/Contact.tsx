@@ -102,11 +102,11 @@ function CardBeam() {
         strokeLinecap="round"
         strokeDasharray={`${dash} ${perim - dash}`}
         filter="url(#beam-glow)"
-        initial={{ strokeDashoffset: 0, opacity: 0 }}
-        animate={{ strokeDashoffset: -perim, opacity: [0, 1, 1, 0] }}
+        initial={{ strokeDashoffset: -223, opacity: 0 }}
+        animate={{ strokeDashoffset: -(223 + perim), opacity: [0, 1, 1, 0] }}
         transition={{
-          strokeDashoffset: { duration: 1.2, delay: 0.9, ease: 'linear' },
-          opacity: { duration: 1.2, delay: 0.9, times: [0, 0.05, 0.9, 1] },
+          strokeDashoffset: { duration: 0.8, delay: 0.9, ease: 'linear' },
+          opacity: { duration: 0.8, delay: 0.9, times: [0, 0.05, 0.9, 1] },
         }}
       />
     </motion.svg>
@@ -180,7 +180,7 @@ export default function Contact() {
         transition={{ delay: 1.2, duration: 0.5 }}
         className="font-mono text-[10px] tracking-[0.35em] text-white/20 uppercase mb-10 relative z-10"
       >
-        Get in touch
+        // contact
       </motion.p>
 
       {/* Perspective wrapper — owns the animated height */}

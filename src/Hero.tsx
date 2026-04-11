@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Layers, Code2, Building2, Mail, Smartphone, Globe, Server, Lightbulb, Palette, ShieldCheck, Rocket, Wrench, User, Sparkles, MessageSquare, BarChart2, Lock, CreditCard, Zap, Settings, ArrowUpRight } from 'lucide-react'
+import { Layers, Code2, Building2, Mail, Smartphone, Globe, Server, Lightbulb, Palette, ShieldCheck, Rocket, Wrench, User, Sparkles, MessageSquare, BarChart2, Lock, CreditCard, Zap, Settings, ArrowUpRight, ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { AnimatedBeam } from '@/components/ui/animated-beam'
 
@@ -129,11 +129,14 @@ const s3 = (sp: number, start: number, end: number): React.CSSProperties => {
 
 // ─── component ───────────────────────────────────────────────────────────────
 
-export default function Hero() {
+export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number) => void }) {
   const [scrollP, setScrollP] = useState(0)
   const neverScrolled = useRef(true)
 
-  useEffect(() => { window.scrollTo(0, 0) }, [])
+  useEffect(() => {
+    window.scrollTo(0, 0)
+    onScrollChange?.(0)
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     let rafId: number | null = null
@@ -176,7 +179,9 @@ export default function Hero() {
     // Uncapped — scrollP > 1 drives section 2 entry
     const onScroll = () => {
       if (window.scrollY > 0) neverScrolled.current = false
-      setScrollP(window.scrollY / window.innerHeight)
+      const sp = window.scrollY / window.innerHeight
+      setScrollP(sp)
+      onScrollChange?.(sp)
       if (!isSnapping) {
         clearTimeout(debounceTimer)
         debounceTimer = setTimeout(snapToNearest, 400)
@@ -820,6 +825,39 @@ export default function Hero() {
           </div>
 
         </div>
+
+        {/* Scroll indicator — fades in late, cascades out as user scrolls */}
+        {(() => {
+          const atRest = scrollP === 0 && neverScrolled.current
+          const labelP = ep(scrollP, 0, 0.10)
+          const chevronP = ep(scrollP, 0.04, 0.16)
+          return (
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 pointer-events-none">
+              <span
+                className="font-mono text-[9px] tracking-[0.28em] text-white/30 uppercase"
+                style={atRest
+                  ? { animation: 'fade-up 0.6s ease both 3.2s' }
+                  : { animation: 'none', opacity: 1 - labelP, transform: `translateY(${labelP * 10}px)` }
+                }
+              >
+                Scroll
+              </span>
+              {/* Wrapper drives entry + exit; ChevronDown bounces independently at rest */}
+              <div
+                style={atRest
+                  ? { animation: 'fade-up 0.6s ease both 3.35s' }
+                  : { animation: 'none', opacity: 1 - chevronP, transform: `translateY(${chevronP * 10}px)` }
+                }
+              >
+                <ChevronDown
+                  size={13}
+                  strokeWidth={1.5}
+                  className={cn('text-white/25', atRest && 'animate-bounce')}
+                />
+              </div>
+            </div>
+          )
+        })()}
 
       </section>
 
