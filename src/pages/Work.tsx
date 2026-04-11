@@ -1917,7 +1917,7 @@ const SCRUB_PX     = 8
 const INTRO_PX     = 120   // scroll distance over which frame 1 fades in
 const FADE_PX      = 300
 const PHASE1_END   = INTRO_PX + (SCRUB_FRAMES - 1) * SCRUB_PX
-const PHASE2_END   = PHASE1_END + FADE_PX
+
 
 const ANIM_COPY = "Fluid transitions, scroll-driven motion, and micro-interactions that feel deliberate, not decorative. Every animated element is tuned for performance and purpose — guiding attention without getting in the way."
 

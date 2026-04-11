@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Layers, Code2, Mail, Smartphone, Globe, Server, Lightbulb, Palette, ShieldCheck, Rocket, Wrench, User, Sparkles, MessageSquare, BarChart2, Lock, CreditCard, Zap, Settings, ArrowUpRight, ChevronDown } from 'lucide-react'
+import { Layers, Code2, Mail, Smartphone, Globe, Server, Lightbulb, Palette, ShieldCheck, Rocket, Wrench, User, Sparkles, MessageSquare, BarChart2, Settings, ArrowUpRight, ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { AnimatedBeam } from '@/components/ui/animated-beam'
 
@@ -28,14 +28,6 @@ const platforms = [
 
 const ddd = ['Design', 'Develop', 'Deploy'] as const
 
-const capabilities = [
-  { label: 'AI & Machine Learning', desc: 'LLMs, embeddings & intelligent pipelines', Icon: Sparkles    },
-  { label: 'Customer Support',      desc: 'Live chat, ticketing & automated bots',    Icon: MessageSquare },
-  { label: 'Analytics',             desc: 'Real-time dashboards & custom reporting',  Icon: BarChart2   },
-  { label: 'Auth & Security',       desc: 'SSO, RBAC & enterprise compliance',        Icon: Lock        },
-  { label: 'Payments & Billing',    desc: 'Subscriptions, invoicing & more',          Icon: CreditCard  },
-  { label: 'Integrations',          desc: 'APIs, webhooks & third-party services',    Icon: Zap         },
-]
 
 const sidebarItems = [
   { label: 'Overview',   Icon: Layers,        active: false },
@@ -109,16 +101,6 @@ const featureCard = (sp: number, i: number): React.CSSProperties => {
 }
 
 /** Section 2.5 capability cards — scale up on entry, slide left on exit. */
-const capItem = (sp: number, i: number): React.CSSProperties => {
-  const eS = 2.28 + i * 0.06
-  const eE = 2.48 + i * 0.06
-  if (sp >= 3.00) {
-    const p = ep(sp, 3.00, 3.18)
-    return { opacity: 1 - p, transform: `scale(${1 + p * 0.04}) translateX(${-p * 40}px)`, pointerEvents: 'none' }
-  }
-  const p = ep(sp, eS, eE)
-  return { opacity: p, transform: `scale(${0.92 + p * 0.08})`, pointerEvents: p < 0.05 ? 'none' : 'auto' }
-}
 
 /** Section 3 — slide in from the left. No exit. */
 const s3 = (sp: number, start: number, end: number): React.CSSProperties => {

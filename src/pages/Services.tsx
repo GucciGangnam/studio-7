@@ -66,8 +66,8 @@ const EXISTING_IDX = [0, 2, 4]
 const NEW_IDX      = [1, 3]
 
 type BeamState = {
-  fromRef: RefObject<HTMLDivElement>
-  toRef:   RefObject<HTMLDivElement>
+  fromRef: RefObject<HTMLDivElement | null>
+  toRef:   RefObject<HTMLDivElement | null>
   reverse: boolean
   id:      number
 }
@@ -190,7 +190,7 @@ function CustomCardBack({ onBack }: { onBack: () => void }) {
 
             {/* CENTER: Feature icons */}
             <div className="flex flex-col gap-3">
-              {([f0Ref, f1Ref, f2Ref, f3Ref, f4Ref] as RefObject<HTMLDivElement>[]).map((ref, i) => {
+              {([f0Ref, f1Ref, f2Ref, f3Ref, f4Ref] as RefObject<HTMLDivElement | null>[]).map((ref, i) => {
                 const isNew   = NEW_IDX.includes(i)
                 const isBuilt = !isNew || newLit.has(i)
                 const Icon    = featureIcons[i]
@@ -322,8 +322,8 @@ function MvpCardBack({ onBack }: { onBack: () => void }) {
   const [lit, setLit] = useState<Set<AnyKey>>(new Set())
   const [animDone, setAnimDone] = useState(false)
   const [beamState, setBeamState] = useState<{
-    fromRef: RefObject<HTMLDivElement>
-    toRef:   RefObject<HTMLDivElement>
+    fromRef: RefObject<HTMLDivElement | null>
+    toRef:   RefObject<HTMLDivElement | null>
     reverse: boolean
     id:      number
   } | null>(null)
@@ -332,7 +332,7 @@ function MvpCardBack({ onBack }: { onBack: () => void }) {
     let cancelled = false
     const wait = (ms: number) => new Promise<void>(r => setTimeout(r, ms))
     const dur = BEAM_DUR * 1000
-    const items: [InfraKey, RefObject<HTMLDivElement>][] = [
+    const items: [InfraKey, RefObject<HTMLDivElement | null>][] = [
       ['mobile',  mobileRef],
       ['monitor', monitorRef],
       ['code',    codeRef],
