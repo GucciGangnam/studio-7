@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { supabase } from '../lib/supabase'
 import { motion, AnimatePresence } from 'motion/react'
 import { Mail, Phone, ArrowRight, ArrowLeft, CheckCircle } from 'lucide-react'
 
@@ -129,6 +130,8 @@ export default function Contact() {
   const [message, setMessage] = useState('')
   const [errors, setErrors] = useState<Errors>({ name: false, email: false, message: false })
   const [submitted, setSubmitted] = useState(false)
+  const [sending, setSending] = useState(false)
+  const [sendError, setSendError] = useState(false)
 
   // After the flip animation finishes (~650ms), expand the form
   useEffect(() => {
@@ -139,7 +142,7 @@ export default function Contact() {
 
   const hasAnyError = errors.name || errors.email || errors.message
 
-  function handleSend() {
+  async function handleSend() {
     const newErrors: Errors = {
       name: !name.trim(),
       email: !email.trim(),
@@ -147,6 +150,18 @@ export default function Contact() {
     }
     setErrors(newErrors)
     if (newErrors.name || newErrors.email || newErrors.message) return
+
+    setSending(true)
+    setSendError(false)
+    const { error } = await supabase
+      .from('contacts')
+      .insert({ name: name.trim(), email: email.trim(), message: message.trim() })
+    setSending(false)
+
+    if (error) {
+      setSendError(true)
+      return
+    }
     setSubmitted(true)
   }
 
@@ -158,6 +173,7 @@ export default function Contact() {
     setMessage('')
     setErrors({ name: false, email: false, message: false })
     setSubmitted(false)
+    setSendError(false)
   }
 
   return (
@@ -390,12 +406,28 @@ export default function Contact() {
                     </div>
 
                     {/* Send */}
-                    <button
-                      onClick={handleSend}
-                      className="w-full py-[9px] rounded-lg bg-accent text-black font-mono text-[11px] tracking-[0.18em] uppercase font-bold hover:opacity-90 active:opacity-80 transition-opacity"
-                    >
-                      Send
-                    </button>
+                    <div className="flex flex-col gap-1.5">
+                      <button
+                        onClick={handleSend}
+                        disabled={sending}
+                        className="w-full py-[9px] rounded-lg bg-accent text-black font-mono text-[11px] tracking-[0.18em] uppercase font-bold hover:opacity-90 active:opacity-80 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {sending ? 'Sending…' : 'Send'}
+                      </button>
+                      <AnimatePresence>
+                        {sendError && (
+                          <motion.p
+                            initial={{ opacity: 0, y: -4 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="font-mono text-[9px] tracking-[0.12em] text-[#ff4a4a]/70 uppercase text-center"
+                          >
+                            Something went wrong — please try again
+                          </motion.p>
+                        )}
+                      </AnimatePresence>
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -409,7 +441,7 @@ export default function Contact() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.4, duration: 0.6 }}
-        className="mt-12 font-mono text-[10px] tracking-[0.22em] text-white/12 uppercase relative z-10"
+        className="mt-12 font-mono text-[10px] tracking-[0.22em] text-grey-500 uppercase relative z-10"
       >
         We'd love to hear from you
       </motion.p>

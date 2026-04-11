@@ -5,14 +5,12 @@ import Hero from './Hero'
 import StyleGuide from './StyleGuide'
 import Work from './pages/Work'
 import Services from './pages/Services'
-import About from './pages/About'
 import Contact from './pages/Contact'
 import Dev from './pages/Dev'
 
 const navItems = [
   { label: 'Work',     to: '/work'     },
   { label: 'Services', to: '/services' },
-  { label: 'About',    to: '/about'    },
   { label: 'Contact',  to: '/contact'  },
 ]
 
@@ -241,7 +239,6 @@ function AppInner() {
         <Route path="/"         element={<Hero onScrollChange={setHeroScrollP} />} />
         <Route path="/work"     element={<Work />}       />
         <Route path="/services" element={<Services />}   />
-        <Route path="/about"    element={<About />}      />
         <Route path="/contact"  element={<Contact />}    />
         <Route path="/guide"    element={<StyleGuide />} />
         <Route path="/dev"      element={<Dev />}        />

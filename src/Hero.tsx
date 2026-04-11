@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Layers, Code2, Building2, Mail, Smartphone, Globe, Server, Lightbulb, Palette, ShieldCheck, Rocket, Wrench, User, Sparkles, MessageSquare, BarChart2, Lock, CreditCard, Zap, Settings, ArrowUpRight, ChevronDown } from 'lucide-react'
+import { Layers, Code2, Mail, Smartphone, Globe, Server, Lightbulb, Palette, ShieldCheck, Rocket, Wrench, User, Sparkles, MessageSquare, BarChart2, Lock, CreditCard, Zap, Settings, ArrowUpRight, ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { AnimatedBeam } from '@/components/ui/animated-beam'
 
@@ -17,7 +17,6 @@ const FONT_STYLE: React.CSSProperties = {
 const pages = [
   { label: 'Work',     to: '/work',     Icon: Layers    },
   { label: 'Services', to: '/services', Icon: Code2     },
-  { label: 'About',    to: '/about',    Icon: Building2 },
   { label: 'Contact',  to: '/contact',  Icon: Mail      },
 ]
 
@@ -328,7 +327,7 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
             </p>
 
             {/* Mobile icon row — hidden in landscape (desktop grid shows instead) */}
-            <div className={cn('grid grid-cols-2 gap-x-6 gap-y-8', isLandscape ? 'hidden' : 'lg:hidden mt-14')}>
+            <div className={cn('grid grid-cols-3 gap-x-6 gap-y-8', isLandscape ? 'hidden' : 'lg:hidden mt-14')}>
               {pages.map(({ label, to, Icon }, i) => (
                 <Link
                   key={to}
@@ -346,7 +345,7 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
 
           {/* Right: 2×2 desktop grid — also visible in landscape */}
           <div className={cn('items-center justify-center', isLandscape ? 'flex flex-1' : 'hidden lg:flex lg:flex-1')}>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-3 gap-3">
               {pages.map(({ label, to, Icon }, i) => (
                 <Link
                   key={to}
