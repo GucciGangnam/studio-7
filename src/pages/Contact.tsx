@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { motion, AnimatePresence } from 'motion/react'
 import { Mail, Phone, ArrowRight, ArrowLeft, CheckCircle } from 'lucide-react'
@@ -76,26 +76,17 @@ function CardShell({ hasError = false }: { hasError?: boolean }) {
 
 // Tapered comet that travels the card border once on mount, then disappears
 function CardBeam() {
-  const svgRef = useRef<SVGSVGElement>(null)
-  const [dims, setDims] = useState<{ w: number; h: number } | null>(null)
-
-  useEffect(() => {
-    const el = svgRef.current
-    if (!el) return
-    const { width, height } = el.getBoundingClientRect()
-    if (width > 0 && height > 0) setDims({ w: Math.round(width), h: Math.round(height) })
-  }, [])
-
-  const rx   = 16
+  // Card CSS: w-[480px] max-w-[90vw] h-[264px]
+  // Compute actual width from window size to avoid measuring during rotateY animation
+  const w = Math.min(480, Math.round(window.innerWidth * 0.9))
+  const h = 264
+  const rx = 16
   const dash = 80
-  const w    = dims?.w ?? 480
-  const h    = dims?.h ?? 264
   const perim = 2 * (w - 2 * rx) + 2 * (h - 2 * rx) + 2 * Math.PI * rx
-  const startOffset = (w - 2 * rx) / 2  // distance from path start to centre of top edge
+  const startOffset = (w - 2 * rx) / 2
 
   return (
     <svg
-      ref={svgRef}
       className="absolute inset-0 w-full h-full pointer-events-none"
       viewBox={`0 0 ${w} ${h}`}
       fill="none"
@@ -110,23 +101,21 @@ function CardBeam() {
           </feMerge>
         </filter>
       </defs>
-      {dims && (
-        <motion.rect
-          x="1" y="1" width={w - 2} height={h - 2} rx={rx} ry={rx}
-          stroke="#e8ff47"
-          strokeOpacity={0.6}
-          strokeWidth="1"
-          strokeLinecap="round"
-          strokeDasharray={`${dash} ${perim - dash}`}
-          filter="url(#beam-glow)"
-          initial={{ strokeDashoffset: -startOffset, opacity: 0 }}
-          animate={{ strokeDashoffset: -(startOffset + perim), opacity: [0, 1, 1, 0] }}
-          transition={{
-            strokeDashoffset: { duration: 0.8, delay: 0.9, ease: 'linear' },
-            opacity: { duration: 0.8, delay: 0.9, times: [0, 0.05, 0.9, 1] },
-          }}
-        />
-      )}
+      <motion.rect
+        x="1" y="1" width={w - 2} height={h - 2} rx={rx} ry={rx}
+        stroke="#e8ff47"
+        strokeOpacity={0.6}
+        strokeWidth="1"
+        strokeLinecap="round"
+        strokeDasharray={`${dash} ${perim - dash}`}
+        filter="url(#beam-glow)"
+        initial={{ strokeDashoffset: -startOffset, opacity: 0 }}
+        animate={{ strokeDashoffset: -(startOffset + perim), opacity: [0, 1, 1, 0] }}
+        transition={{
+          strokeDashoffset: { duration: 0.8, delay: 0.9, ease: 'linear' },
+          opacity: { duration: 0.8, delay: 0.9, times: [0, 0.05, 0.9, 1] },
+        }}
+      />
     </svg>
   )
 }
