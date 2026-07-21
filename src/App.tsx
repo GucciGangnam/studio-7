@@ -7,6 +7,7 @@ import Work from './pages/Work'
 import Services from './pages/Services'
 import Contact from './pages/Contact'
 import Dev from './pages/Dev'
+import NotFound from './pages/NotFound'
 
 const navItems = [
   { label: 'Work',     to: '/work'     },
@@ -242,6 +243,7 @@ function AppInner() {
         <Route path="/contact"  element={<Contact />}    />
         <Route path="/guide"    element={<StyleGuide />} />
         <Route path="/dev"      element={<Dev />}        />
+        <Route path="*"         element={<NotFound />}   />
       </Routes>
     </div>
   )
