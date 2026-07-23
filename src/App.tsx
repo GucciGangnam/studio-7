@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
 import Hero from './Hero'
-import StyleGuide from './StyleGuide'
 import Work from './pages/Work'
 import Services from './pages/Services'
 import Contact from './pages/Contact'
@@ -56,16 +55,6 @@ function Nav({ heroScrollP }: { heroScrollP: number }) {
       pointerEvents: p < 0.05 ? 'none' : 'auto',
     }
   }
-
-  const auxP = ep(heroScrollP, 0.20, 0.34)
-  const auxStyle: React.CSSProperties = isHome
-    ? { animation: 'none', opacity: auxP, transform: `translateY(${(1 - auxP) * -10}px)`, pointerEvents: auxP < 0.05 ? 'none' : 'auto' }
-    : { animation: `nav-item-in 0.35s cubic-bezier(0.16,1,0.3,1) both ${navItems.length * 55}ms` }
-
-  const guideP = ep(heroScrollP, 0.22, 0.36)
-  const guideStyle: React.CSSProperties = isHome
-    ? { boxShadow: TAB_SHADOW, animation: 'none', opacity: guideP, transform: `translateY(${(1 - guideP) * -10}px)`, pointerEvents: guideP < 0.05 ? 'none' : 'auto' }
-    : { boxShadow: TAB_SHADOW, animation: `nav-item-in 0.35s cubic-bezier(0.16,1,0.3,1) both ${(navItems.length + 1) * 55}ms` }
 
   return (
     <>
@@ -151,29 +140,6 @@ function Nav({ heroScrollP }: { heroScrollP: number }) {
               {label.toUpperCase()}
             </Link>
           ))}
-
-          {/* Divider */}
-          <div
-            className="w-6 h-px bg-white/[0.08]"
-            style={{ animation: `fade-in 0.4s ease both ${55 + navItems.length * 60 - 30}ms` }}
-          />
-
-          {/* Guide */}
-          <Link
-            to="/guide"
-            className={[
-              'px-6 py-3 border rounded-full',
-              'font-mono text-[12px] tracking-[0.14em]',
-              'transition-colors duration-150',
-              pathname === '/guide'
-                ? 'border-accent/40 bg-accent/[0.06] text-accent/80'
-                : 'border-white/[0.07] bg-white/[0.02] text-white/40',
-            ].join(' ')}
-            style={{ animation: `fade-up 0.55s cubic-bezier(0.16,1,0.3,1) both ${55 + navItems.length * 60}ms` }}
-            onClick={closeMenu}
-          >
-            GUIDE
-          </Link>
         </div>
       )}
 
@@ -199,23 +165,6 @@ function Nav({ heroScrollP }: { heroScrollP: number }) {
             </Link>
           )
         })}
-
-        <div className="w-px h-4 bg-white/[0.08] mx-1" style={auxStyle} />
-
-        <Link
-          to="/guide"
-          className={[
-            'px-3.5 py-[7px] border rounded-full',
-            'font-mono text-[11px] tracking-[0.14em]',
-            'transition-colors duration-150',
-            pathname === '/guide'
-              ? 'border-accent/40 bg-accent/[0.06] text-accent/80'
-              : 'border-white/[0.07] bg-white/[0.02] backdrop-blur-md text-white/45 hover:text-white/70 hover:border-white/15',
-          ].join(' ')}
-          style={guideStyle}
-        >
-          GUIDE
-        </Link>
       </nav>
     </>
   )
@@ -241,7 +190,6 @@ function AppInner() {
         <Route path="/work"     element={<Work />}       />
         <Route path="/services" element={<Services />}   />
         <Route path="/contact"  element={<Contact />}    />
-        <Route path="/guide"    element={<StyleGuide />} />
         <Route path="/dev"      element={<Dev />}        />
         <Route path="*"         element={<NotFound />}   />
       </Routes>
