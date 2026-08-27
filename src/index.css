@@ -68,69 +68,73 @@
 :root {
   /* ── Dark theme (default) ── lifted one notch off pure black for a softer,
      more premium feel (matches the brightness/contrast lift baked into demos). */
-  --grey-950: #101010;
-  --grey-900: #161616;
-  --grey-800: #212121;
-  --grey-700: #272727;
-  --grey-600: #373737;
-  --grey-500: #515151;
-  --grey-400: #747474;
-  --grey-300: #969696;
-  --grey-200: #c9c9c9;
-  --grey-100: #f2f2f2;
+  --grey-950: #181818;
+  --grey-900: #1e1e1e;
+  --grey-800: #292929;
+  --grey-700: #2f2f2f;
+  --grey-600: #3f3f3f;
+  --grey-500: #595959;
+  --grey-400: #7c7c7c;
+  --grey-300: #9e9e9e;
+  --grey-200: #d0d0d0;
+  --grey-100: #f5f5f5;
 
-  --background: #0d0d0d;
+  --background: #151515;
   --foreground: #ffffff;
-  --card: #141414;
+  --card: #1c1c1c;
   --card-foreground: #ffffff;
-  --popover: #1b1b1b;
+  --popover: #232323;
   --popover-foreground: #ffffff;
   --primary: #ffffff;
-  --primary-foreground: #0d0d0d;
-  --secondary: #272727;
+  --primary-foreground: #151515;
+  --secondary: #2f2f2f;
   --secondary-foreground: #ffffff;
-  --muted: #272727;
-  --muted-foreground: #adadad;
+  --muted: #2f2f2f;
+  --muted-foreground: #b3b3b3;
   --accent: #e8ff47;
-  --accent-foreground: #0d0d0d;
+  --accent-foreground: #151515;
   --destructive: #ff4a4a;
   --destructive-foreground: #ffffff;
-  --border: #272727;
-  --input: #272727;
+  --border: #2f2f2f;
+  --input: #2f2f2f;
   --ring: #e8ff47;
   --radius: 4px;
+  /* Accent used as TEXT that sits on the page (not on a dark surface). Kept out
+     of .surface-dark so it follows the page theme even inside demos: lime reads
+     fine on the dark page, but on a light page it must go darker. */
+  --accent-label: #e8ff47;
 }
 
 /* Pins the dark palette locally — for device/app mockups that should read as
    dark product screenshots regardless of the page theme. */
 .surface-dark {
-  --grey-950: #101010;
-  --grey-900: #161616;
-  --grey-800: #212121;
-  --grey-700: #272727;
-  --grey-600: #373737;
-  --grey-500: #515151;
-  --grey-400: #747474;
-  --grey-300: #969696;
-  --grey-200: #c9c9c9;
-  --grey-100: #f2f2f2;
-  --background: #0d0d0d;
+  --grey-950: #181818;
+  --grey-900: #1e1e1e;
+  --grey-800: #292929;
+  --grey-700: #2f2f2f;
+  --grey-600: #3f3f3f;
+  --grey-500: #595959;
+  --grey-400: #7c7c7c;
+  --grey-300: #9e9e9e;
+  --grey-200: #d0d0d0;
+  --grey-100: #f5f5f5;
+  --background: #151515;
   --foreground: #ffffff;
-  --card: #141414;
+  --card: #1c1c1c;
   --card-foreground: #ffffff;
-  --popover: #1b1b1b;
+  --popover: #232323;
   --popover-foreground: #ffffff;
   --primary: #ffffff;
-  --primary-foreground: #0d0d0d;
-  --secondary: #272727;
+  --primary-foreground: #151515;
+  --secondary: #2f2f2f;
   --secondary-foreground: #ffffff;
-  --muted: #272727;
-  --muted-foreground: #adadad;
+  --muted: #2f2f2f;
+  --muted-foreground: #b3b3b3;
   --accent: #e8ff47;
-  --accent-foreground: #0d0d0d;
+  --accent-foreground: #151515;
   --destructive: #ff4a4a;
-  --border: #272727;
-  --input: #272727;
+  --border: #2f2f2f;
+  --input: #2f2f2f;
   --ring: #e8ff47;
 }
 
@@ -168,6 +172,8 @@
   --border: #e4e4e4;
   --input: #e4e4e4;
   --ring: #b6cc00;
+  /* Dark olive so accent text stays legible on the light page */
+  --accent-label: #5f6e00;
 }
 
 /* In light mode, lift the dark device demos off the page with a soft shadow so

@@ -75,7 +75,7 @@ const MOCK_CSS = `
 
   /* skeleton block — shimmer */
   .sk {
-    background: linear-gradient(90deg, #292929 25%, #343434 50%, #292929 75%);
+    background: linear-gradient(90deg, #313131 25%, #3c3c3c 50%, #313131 75%);
     background-size: 400% 100%;
     animation: sk-sweep 5.5s ease-in-out infinite;
     border-radius: 4px;
@@ -96,15 +96,15 @@ const MOCK_CSS = `
     container-name: mock;
     height: 100%;
     overflow: hidden;
-    background: #161616;
+    background: #1e1e1e;
     display: flex;
     flex-direction: column;
   }
 
   /* ── TOP NAV ── */
   .mc-nav {
-    background: #1b1b1b;
-    border-bottom: 1px solid #272727;
+    background: #232323;
+    border-bottom: 1px solid #2f2f2f;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -122,7 +122,7 @@ const MOCK_CSS = `
     display: block;
     width: 14px;
     height: 1.5px;
-    background: #3b3b3b;
+    background: #454545;
     border-radius: 1px;
   }
   .mc-nav-links { display: none; }
@@ -161,8 +161,8 @@ const MOCK_CSS = `
       flex-direction: column;
       width: 164px;
       flex-shrink: 0;
-      background: #191919;
-      border-right: 1px solid #252525;
+      background: #212121;
+      border-right: 1px solid #2d2d2d;
       padding: 12px 10px;
       gap: 3px;
       overflow: hidden;
@@ -182,7 +182,7 @@ const MOCK_CSS = `
   }
   .mc-sidebar-divider {
     height: 1px;
-    background: #252525;
+    background: #2d2d2d;
     margin: 6px 8px;
     flex-shrink: 0;
   }
@@ -221,8 +221,8 @@ const MOCK_CSS = `
     align-items: center;
     gap: 10px;
     padding: 10px;
-    background: #1e1e1e;
-    border: 1px solid #272727;
+    background: #262626;
+    border: 1px solid #2f2f2f;
     border-radius: 8px;
   }
   .mc-list-text {
@@ -238,8 +238,8 @@ const MOCK_CSS = `
     display: none;
   }
   .mc-card {
-    background: #1e1e1e;
-    border: 1px solid #272727;
+    background: #262626;
+    border: 1px solid #2f2f2f;
     border-radius: 8px;
     padding: 12px;
     display: flex;
@@ -266,8 +266,8 @@ const MOCK_CSS = `
     display: flex;
     justify-content: space-around;
     align-items: center;
-    background: #1b1b1b;
-    border-top: 1px solid #272727;
+    background: #232323;
+    border-top: 1px solid #2f2f2f;
     padding: 8px 0 10px;
     flex-shrink: 0;
   }
@@ -414,7 +414,7 @@ function PhoneChrome() {
       alignItems: "flex-end",
       justifyContent: "space-between",
       padding: "0 22px 6px",
-      color: "#f2f2f2",
+      color: "#f5f5f5",
     }}>
       <span style={{ fontFamily: "Space Grotesk", fontSize: 12, fontWeight: 600 }}>{time}</span>
       {/* Dynamic island */}
@@ -425,7 +425,7 @@ function PhoneChrome() {
         transform: "translateX(-50%)",
         width: 88,
         height: 26,
-        background: "#0d0d0d",
+        background: "#151515",
         borderRadius: 14,
       }} />
       <div style={{ display: "flex", gap: 5, alignItems: "center" }}>
@@ -459,9 +459,9 @@ function BrowserChrome() {
       <div style={{
         flex: 1,
         height: 26,
-        background: "#1b1b1b",
+        background: "#232323",
         borderRadius: 6,
-        border: "1px solid #3b3b3b",
+        border: "1px solid #454545",
         display: "flex",
         alignItems: "center",
         padding: "0 10px",
@@ -472,7 +472,7 @@ function BrowserChrome() {
         <span style={{
           fontFamily: "Space Mono",
           fontSize: 10,
-          color: "#747474",
+          color: "#7c7c7c",
           whiteSpace: "nowrap",
         }}>
           studio7.design
@@ -481,9 +481,9 @@ function BrowserChrome() {
 
       {/* Browser actions */}
       <div style={{ display: "flex", gap: 12, flexShrink: 0 }}>
-        <ArrowLeft size={12} color="#626262" />
-        <RotateCcw size={12} color="#626262" />
-        <Share2 size={12} color="#626262" />
+        <ArrowLeft size={12} color="#6a6a6a" />
+        <RotateCcw size={12} color="#6a6a6a" />
+        <Share2 size={12} color="#6a6a6a" />
       </div>
     </div>
   )
@@ -525,7 +525,7 @@ function AppChrome() {
           alignItems: "center",
           justifyContent: "center",
         }}>
-          <div style={{ width: 6, height: 6, background: "#161616", borderRadius: 1 }} />
+          <div style={{ width: 6, height: 6, background: "#1e1e1e", borderRadius: 1 }} />
         </div>
         <span style={{
           fontFamily: "Space Grotesk",
@@ -541,7 +541,7 @@ function AppChrome() {
       {/* Toolbar icons (right) */}
       <div style={{ display: "flex", gap: 8, marginLeft: "auto", alignItems: "center" }}>
         {[14, 14, 14].map((_, i) => (
-          <div key={i} style={{ width: 14, height: 14, background: "#2b2b2b", borderRadius: 3 }} />
+          <div key={i} style={{ width: 14, height: 14, background: "#333333", borderRadius: 3 }} />
         ))}
       </div>
     </div>
@@ -556,7 +556,7 @@ const MOCK_APP_CSS = `
     100% { background-position:  400% 0; }
   }
   .sk {
-    background: linear-gradient(90deg, #292929 25%, #343434 50%, #292929 75%);
+    background: linear-gradient(90deg, #313131 25%, #3c3c3c 50%, #313131 75%);
     background-size: 400% 100%;
     animation: sk-sweep 5.5s ease-in-out infinite;
     border-radius: 4px;
@@ -573,15 +573,15 @@ const MOCK_APP_CSS = `
   .mca {
     height: 100%;
     overflow: hidden;
-    background: #161616;
+    background: #1e1e1e;
     display: flex;
   }
 
   .mca-nav {
     width: 148px;
     flex-shrink: 0;
-    background: #191919;
-    border-right: 1px solid #252525;
+    background: #212121;
+    border-right: 1px solid #2d2d2d;
     display: flex;
     flex-direction: column;
     padding: 10px 8px;
@@ -592,7 +592,7 @@ const MOCK_APP_CSS = `
   .mca-section-label {
     font-size: 7px;
     letter-spacing: 0.18em;
-    color: #373737;
+    color: #3f3f3f;
     padding: 8px 8px 3px;
     font-family: Space Mono, monospace;
     text-transform: uppercase;
@@ -613,7 +613,7 @@ const MOCK_APP_CSS = `
 
   .mca-divider {
     height: 1px;
-    background: #252525;
+    background: #2d2d2d;
     margin: 5px 8px;
     flex-shrink: 0;
   }
@@ -643,8 +643,8 @@ const MOCK_APP_CSS = `
   }
 
   .mca-kpi {
-    background: #1e1e1e;
-    border: 1px solid #272727;
+    background: #262626;
+    border: 1px solid #2f2f2f;
     border-radius: 7px;
     padding: 10px;
     display: flex;
@@ -653,8 +653,8 @@ const MOCK_APP_CSS = `
   }
 
   .mca-chart {
-    background: #1e1e1e;
-    border: 1px solid #272727;
+    background: #262626;
+    border: 1px solid #2f2f2f;
     border-radius: 7px;
     padding: 10px 12px;
     flex-shrink: 0;
@@ -677,8 +677,8 @@ const MOCK_APP_CSS = `
 
   .mca-table {
     flex: 1;
-    background: #1e1e1e;
-    border: 1px solid #272727;
+    background: #262626;
+    border: 1px solid #2f2f2f;
     border-radius: 7px;
     overflow: hidden;
     display: flex;
@@ -691,8 +691,8 @@ const MOCK_APP_CSS = `
     align-items: center;
     gap: 8px;
     padding: 7px 12px;
-    border-bottom: 1px solid #272727;
-    background: #191919;
+    border-bottom: 1px solid #2f2f2f;
+    background: #212121;
     flex-shrink: 0;
   }
 
@@ -701,7 +701,7 @@ const MOCK_APP_CSS = `
     align-items: center;
     gap: 8px;
     padding: 6px 12px;
-    border-bottom: 1px solid #212121;
+    border-bottom: 1px solid #292929;
     flex-shrink: 0;
   }
 `
@@ -764,7 +764,7 @@ function MockAppContent() {
               {CHART_BARS.map((h, i) => (
                 <div key={i} className="mca-bar" style={{
                   height: `${h}%`,
-                  background: h >= 88 ? "rgba(232,255,71,0.4)" : "#2b2b2b",
+                  background: h >= 88 ? "rgba(232,255,71,0.4)" : "#333333",
                 }} />
               ))}
             </div>
@@ -854,14 +854,14 @@ function PhoneToDesktopDemo() {
         <p style={{
           fontFamily: "Space Mono",
           fontSize: 10,
-          color: "#515151",
+          color: "#595959",
           letterSpacing: "0.14em",
           textTransform: "uppercase",
           margin: 0,
         }}>
           Responsive by design
         </p>
-        <div style={{ width: 1, height: 10, background: "#373737" }} />
+        <div style={{ width: 1, height: 10, background: "#3f3f3f" }} />
         <AnimatePresence mode="wait">
           <motion.p
             key={phase}
@@ -872,7 +872,7 @@ function PhoneToDesktopDemo() {
             style={{
               fontFamily: "Space Mono",
               fontSize: 10,
-              color: "#e8ff47",
+              color: "var(--accent-label)",
               margin: 0,
               display: "flex",
               alignItems: "center",
@@ -907,10 +907,10 @@ function PhoneToDesktopDemo() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.25 }}
             >
-              <div style={{ position: "absolute", right: -3, top: 110, width: 3, height: 38, background: "#2b2b2b", borderRadius: "0 2px 2px 0" }} />
-              <div style={{ position: "absolute", left: -3, top: 88,  width: 3, height: 26, background: "#2b2b2b", borderRadius: "2px 0 0 2px" }} />
-              <div style={{ position: "absolute", left: -3, top: 122, width: 3, height: 26, background: "#2b2b2b", borderRadius: "2px 0 0 2px" }} />
-              <div style={{ position: "absolute", left: -3, top: 62,  width: 3, height: 18, background: "#2b2b2b", borderRadius: "2px 0 0 2px" }} />
+              <div style={{ position: "absolute", right: -3, top: 110, width: 3, height: 38, background: "#333333", borderRadius: "0 2px 2px 0" }} />
+              <div style={{ position: "absolute", left: -3, top: 88,  width: 3, height: 26, background: "#333333", borderRadius: "2px 0 0 2px" }} />
+              <div style={{ position: "absolute", left: -3, top: 122, width: 3, height: 26, background: "#333333", borderRadius: "2px 0 0 2px" }} />
+              <div style={{ position: "absolute", left: -3, top: 62,  width: 3, height: 18, background: "#333333", borderRadius: "2px 0 0 2px" }} />
             </motion.div>
           )}
         </AnimatePresence>
@@ -922,8 +922,8 @@ function PhoneToDesktopDemo() {
           style={{
             position: "relative",
             overflow: "hidden",
-            background: "#212121",
-            border: "1px solid #333333",
+            background: "#292929",
+            border: "1px solid #3b3b3b",
             boxShadow: "0 36px 90px rgba(0,0,0,0.75), inset 0 1px 0 rgba(255,255,255,0.04)",
             zIndex: 1,
           }}
@@ -992,7 +992,7 @@ function PhoneToDesktopDemo() {
                   left: "50%",
                   transform: "translateX(-50%)",
                   width: 96, height: 4,
-                  background: "#f2f2f2",
+                  background: "#f5f5f5",
                   borderRadius: 2,
                   opacity: 0.3,
                   zIndex: 20,
@@ -1011,8 +1011,8 @@ function PhoneToDesktopDemo() {
         whileTap={{ scale: 0.97 }}
         style={{
           background: "transparent",
-          border: "1px solid #373737",
-          color: "#626262",
+          border: "1px solid #3f3f3f",
+          color: "#6a6a6a",
           fontFamily: "Space Mono",
           fontSize: 10,
           letterSpacing: "0.08em",
@@ -1025,7 +1025,7 @@ function PhoneToDesktopDemo() {
           transition: "border-color 0.2s, color 0.2s",
         }}
         onMouseEnter={e => { e.currentTarget.style.borderColor = "#e8ff47"; e.currentTarget.style.color = "#e8ff47" }}
-        onMouseLeave={e => { e.currentTarget.style.borderColor = "#373737"; e.currentTarget.style.color = "#626262" }}
+        onMouseLeave={e => { e.currentTarget.style.borderColor = "#3f3f3f"; e.currentTarget.style.color = "#6a6a6a" }}
       >
         {looping ? "⏸ Pause" : "▶ Resume"}
       </motion.button>
@@ -1092,7 +1092,7 @@ function ServerChrome({ phase }: { phase: BackendPhase }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.2 }}
-            style={{ fontFamily: "Space Mono", fontSize: 10, color: "#626262" }}
+            style={{ fontFamily: "Space Mono", fontSize: 10, color: "#6a6a6a" }}
           >
             {BACKEND_META[phase].title}
           </motion.span>
@@ -1100,7 +1100,7 @@ function ServerChrome({ phase }: { phase: BackendPhase }) {
       </div>
       <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 5 }}>
         <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#28c840", flexShrink: 0 }} />
-        <span style={{ fontFamily: "Space Mono", fontSize: 9, color: "#494949" }}>99.9%</span>
+        <span style={{ fontFamily: "Space Mono", fontSize: 9, color: "#515151" }}>99.9%</span>
       </div>
     </div>
   )
@@ -1141,7 +1141,7 @@ function BackendPipeline({ phase }: { phase: BackendPhase }) {
           <React.Fragment key={i}>
             {i > 0 && (
               <motion.div
-                animate={{ background: isActive ? "rgba(232,255,71,0.3)" : "#2b2b2b" }}
+                animate={{ background: isActive ? "rgba(232,255,71,0.3)" : "#333333" }}
                 transition={{ duration: 0.3 }}
                 style={{
                   position: "absolute",
@@ -1159,8 +1159,8 @@ function BackendPipeline({ phase }: { phase: BackendPhase }) {
                   ? "rgba(232,255,71,0.5)"
                   : isActive
                   ? "rgba(232,255,71,0.12)"
-                  : "#2b2b2b",
-                backgroundColor: isCurrent ? "rgba(232,255,71,0.05)" : "#1e1e1e",
+                  : "#333333",
+                backgroundColor: isCurrent ? "rgba(232,255,71,0.05)" : "#262626",
               }}
               transition={{ duration: 0.3 }}
               style={{
@@ -1170,7 +1170,7 @@ function BackendPipeline({ phase }: { phase: BackendPhase }) {
                 width: BN_W,
                 height: BN_H,
                 borderRadius: 8,
-                border: "1px solid #2b2b2b",
+                border: "1px solid #333333",
                 padding: "0 14px",
                 display: "flex",
                 flexDirection: "column",
@@ -1178,12 +1178,12 @@ function BackendPipeline({ phase }: { phase: BackendPhase }) {
                 gap: 4,
               }}
             >
-              <span style={{ fontFamily: "Space Grotesk", fontSize: 12, fontWeight: 600, color: isActive ? "#c9c9c9" : "#494949" }}>
+              <span style={{ fontFamily: "Space Grotesk", fontSize: 12, fontWeight: 600, color: isActive ? "#d0d0d0" : "#515151" }}>
                 {node.label}
               </span>
               <span style={{
                 fontFamily: "Space Mono", fontSize: 9, letterSpacing: "0.06em",
-                color: isCurrent ? "#e8ff47" : isActive ? "#626262" : "#2f2f2f",
+                color: isCurrent ? "#e8ff47" : isActive ? "#6a6a6a" : "#373737",
               }}>
                 {node.sub}
               </span>
@@ -1270,10 +1270,10 @@ function BackendFlowDemo() {
 
       {/* Phase label */}
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        <p style={{ fontFamily: "Space Mono", fontSize: 10, color: "#515151", letterSpacing: "0.14em", textTransform: "uppercase", margin: 0 }}>
+        <p style={{ fontFamily: "Space Mono", fontSize: 10, color: "#595959", letterSpacing: "0.14em", textTransform: "uppercase", margin: 0 }}>
           Request lifecycle
         </p>
-        <div style={{ width: 1, height: 10, background: "#373737" }} />
+        <div style={{ width: 1, height: 10, background: "#3f3f3f" }} />
         <AnimatePresence mode="wait">
           <motion.p
             key={phase}
@@ -1281,7 +1281,7 @@ function BackendFlowDemo() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -5 }}
             transition={{ duration: 0.2 }}
-            style={{ fontFamily: "Space Mono", fontSize: 10, color: "#e8ff47", margin: 0, display: "flex", alignItems: "center", gap: 6 }}
+            style={{ fontFamily: "Space Mono", fontSize: 10, color: "var(--accent-label)", margin: 0, display: "flex", alignItems: "center", gap: 6 }}
           >
             <PhaseIcon size={11} />
             {meta.phaseText}
@@ -1292,8 +1292,8 @@ function BackendFlowDemo() {
       {/* Server frame */}
       <div style={{
         width: BACKEND_W - 80,
-        background: "#212121",
-        border: "1px solid #333333",
+        background: "#292929",
+        border: "1px solid #3b3b3b",
         borderRadius: 10,
         boxShadow: "0 36px 90px rgba(0,0,0,0.75), inset 0 1px 0 rgba(255,255,255,0.04)",
         overflow: "hidden",
@@ -1306,7 +1306,7 @@ function BackendFlowDemo() {
           pointerEvents: "none", zIndex: 0,
         }} />
         {/* Chrome bar */}
-        <div style={{ height: 44, borderBottom: "1px solid #2b2b2b", position: "relative", zIndex: 1 }}>
+        <div style={{ height: 44, borderBottom: "1px solid #333333", position: "relative", zIndex: 1 }}>
           <ServerChrome phase={phase} />
         </div>
         {/* Pipeline content */}
@@ -1335,14 +1335,14 @@ function BackendFlowDemo() {
         whileHover={{ scale: 1.03 }}
         whileTap={{ scale: 0.97 }}
         style={{
-          background: "transparent", border: "1px solid #373737", color: "#626262",
+          background: "transparent", border: "1px solid #3f3f3f", color: "#6a6a6a",
           fontFamily: "Space Mono", fontSize: 10, letterSpacing: "0.08em",
           padding: "7px 18px", borderRadius: 6, cursor: "pointer",
           display: "flex", alignItems: "center", gap: 7,
           transition: "border-color 0.2s, color 0.2s",
         }}
         onMouseEnter={e => { e.currentTarget.style.borderColor = "#e8ff47"; e.currentTarget.style.color = "#e8ff47" }}
-        onMouseLeave={e => { e.currentTarget.style.borderColor = "#373737"; e.currentTarget.style.color = "#626262" }}
+        onMouseLeave={e => { e.currentTarget.style.borderColor = "#3f3f3f"; e.currentTarget.style.color = "#6a6a6a" }}
       >
         {looping ? "⏸ Pause" : "▶ Resume"}
       </motion.button>
@@ -1443,12 +1443,12 @@ function MetricCard({ label, value, delta, up, delay }: {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, delay }}
-      style={{ flex: 1, background: "#1e1e1e", border: "1px solid #2b2b2b", borderRadius: 8, padding: "14px 16px" }}
+      style={{ flex: 1, background: "#262626", border: "1px solid #333333", borderRadius: 8, padding: "14px 16px" }}
     >
-      <p style={{ fontFamily: "Space Mono", fontSize: 9, color: "#515151", letterSpacing: "0.12em", textTransform: "uppercase" as const, margin: "0 0 8px" }}>
+      <p style={{ fontFamily: "Space Mono", fontSize: 9, color: "#595959", letterSpacing: "0.12em", textTransform: "uppercase" as const, margin: "0 0 8px" }}>
         {label}
       </p>
-      <p style={{ fontFamily: "Space Grotesk", fontSize: 22, fontWeight: 600, color: "#f2f2f2", margin: "0 0 6px", letterSpacing: "-0.02em" }}>
+      <p style={{ fontFamily: "Space Grotesk", fontSize: 22, fontWeight: 600, color: "#f5f5f5", margin: "0 0 6px", letterSpacing: "-0.02em" }}>
         {isNum ? counted.toLocaleString() : value}
       </p>
       <span style={{
@@ -1473,17 +1473,17 @@ function LineChartPanel() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4, delay: 0.2 }}
-      style={{ background: "#1e1e1e", border: "1px solid #2b2b2b", borderRadius: 8, padding: "16px 18px 14px" }}
+      style={{ background: "#262626", border: "1px solid #333333", borderRadius: 8, padding: "16px 18px 14px" }}
     >
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-        <p style={{ fontFamily: "Space Mono", fontSize: 9, color: "#515151", letterSpacing: "0.12em", textTransform: "uppercase" as const, margin: 0 }}>
+        <p style={{ fontFamily: "Space Mono", fontSize: 9, color: "#595959", letterSpacing: "0.12em", textTransform: "uppercase" as const, margin: 0 }}>
           Monthly Active Users
         </p>
         <div style={{ display: "flex", gap: 4 }}>
           {["1M","3M","12M"].map((l, i) => (
             <span key={l} style={{
               fontFamily: "Space Mono", fontSize: 9,
-              color: i === 2 ? "#e8ff47" : "#3f3f3f",
+              color: i === 2 ? "#e8ff47" : "#474747",
               background: i === 2 ? "rgba(232,255,71,0.1)" : "transparent",
               padding: "2px 7px", borderRadius: 3, cursor: "pointer",
             }}>{l}</span>
@@ -1498,7 +1498,7 @@ function LineChartPanel() {
           </linearGradient>
         </defs>
         {[0.25, 0.5, 0.75].map(y => (
-          <line key={y} x1={20} y1={y * H} x2={W - 20} y2={y * H} stroke="#272727" strokeWidth={1} />
+          <line key={y} x1={20} y1={y * H} x2={W - 20} y2={y * H} stroke="#2f2f2f" strokeWidth={1} />
         ))}
         <motion.path
           d={buildAreaPath(MAU_DATA, W, H)}
@@ -1527,7 +1527,7 @@ function LineChartPanel() {
         })}
         {MONTHS.map((m, i) => (
           <text key={i} x={20 + i * xStep} y={H + 14} textAnchor="middle"
-            style={{ fontFamily: "Space Mono", fontSize: 9, fill: "#373737" }}>{m}</text>
+            style={{ fontFamily: "Space Mono", fontSize: 9, fill: "#3f3f3f" }}>{m}</text>
         ))}
       </svg>
     </motion.div>
@@ -1540,19 +1540,19 @@ function EventSourcesPanel() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4, delay: 0.3 }}
-      style={{ flex: 1, background: "#1e1e1e", border: "1px solid #2b2b2b", borderRadius: 8, padding: "16px 18px" }}
+      style={{ flex: 1, background: "#262626", border: "1px solid #333333", borderRadius: 8, padding: "16px 18px" }}
     >
-      <p style={{ fontFamily: "Space Mono", fontSize: 9, color: "#515151", letterSpacing: "0.12em", textTransform: "uppercase" as const, margin: "0 0 14px" }}>
+      <p style={{ fontFamily: "Space Mono", fontSize: 9, color: "#595959", letterSpacing: "0.12em", textTransform: "uppercase" as const, margin: "0 0 14px" }}>
         Events by Source
       </p>
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         {EVENT_SOURCES.map((src, i) => (
           <div key={src.label}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-              <span style={{ fontFamily: "Space Mono", fontSize: 9, color: "#626262" }}>{src.label}</span>
-              <span style={{ fontFamily: "Space Mono", fontSize: 9, color: "#747474" }}>{src.value.toLocaleString()}</span>
+              <span style={{ fontFamily: "Space Mono", fontSize: 9, color: "#6a6a6a" }}>{src.label}</span>
+              <span style={{ fontFamily: "Space Mono", fontSize: 9, color: "#7c7c7c" }}>{src.value.toLocaleString()}</span>
             </div>
-            <div style={{ height: 4, background: "#272727", borderRadius: 2, overflow: "hidden" }}>
+            <div style={{ height: 4, background: "#2f2f2f", borderRadius: 2, overflow: "hidden" }}>
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${src.pct}%` }}
@@ -1579,18 +1579,18 @@ function FunnelPanel() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4, delay: 0.2 }}
-      style={{ flex: 1, background: "#1e1e1e", border: "1px solid #2b2b2b", borderRadius: 8, padding: "16px 18px" }}
+      style={{ flex: 1, background: "#262626", border: "1px solid #333333", borderRadius: 8, padding: "16px 18px" }}
     >
-      <p style={{ fontFamily: "Space Mono", fontSize: 9, color: "#515151", letterSpacing: "0.12em", textTransform: "uppercase" as const, margin: "0 0 14px" }}>
+      <p style={{ fontFamily: "Space Mono", fontSize: 9, color: "#595959", letterSpacing: "0.12em", textTransform: "uppercase" as const, margin: "0 0 14px" }}>
         Conversion Funnel
       </p>
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         {FUNNEL_STEPS.map((step, i) => (
           <div key={step.label} style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <div style={{ width: 58, textAlign: "right" as const, flexShrink: 0 }}>
-              <span style={{ fontFamily: "Space Mono", fontSize: 9, color: "#515151" }}>{step.label}</span>
+              <span style={{ fontFamily: "Space Mono", fontSize: 9, color: "#595959" }}>{step.label}</span>
             </div>
-            <div style={{ flex: 1, height: 26, background: "#272727", borderRadius: 3, overflow: "hidden" }}>
+            <div style={{ flex: 1, height: 26, background: "#2f2f2f", borderRadius: 3, overflow: "hidden" }}>
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${step.pct}%` }}
@@ -1611,13 +1611,13 @@ function FunnelPanel() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.6 + i * 0.15 }}
-                  style={{ fontFamily: "Space Mono", fontSize: 9, color: i === 3 ? "#0d0d0d" : "#e8ff47", whiteSpace: "nowrap" as const }}
+                  style={{ fontFamily: "Space Mono", fontSize: 9, color: i === 3 ? "#151515" : "#e8ff47", whiteSpace: "nowrap" as const }}
                 >
                   {step.value}
                 </motion.span>
               </motion.div>
             </div>
-            <span style={{ fontFamily: "Space Mono", fontSize: 9, color: "#3f3f3f", width: 26, textAlign: "right" as const }}>
+            <span style={{ fontFamily: "Space Mono", fontSize: 9, color: "#474747", width: 26, textAlign: "right" as const }}>
               {step.pct}%
             </span>
           </div>
@@ -1667,10 +1667,10 @@ function AnalyticsDashboardDemo() {
 
       {/* View label */}
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        <p style={{ fontFamily: "Space Mono", fontSize: 10, color: "#515151", letterSpacing: "0.14em", textTransform: "uppercase" as const, margin: 0 }}>
+        <p style={{ fontFamily: "Space Mono", fontSize: 10, color: "#595959", letterSpacing: "0.14em", textTransform: "uppercase" as const, margin: 0 }}>
           Analytics
         </p>
-        <div style={{ width: 1, height: 10, background: "#373737" }} />
+        <div style={{ width: 1, height: 10, background: "#3f3f3f" }} />
         <AnimatePresence mode="wait">
           <motion.p
             key={view}
@@ -1678,7 +1678,7 @@ function AnalyticsDashboardDemo() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -5 }}
             transition={{ duration: 0.2 }}
-            style={{ fontFamily: "Space Mono", fontSize: 10, color: "#e8ff47", margin: 0 }}
+            style={{ fontFamily: "Space Mono", fontSize: 10, color: "var(--accent-label)", margin: 0 }}
           >
             {ANALYTICS_META[view].text}
           </motion.p>
@@ -1688,8 +1688,8 @@ function AnalyticsDashboardDemo() {
       {/* Dashboard frame */}
       <div style={{
         width: ANALYTICS_W - 40,
-        background: "#212121",
-        border: "1px solid #333333",
+        background: "#292929",
+        border: "1px solid #3b3b3b",
         borderRadius: 10,
         boxShadow: "0 36px 90px rgba(0,0,0,0.75), inset 0 1px 0 rgba(255,255,255,0.04)",
         overflow: "hidden",
@@ -1704,7 +1704,7 @@ function AnalyticsDashboardDemo() {
 
         {/* Chrome bar */}
         <div style={{
-          height: 40, borderBottom: "1px solid #2b2b2b",
+          height: 40, borderBottom: "1px solid #333333",
           display: "flex", alignItems: "center", padding: "0 16px", gap: 10,
           position: "relative", zIndex: 1,
         }}>
@@ -1720,9 +1720,9 @@ function AnalyticsDashboardDemo() {
                 onClick={() => { setView(v); setLooping(false) }}
                 style={{
                   fontFamily: "Space Mono", fontSize: 9, letterSpacing: "0.06em",
-                  color: view === v ? "#e8ff47" : "#3f3f3f",
+                  color: view === v ? "#e8ff47" : "#474747",
                   background: view === v ? "rgba(232,255,71,0.1)" : "transparent",
-                  border: `1px solid ${view === v ? "rgba(232,255,71,0.25)" : "#2b2b2b"}`,
+                  border: `1px solid ${view === v ? "rgba(232,255,71,0.25)" : "#333333"}`,
                   borderRadius: 4, padding: "3px 10px", cursor: "pointer",
                   transition: "all 0.15s", textTransform: "capitalize" as const,
                 }}
@@ -1737,7 +1737,7 @@ function AnalyticsDashboardDemo() {
               transition={{ duration: 2, repeat: Infinity }}
               style={{ width: 6, height: 6, borderRadius: "50%", background: "#e8ff47" }}
             />
-            <span style={{ fontFamily: "Space Mono", fontSize: 9, color: "#3f3f3f" }}>LIVE</span>
+            <span style={{ fontFamily: "Space Mono", fontSize: 9, color: "#474747" }}>LIVE</span>
           </div>
         </div>
 
@@ -1778,13 +1778,13 @@ function AnalyticsDashboardDemo() {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.3, delay: 0.2 + i * 0.07 }}
                         style={{
-                          background: "#1e1e1e", border: "1px solid #2b2b2b", borderRadius: 6,
+                          background: "#262626", border: "1px solid #333333", borderRadius: 6,
                           padding: "11px 14px", display: "flex", justifyContent: "space-between", alignItems: "center",
                         }}
                       >
-                        <span style={{ fontFamily: "Space Mono", fontSize: 9, color: "#515151", letterSpacing: "0.1em" }}>{s.label}</span>
+                        <span style={{ fontFamily: "Space Mono", fontSize: 9, color: "#595959", letterSpacing: "0.1em" }}>{s.label}</span>
                         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                          <span style={{ fontFamily: "Space Grotesk", fontSize: 17, fontWeight: 600, color: "#d3d3d3" }}>{s.value}</span>
+                          <span style={{ fontFamily: "Space Grotesk", fontSize: 17, fontWeight: 600, color: "#dadada" }}>{s.value}</span>
                           <span style={{ fontFamily: "Space Mono", fontSize: 9, color: "#e8ff47" }}>{s.trend}</span>
                         </div>
                       </motion.div>
@@ -1801,7 +1801,7 @@ function AnalyticsDashboardDemo() {
               >
                 {/* Daily bar chart */}
                 <div style={{ marginBottom: 14 }}>
-                  <p style={{ fontFamily: "Space Mono", fontSize: 9, color: "#515151", letterSpacing: "0.12em", textTransform: "uppercase" as const, margin: "0 0 12px" }}>
+                  <p style={{ fontFamily: "Space Mono", fontSize: 9, color: "#595959", letterSpacing: "0.12em", textTransform: "uppercase" as const, margin: "0 0 12px" }}>
                     Daily Events — Last 14 days
                   </p>
                   <div style={{ display: "flex", alignItems: "flex-end", gap: 5, height: 80 }}>
@@ -1824,7 +1824,7 @@ function AnalyticsDashboardDemo() {
                   <div style={{ display: "flex", gap: 5, marginTop: 4 }}>
                     {DAILY_BARS.map((_, i) => (
                       <div key={i} style={{ flex: 1, textAlign: "center" as const }}>
-                        <span style={{ fontFamily: "Space Mono", fontSize: 7, color: "#333333" }}>{i + 1}</span>
+                        <span style={{ fontFamily: "Space Mono", fontSize: 7, color: "#3b3b3b" }}>{i + 1}</span>
                       </div>
                     ))}
                   </div>
@@ -1837,15 +1837,15 @@ function AnalyticsDashboardDemo() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.35 }}
-                    style={{ flex: 1, background: "#1e1e1e", border: "1px solid #2b2b2b", borderRadius: 8, padding: "16px 18px" }}
+                    style={{ flex: 1, background: "#262626", border: "1px solid #333333", borderRadius: 8, padding: "16px 18px" }}
                   >
-                    <p style={{ fontFamily: "Space Mono", fontSize: 9, color: "#515151", letterSpacing: "0.12em", textTransform: "uppercase" as const, margin: "0 0 12px" }}>
+                    <p style={{ fontFamily: "Space Mono", fontSize: 9, color: "#595959", letterSpacing: "0.12em", textTransform: "uppercase" as const, margin: "0 0 12px" }}>
                       Weekly Retention
                     </p>
                     <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
                       {RETENTION_ROWS.map((row, ri) => (
                         <div key={ri} style={{ display: "flex", gap: 4 }}>
-                          <span style={{ fontFamily: "Space Mono", fontSize: 8, color: "#373737", width: 28, flexShrink: 0, lineHeight: "18px" }}>
+                          <span style={{ fontFamily: "Space Mono", fontSize: 8, color: "#3f3f3f", width: 28, flexShrink: 0, lineHeight: "18px" }}>
                             Wk {ri + 1}
                           </span>
                           {row.map((v, ci) => (
@@ -1862,7 +1862,7 @@ function AnalyticsDashboardDemo() {
                               }}
                             >
                               {v != null && (
-                                <span style={{ fontFamily: "Space Mono", fontSize: 7, color: v === 100 ? "#0d0d0d" : "#e8ff47" }}>
+                                <span style={{ fontFamily: "Space Mono", fontSize: 7, color: v === 100 ? "#151515" : "#e8ff47" }}>
                                   {v}%
                                 </span>
                               )}
@@ -1886,14 +1886,14 @@ function AnalyticsDashboardDemo() {
         whileHover={{ scale: 1.03 }}
         whileTap={{ scale: 0.97 }}
         style={{
-          background: "transparent", border: "1px solid #373737", color: "#626262",
+          background: "transparent", border: "1px solid #3f3f3f", color: "#6a6a6a",
           fontFamily: "Space Mono", fontSize: 10, letterSpacing: "0.08em",
           padding: "7px 18px", borderRadius: 6, cursor: "pointer",
           display: "flex", alignItems: "center", gap: 7,
           transition: "border-color 0.2s, color 0.2s",
         }}
         onMouseEnter={e => { e.currentTarget.style.borderColor = "#e8ff47"; e.currentTarget.style.color = "#e8ff47" }}
-        onMouseLeave={e => { e.currentTarget.style.borderColor = "#373737"; e.currentTarget.style.color = "#626262" }}
+        onMouseLeave={e => { e.currentTarget.style.borderColor = "#3f3f3f"; e.currentTarget.style.color = "#6a6a6a" }}
       >
         {looping ? "⏸ Pause" : "▶ Resume"}
       </motion.button>
@@ -2049,7 +2049,7 @@ function AnimationsShowcase({ onReachEnd }: { onReachEnd?: () => void }) {
       <div
         style={{
           position: "fixed", inset: 0, zIndex: 10,
-          background: "#0d0d0d", pointerEvents: "none",
+          background: "#151515", pointerEvents: "none",
         }}
       >
       <canvas
@@ -2061,7 +2061,7 @@ function AnimationsShowcase({ onReachEnd }: { onReachEnd?: () => void }) {
       {!loaded && (
         <div style={{
           position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center",
-          fontFamily: "Space Mono", fontSize: 13, color: "#515151", zIndex: 1,
+          fontFamily: "Space Mono", fontSize: 13, color: "#595959", zIndex: 1,
         }}>
           loading frames…
         </div>
@@ -2236,8 +2236,8 @@ const SCHEMA_TABLES: SchemaTable[] = [
 
 function SchemaCard({ table }: { table: SchemaTable }) {
   return (
-    <div style={{ background: "#191919", border: "1px solid #2b2b2b", borderRadius: 6, overflow: "hidden", flex: 1, minWidth: 0 }}>
-      <div style={{ padding: "7px 12px", borderBottom: "1px solid #232323", background: "#1e1e1e" }}>
+    <div style={{ background: "#212121", border: "1px solid #333333", borderRadius: 6, overflow: "hidden", flex: 1, minWidth: 0 }}>
+      <div style={{ padding: "7px 12px", borderBottom: "1px solid #2b2b2b", background: "#262626" }}>
         <span style={{ fontFamily: "Space Mono", fontSize: 10, color: "#777", letterSpacing: "0.06em" }}>{table.name}</span>
       </div>
       {table.fields.map(f => (
@@ -2251,11 +2251,11 @@ function SchemaCard({ table }: { table: SchemaTable }) {
           </span>
           <span style={{
             fontFamily: "Space Mono", fontSize: 9, flex: 1,
-            color: f.tag === "PK" ? "#aaa" : f.tag === "FK" ? "rgba(232,255,71,0.75)" : "#494949",
+            color: f.tag === "PK" ? "#aaa" : f.tag === "FK" ? "rgba(232,255,71,0.75)" : "#515151",
           }}>
             {f.name}
           </span>
-          <span style={{ fontFamily: "Space Mono", fontSize: 7, color: "#2f2f2f" }}>{f.type}</span>
+          <span style={{ fontFamily: "Space Mono", fontSize: 7, color: "#373737" }}>{f.type}</span>
         </div>
       ))}
     </div>
@@ -2365,16 +2365,16 @@ function FeaturesShowcase() {
       <div style={{
         display: "flex", alignItems: "center", gap: 8,
         paddingBottom: 12, marginBottom: 6,
-        borderBottom: "1px solid #1e1e1e",
+        borderBottom: "1px solid #262626",
       }}>
         <div style={{
           width: 22, height: 22, borderRadius: 6,
-          background: "#1b1b1b", border: "1px solid #2b2b2b",
+          background: "#232323", border: "1px solid #333333",
           display: "flex", alignItems: "center", justifyContent: "center",
         }}>
-          <Layout size={11} color="#494949" />
+          <Layout size={11} color="#515151" />
         </div>
-        <span style={{ fontFamily: "Space Grotesk", fontSize: 12, fontWeight: 600, color: "#373737" }}>
+        <span style={{ fontFamily: "Space Grotesk", fontSize: 12, fontWeight: 600, color: "#3f3f3f" }}>
           your-app
         </span>
       </div>
@@ -2403,10 +2403,10 @@ function FeaturesShowcase() {
                 background: item.isNew ? "rgba(232,255,71,0.05)" : "transparent",
                 border: `1px solid ${item.isNew ? "rgba(232,255,71,0.14)" : "transparent"}`,
               }}>
-                <item.Icon size={13} color={item.isNew ? "#8a9820" : "#3b3b3b"} />
+                <item.Icon size={13} color={item.isNew ? "#8a9820" : "#454545"} />
                 <span style={{
                   fontFamily: "Space Grotesk", fontSize: 12, fontWeight: 500,
-                  color: item.isNew ? "#8a9820" : "#3b3b3b",
+                  color: item.isNew ? "#8a9820" : "#454545",
                   flex: 1,
                 }}>
                   {item.label}
@@ -2439,10 +2439,10 @@ function FeaturesShowcase() {
 
 function DesignShowcase() {
   const palette = [
-    { token: "background", hex: "#0d0d0d" },
-    { token: "card",       hex: "#141414" },
-    { token: "border",     hex: "#272727" },
-    { token: "muted",      hex: "#515151" },
+    { token: "background", hex: "#151515" },
+    { token: "card",       hex: "#1c1c1c" },
+    { token: "border",     hex: "#2f2f2f" },
+    { token: "muted",      hex: "#595959" },
     { token: "foreground", hex: "#ffffff" },
     { token: "accent",     hex: "#e8ff47" },
   ]
@@ -2454,29 +2454,29 @@ function DesignShowcase() {
 
   const components = [
     <button key="primary" style={{
-      background: "#e8ff47", color: "#0d0d0d", border: "none",
+      background: "#e8ff47", color: "#151515", border: "none",
       fontFamily: "Space Mono", fontSize: 10, letterSpacing: "0.1em",
       padding: "9px 20px", borderRadius: 7, cursor: "pointer", fontWeight: 700,
     }}>PRIMARY</button>,
     <button key="secondary" style={{
-      background: "transparent", color: "#626262", border: "1px solid #2b2b2b",
+      background: "transparent", color: "#6a6a6a", border: "1px solid #333333",
       fontFamily: "Space Mono", fontSize: 10, letterSpacing: "0.1em",
       padding: "9px 20px", borderRadius: 7, cursor: "pointer",
     }}>SECONDARY</button>,
     <span key="badge" style={{
       fontFamily: "Space Mono", fontSize: 8, letterSpacing: "0.08em",
-      color: "#e8ff47", background: "rgba(232,255,71,0.08)",
+      color: "var(--accent-label)", background: "rgba(232,255,71,0.08)",
       padding: "5px 11px", borderRadius: 5, border: "1px solid rgba(232,255,71,0.12)",
     }}>Badge</span>,
     <div key="input" style={{
-      background: "#191919", border: "1px solid #2b2b2b",
+      background: "#212121", border: "1px solid #333333",
       borderRadius: 7, padding: "9px 14px",
       fontFamily: "Space Grotesk", fontSize: 11, color: "var(--color-grey-400)",
     }}>Input field</div>,
   ]
 
   return (
-    <div style={{ maxWidth: 560, width: "100%", display: "flex", flexDirection: "column", gap: 26 }}>
+    <div style={{ maxWidth: 700, width: "100%", display: "flex", flexDirection: "column", gap: 26 }}>
 
       {/* Color tokens — cascade in from left with bounce */}
       <div>
@@ -2508,7 +2508,7 @@ function DesignShowcase() {
       </div>
 
       {/* Type hierarchy — stagger in from left */}
-      <div style={{ borderTop: "1px solid #1b1b1b", paddingTop: 22 }}>
+      <div style={{ borderTop: "1px solid #232323", paddingTop: 22 }}>
         <motion.p
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
@@ -2519,7 +2519,7 @@ function DesignShowcase() {
         </motion.p>
         <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
           {[
-            <p key="h" style={{ fontFamily: "Space Grotesk", fontSize: 30, fontWeight: 700, color: "#c9c9c9", letterSpacing: "-0.02em", margin: 0, lineHeight: 1.1 }}>
+            <p key="h" style={{ fontFamily: "Space Grotesk", fontSize: 30, fontWeight: 700, color: "var(--color-grey-200)", letterSpacing: "-0.02em", margin: 0, lineHeight: 1.1 }}>
               Precision by design
             </p>,
             <p key="b" style={{ fontFamily: "Space Grotesk", fontSize: 13, color: "var(--color-grey-300)", lineHeight: 1.6, margin: 0 }}>
@@ -2542,7 +2542,7 @@ function DesignShowcase() {
       </div>
 
       {/* Components — cascade in from right */}
-      <div style={{ borderTop: "1px solid #1b1b1b", paddingTop: 22 }}>
+      <div style={{ borderTop: "1px solid #232323", paddingTop: 22 }}>
         <motion.p
           initial={{ opacity: 0, x: 10 }}
           animate={{ opacity: 1, x: 0 }}
@@ -2635,19 +2635,21 @@ function IntegrationsShowcase() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25, delay: i * 0.04 }}
             style={{
-              background:  isCurrent ? "#131300" : "#191919",
-              border:     `1px solid ${isCurrent ? "rgba(232,255,71,0.3)" : isConnected ? "rgba(232,255,71,0.08)" : "#272727"}`,
+              // Once connected, a tile stays LIT (not dimmed) so by the end of
+              // the sequence every integration is lit before the loop resets.
+              background:  isCurrent ? "#1c1c06" : isConnected ? "#171703" : "#212121",
+              border:     `1px solid ${isCurrent ? "rgba(232,255,71,0.4)" : isConnected ? "rgba(232,255,71,0.22)" : "#2f2f2f"}`,
               borderRadius: 7,
               padding: "13px 14px", display: "flex", alignItems: "center", gap: 10,
               transition: "background 0.3s, border-color 0.3s",
             }}
           >
-            <div style={{ flexShrink: 0, color: isCurrent ? "#e8ff47" : isConnected ? "#4a4a22" : "#3b3b3b", transition: "color 0.3s" }}>
+            <div style={{ flexShrink: 0, color: isCurrent ? "#e8ff47" : isConnected ? "#c2d63a" : "#454545", transition: "color 0.3s" }}>
               <Icon size={14} />
             </div>
             <div>
-              <p style={{ fontFamily: "Space Grotesk", fontSize: 12, fontWeight: 600, color: isCurrent ? "#d3d3d3" : isConnected ? "#4a4a4a" : "#494949", margin: "0 0 1px", transition: "color 0.3s" }}>{name}</p>
-              <p style={{ fontFamily: "Space Mono", fontSize: 8, color: isCurrent ? "#747474" : "#373737", margin: 0, letterSpacing: "0.04em", transition: "color 0.3s" }}>{category}</p>
+              <p style={{ fontFamily: "Space Grotesk", fontSize: 12, fontWeight: 600, color: isCurrent ? "#f5f5f5" : isConnected ? "#cfcfcf" : "#515151", margin: "0 0 1px", transition: "color 0.3s" }}>{name}</p>
+              <p style={{ fontFamily: "Space Mono", fontSize: 8, color: isCurrent ? "#8a8a8a" : isConnected ? "#6a6a6a" : "#3f3f3f", margin: 0, letterSpacing: "0.04em", transition: "color 0.3s" }}>{category}</p>
             </div>
           </motion.div>
         )
@@ -2677,7 +2679,7 @@ function SecurityShowcase() {
           transition={{ duration: 0.3, delay: i * 0.09 }}
           style={{
             display: "flex", alignItems: "center", gap: 14,
-            background: "#191919",
+            background: "#212121",
             border: `1px solid rgba(232,255,71,${layer.op * 0.1})`,
             borderRadius: 6, padding: "13px 16px",
           }}
@@ -2689,14 +2691,14 @@ function SecurityShowcase() {
             )}
           </div>
           <div style={{ flex: 1 }}>
-            <p style={{ fontFamily: "Space Grotesk", fontSize: 12, fontWeight: 600, color: `rgba(232,255,71,${Math.min(layer.op * 0.9 + 0.1, 1)})`, margin: "0 0 2px" }}>
+            <p style={{ fontFamily: "Space Grotesk", fontSize: 12, fontWeight: 600, color: `rgba(232,255,71,${Math.min(layer.op * 0.45 + 0.55, 1)})`, margin: "0 0 2px" }}>
               {layer.label}
             </p>
-            <p style={{ fontFamily: "Space Mono", fontSize: 9, color: "#3b3b3b", margin: 0, letterSpacing: "0.04em" }}>
+            <p style={{ fontFamily: "Space Mono", fontSize: 9, color: "#8a8a8a", margin: 0, letterSpacing: "0.04em" }}>
               {layer.sub}
             </p>
           </div>
-          <span style={{ fontFamily: "Space Mono", fontSize: 8, color: `rgba(232,255,71,${layer.op * 0.4})`, letterSpacing: "0.08em", flexShrink: 0 }}>
+          <span style={{ fontFamily: "Space Mono", fontSize: 8, color: `rgba(232,255,71,${layer.op * 0.35 + 0.35})`, letterSpacing: "0.08em", flexShrink: 0 }}>
             L{i + 1}
           </span>
         </motion.div>
@@ -2866,10 +2868,10 @@ export default function Work() {
 
               {/* Demo / showcase — dark-scoped so the device mockups read as
                   dark product screenshots regardless of page theme. */}
-              <div className="surface-dark flex justify-center">
+              <div className={active === "design" ? "flex justify-center" : "surface-dark flex justify-center"}>
                 {active === "animations"
                   ? <AnimationsShowcase onReachEnd={() => setAnimationDone(true)} />
-                  : <div className="demo-lift"><section.Demo /></div>}
+                  : <div className={active === "design" ? undefined : "demo-lift"}><section.Demo /></div>}
               </div>
 
             </motion.div>

@@ -45,7 +45,7 @@ function ContactRow({ icon, value }: { icon: 'mail' | 'phone'; value: string }) 
 function CardShell({ hasError = false }: { hasError?: boolean }) {
   return (
     <>
-      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#232323] via-[#1b1b1b] to-[#141414] border border-foreground/[0.07] shadow-[0_32px_80px_rgba(0,0,0,0.8),0_8px_24px_rgba(0,0,0,0.5)]" />
+      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#2b2b2b] via-[#232323] to-[#1c1c1c] border border-foreground/[0.07] shadow-[0_32px_80px_rgba(0,0,0,0.8),0_8px_24px_rgba(0,0,0,0.5)]" />
       {/* Top border line — cross-fades between accent and destructive */}
       <div className="absolute top-0 left-12 right-12 h-px">
         <motion.div
