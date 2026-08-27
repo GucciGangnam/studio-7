@@ -241,7 +241,7 @@ export default function Contact() {
                 className="flex items-start justify-between"
               >
                 <div>
-                  <h1 className="text-[32px] font-semibold tracking-[-0.03em] text-white leading-none">
+                  <h1 className="text-[32px] font-semibold tracking-[-0.03em] text-foreground leading-none">
                     Studio 7
                   </h1>
                   <p className="mt-1.5 font-mono text-[10px] tracking-[0.22em] text-foreground/28 uppercase">

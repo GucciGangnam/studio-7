@@ -274,7 +274,7 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
             >
               <span className="text-foreground font-sans" style={FONT_STYLE}>S</span>
               <span
-                className="text-white font-sans overflow-hidden whitespace-nowrap"
+                className="text-foreground font-sans overflow-hidden whitespace-nowrap"
                 style={{
                   ...FONT_STYLE,
                   display: 'block',

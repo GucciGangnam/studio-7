@@ -1943,9 +1943,12 @@ function AnimationsShowcase({ onReachEnd }: { onReachEnd?: () => void }) {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" })
     document.documentElement.style.cursor = "ns-resize"
+    // Tell the nav it's sitting over the dark intro so it can stay light.
+    window.dispatchEvent(new CustomEvent("s7:introdark", { detail: true }))
     return () => {
       window.scrollTo({ top: 0, behavior: "instant" })
       document.documentElement.style.cursor = ""
+      window.dispatchEvent(new CustomEvent("s7:introdark", { detail: false }))
     }
   }, [])
 
@@ -2866,7 +2869,7 @@ export default function Work() {
               <div className="surface-dark flex justify-center">
                 {active === "animations"
                   ? <AnimationsShowcase onReachEnd={() => setAnimationDone(true)} />
-                  : <section.Demo />}
+                  : <div className="demo-lift"><section.Demo /></div>}
               </div>
 
             </motion.div>

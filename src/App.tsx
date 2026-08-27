@@ -42,6 +42,15 @@ function Nav({ heroScrollP }: { heroScrollP: number }) {
   const themeToggleCls =
     'flex items-center justify-center rounded-full border border-foreground/15 bg-foreground/[0.03] text-foreground/60 hover:text-foreground hover:border-foreground/30 transition-colors'
 
+  // While the Work intro (dark full-screen video) is on screen, keep the nav
+  // light-on-dark regardless of the page theme.
+  const [introDark, setIntroDark] = useState(false)
+  useEffect(() => {
+    const h = (e: Event) => setIntroDark((e as CustomEvent).detail === true)
+    window.addEventListener('s7:introdark', h)
+    return () => window.removeEventListener('s7:introdark', h)
+  }, [])
+
   const openMenu = () => { setMobileMenuOpen(true); setLogoHovered(true) }
   const closeMenu = () => { setMobileMenuOpen(false); setLogoHovered(false) }
 
@@ -64,7 +73,9 @@ function Nav({ heroScrollP }: { heroScrollP: number }) {
   }
 
   return (
-    <>
+    // display:contents so this wrapper adds no box; when the intro is active it
+    // pins the dark palette (surface-dark) so all nav chrome reads light.
+    <div style={{ display: 'contents' }} className={introDark ? 'surface-dark' : undefined}>
       {/* Logo — lifts above overlay when menu is open */}
       <div className={`fixed top-7 left-8 ${mobileMenuOpen ? 'z-[70]' : 'z-50'}`}>
         <Link
@@ -204,7 +215,7 @@ function Nav({ heroScrollP }: { heroScrollP: number }) {
           )
         })}
       </nav>
-    </>
+    </div>
   )
 }
 
