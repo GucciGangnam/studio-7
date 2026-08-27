@@ -492,7 +492,7 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
             <div
               className="surface-dark relative w-full max-w-[390px] lg:max-w-[390px] rounded-lg overflow-hidden border border-foreground/[0.08]"
               style={{
-                background: 'rgba(8,8,8,0.95)',
+                background: 'rgba(20,20,20,0.96)',
                 boxShadow: '0 0 0 1px rgba(255,255,255,0.03), 0 32px 80px rgba(0,0,0,0.85)',
               }}
             >

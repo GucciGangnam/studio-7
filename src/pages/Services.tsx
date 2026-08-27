@@ -41,7 +41,7 @@ function useCardAnimation(mountDelay: number) {
 function CardBg() {
   return (
     <>
-      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#161616] via-[#0f0f0f] to-[#080808] border border-foreground/[0.07] shadow-[0_32px_80px_rgba(0,0,0,0.8),0_8px_24px_rgba(0,0,0,0.5)]" />
+      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#232323] via-[#1b1b1b] to-[#141414] border border-foreground/[0.07] shadow-[0_32px_80px_rgba(0,0,0,0.8),0_8px_24px_rgba(0,0,0,0.5)]" />
       <div className="absolute bottom-0 left-20 right-20 h-px bg-gradient-to-r from-transparent via-foreground/[0.04] to-transparent" />
       <div
         className="absolute inset-0 rounded-2xl pointer-events-none"
@@ -714,7 +714,7 @@ export default function Services() {
                           <motion.button
                             animate={{
                               backgroundColor: mvp.isActive ? ACCENT : N_CTA_BG,
-                              color: mvp.isActive ? '#000000' : N_CTA_TEXT,
+                              color: mvp.isActive ? '#0d0d0d' : N_CTA_TEXT,
                               borderColor: mvp.isActive ? ACCENT : N_CTA_BORDER,
                             }}
                             transition={ct(mvp.isActive, 0.40)}
@@ -832,7 +832,7 @@ export default function Services() {
                           <motion.button
                             animate={{
                               backgroundColor: custom.isActive ? ACCENT : N_CTA_BG,
-                              color: custom.isActive ? '#000000' : N_CTA_TEXT,
+                              color: custom.isActive ? '#0d0d0d' : N_CTA_TEXT,
                               borderColor: custom.isActive ? ACCENT : N_CTA_BORDER,
                             }}
                             transition={ct(custom.isActive, 0.40)}

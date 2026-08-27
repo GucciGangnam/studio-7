@@ -66,36 +66,37 @@
 }
 
 :root {
-  /* ── Dark theme (default) ── */
-  --grey-950: #050505;
-  --grey-900: #0a0a0a;
-  --grey-800: #141414;
-  --grey-700: #1a1a1a;
-  --grey-600: #2a2a2a;
-  --grey-500: #444444;
-  --grey-400: #666666;
-  --grey-300: #888888;
-  --grey-200: #bbbbbb;
-  --grey-100: #eeeeee;
+  /* ── Dark theme (default) ── lifted one notch off pure black for a softer,
+     more premium feel (matches the brightness/contrast lift baked into demos). */
+  --grey-950: #101010;
+  --grey-900: #161616;
+  --grey-800: #212121;
+  --grey-700: #272727;
+  --grey-600: #373737;
+  --grey-500: #515151;
+  --grey-400: #747474;
+  --grey-300: #969696;
+  --grey-200: #c9c9c9;
+  --grey-100: #f2f2f2;
 
-  --background: #000000;
+  --background: #0d0d0d;
   --foreground: #ffffff;
-  --card: #080808;
+  --card: #141414;
   --card-foreground: #ffffff;
-  --popover: #0f0f0f;
+  --popover: #1b1b1b;
   --popover-foreground: #ffffff;
   --primary: #ffffff;
-  --primary-foreground: #000000;
-  --secondary: #1a1a1a;
+  --primary-foreground: #0d0d0d;
+  --secondary: #272727;
   --secondary-foreground: #ffffff;
-  --muted: #1a1a1a;
-  --muted-foreground: #a0a0a0;
+  --muted: #272727;
+  --muted-foreground: #adadad;
   --accent: #e8ff47;
-  --accent-foreground: #000000;
+  --accent-foreground: #0d0d0d;
   --destructive: #ff4a4a;
   --destructive-foreground: #ffffff;
-  --border: #1a1a1a;
-  --input: #1a1a1a;
+  --border: #272727;
+  --input: #272727;
   --ring: #e8ff47;
   --radius: 4px;
 }
@@ -103,33 +104,33 @@
 /* Pins the dark palette locally — for device/app mockups that should read as
    dark product screenshots regardless of the page theme. */
 .surface-dark {
-  --grey-950: #050505;
-  --grey-900: #0a0a0a;
-  --grey-800: #141414;
-  --grey-700: #1a1a1a;
-  --grey-600: #2a2a2a;
-  --grey-500: #444444;
-  --grey-400: #666666;
-  --grey-300: #888888;
-  --grey-200: #bbbbbb;
-  --grey-100: #eeeeee;
-  --background: #000000;
+  --grey-950: #101010;
+  --grey-900: #161616;
+  --grey-800: #212121;
+  --grey-700: #272727;
+  --grey-600: #373737;
+  --grey-500: #515151;
+  --grey-400: #747474;
+  --grey-300: #969696;
+  --grey-200: #c9c9c9;
+  --grey-100: #f2f2f2;
+  --background: #0d0d0d;
   --foreground: #ffffff;
-  --card: #080808;
+  --card: #141414;
   --card-foreground: #ffffff;
-  --popover: #0f0f0f;
+  --popover: #1b1b1b;
   --popover-foreground: #ffffff;
   --primary: #ffffff;
-  --primary-foreground: #000000;
-  --secondary: #1a1a1a;
+  --primary-foreground: #0d0d0d;
+  --secondary: #272727;
   --secondary-foreground: #ffffff;
-  --muted: #1a1a1a;
-  --muted-foreground: #a0a0a0;
+  --muted: #272727;
+  --muted-foreground: #adadad;
   --accent: #e8ff47;
-  --accent-foreground: #000000;
+  --accent-foreground: #0d0d0d;
   --destructive: #ff4a4a;
-  --border: #1a1a1a;
-  --input: #1a1a1a;
+  --border: #272727;
+  --input: #272727;
   --ring: #e8ff47;
 }
 
