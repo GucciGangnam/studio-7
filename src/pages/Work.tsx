@@ -2678,6 +2678,18 @@ function SecurityShowcase() {
   const [passed, setPassed] = useState<Set<number>>(new Set())
   const [complete, setComplete] = useState(false)
 
+  // Below ~620px the fixed 520 card can't fit inside the page padding. The demo
+  // wrapper (a justify-center flex item) won't shrink a definite-width child, so
+  // we go fluid (100%) on narrow screens and keep the intended 520 on desktop.
+  const [fluid, setFluid] = useState(() => typeof window !== "undefined" && window.innerWidth < 620)
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 619px)")
+    const onChange = (e: MediaQueryListEvent) => setFluid(e.matches)
+    mq.addEventListener("change", onChange)
+    setFluid(mq.matches)
+    return () => mq.removeEventListener("change", onChange)
+  }, [])
+
   useEffect(() => {
     let cancelled = false
     const wait = (ms: number) => new Promise<void>(r => setTimeout(r, ms))
@@ -2708,7 +2720,7 @@ function SecurityShowcase() {
 
   return (
     <div style={{
-      width: 520, maxWidth: "100%",
+      width: fluid ? "100%" : 520, maxWidth: "100%",
       background: "#1c1c1c", border: "1px solid #333333",
       borderRadius: 12, overflow: "hidden",
     }}>
