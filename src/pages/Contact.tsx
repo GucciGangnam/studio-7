@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { supabase } from '../lib/supabase'
 import { motion, AnimatePresence } from 'motion/react'
 import { Mail, Phone, ArrowRight, ArrowLeft, CheckCircle } from 'lucide-react'
 
@@ -159,16 +158,19 @@ export default function Contact() {
 
     setSending(true)
     setSendError(false)
-    const { error } = await supabase
-      .from('contacts')
-      .insert({ name: name.trim(), email: email.trim(), message: message.trim() })
-    setSending(false)
-
-    if (error) {
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name.trim(), email: email.trim(), message: message.trim() }),
+      })
+      if (!res.ok) throw new Error(`Request failed (${res.status})`)
+      setSubmitted(true)
+    } catch {
       setSendError(true)
-      return
+    } finally {
+      setSending(false)
     }
-    setSubmitted(true)
   }
 
   function handleBack() {
