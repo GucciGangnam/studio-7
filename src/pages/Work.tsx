@@ -2238,7 +2238,7 @@ function SchemaCard({ table }: { table: SchemaTable }) {
   return (
     <div style={{ background: "#212121", border: "1px solid #333333", borderRadius: 6, overflow: "hidden", flex: 1, minWidth: 0 }}>
       <div style={{ padding: "7px 12px", borderBottom: "1px solid #2b2b2b", background: "#262626" }}>
-        <span style={{ fontFamily: "Space Mono", fontSize: 10, color: "#777", letterSpacing: "0.06em" }}>{table.name}</span>
+        <span style={{ fontFamily: "Space Mono", fontSize: 10, color: "#9a9a9a", letterSpacing: "0.06em" }}>{table.name}</span>
       </div>
       {table.fields.map(f => (
         <div key={f.name} style={{ display: "flex", alignItems: "center", padding: "4px 12px", gap: 8 }}>
@@ -2251,11 +2251,11 @@ function SchemaCard({ table }: { table: SchemaTable }) {
           </span>
           <span style={{
             fontFamily: "Space Mono", fontSize: 9, flex: 1,
-            color: f.tag === "PK" ? "#aaa" : f.tag === "FK" ? "rgba(232,255,71,0.75)" : "#515151",
+            color: f.tag === "PK" ? "#c4c4c4" : f.tag === "FK" ? "rgba(232,255,71,0.85)" : "#8f8f8f",
           }}>
             {f.name}
           </span>
-          <span style={{ fontFamily: "Space Mono", fontSize: 7, color: "#373737" }}>{f.type}</span>
+          <span style={{ fontFamily: "Space Mono", fontSize: 7, color: "#6e6e6e" }}>{f.type}</span>
         </div>
       ))}
     </div>
@@ -2281,10 +2281,10 @@ function DatabaseShowcase() {
         <React.Fragment key={table.name}>
           {i > 0 && (
             <div style={{ display: "flex", alignItems: "center", paddingTop: 34, flexShrink: 0 }}>
-              <div style={{ width: 20, height: 1, background: "rgba(232,255,71,0.12)" }} />
+              <div style={{ width: 20, height: 1, background: "color-mix(in srgb, var(--accent-label) 50%, transparent)" }} />
               <div style={{
                 width: 0, height: 0,
-                borderLeft: "4px solid rgba(232,255,71,0.12)",
+                borderLeft: "4px solid color-mix(in srgb, var(--accent-label) 50%, transparent)",
                 borderTop: "3px solid transparent",
                 borderBottom: "3px solid transparent",
               }} />
