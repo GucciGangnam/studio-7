@@ -29,12 +29,6 @@ import {
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
 import { Dock, DockIcon } from "@/components/ui/dock"
 
 // ─── Dock config (unchanged) ──────────────────────────────────────────────────
@@ -2809,6 +2803,36 @@ export default function Work() {
   // Drop the already-seen Animations icon from the dock.
   const dockNavItems = NAV_ITEMS.filter(i => i.id !== "animations")
 
+  // One dock icon with a CSS-only hover tooltip. Pure :hover is used instead
+  // of Radix here because Radix's JS hover-intent doesn't fire reliably in
+  // Safari while the icon magnifies under the cursor. Tooltip is desktop-only
+  // (no hover on touch).
+  const dockIcon = (item: NavItem) => (
+    <DockIcon key={item.id}>
+      <button
+        aria-label={item.label}
+        onClick={() => setActive(item.id)}
+        className={cn(
+          buttonVariants({ variant: "ghost", size: "icon" }),
+          "group relative size-12 rounded-full transition-colors",
+          active === item.id
+            ? "bg-accent text-grey-900 hover:bg-accent"
+            : "text-grey-300 hover:text-grey-100 hover:bg-grey-700"
+        )}
+      >
+        <item.icon className="size-5" />
+        {!isMobile && (
+          <span
+            role="tooltip"
+            className="pointer-events-none absolute bottom-full left-1/2 mb-3 -translate-x-1/2 translate-y-1 whitespace-nowrap rounded-md border border-white/10 bg-[#0f0f0f] px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-white/85 opacity-0 shadow-md transition duration-150 group-hover:translate-y-0 group-hover:opacity-100"
+          >
+            {item.label}
+          </span>
+        )}
+      </button>
+    </DockIcon>
+  )
+
   return (
     <>
       <div className="min-h-screen flex flex-col justify-center px-10 pt-20 sm:pt-8 pb-32">
@@ -2860,58 +2884,14 @@ export default function Work() {
           exit={{ opacity: 0, y: 24 }}
           transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
         >
-        <div className="overflow-x-auto" style={{ scrollbarWidth: 'none', maxWidth: isMobile ? '98vw' : '100%' }}>
-        <TooltipProvider>
+        <div className={isMobile ? "overflow-x-auto" : ""} style={{ scrollbarWidth: 'none', maxWidth: isMobile ? '98vw' : '100%' }}>
           <Dock direction="middle" iconSize={isMobile ? 28 : 44} iconMagnification={isMobile ? 44 : 66} disableMagnification={isMobile} className={isMobile ? "px-6 gap-3" : ""}>
-            {dockNavItems.map((item) => (
-              <DockIcon key={item.id}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button
-                      aria-label={item.label}
-                      onClick={() => setActive(item.id)}
-                      className={cn(
-                        buttonVariants({ variant: "ghost", size: "icon" }),
-                        "size-12 rounded-full transition-colors",
-                        active === item.id
-                          ? "bg-accent text-grey-900 hover:bg-accent"
-                          : "text-grey-300 hover:text-grey-100 hover:bg-grey-700"
-                      )}
-                    >
-                      <item.icon className="size-5" />
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent side="top"><p>{item.label}</p></TooltipContent>
-                </Tooltip>
-              </DockIcon>
-            ))}
+            {dockNavItems.map(dockIcon)}
 
             <Separator orientation="vertical" className="h-full bg-grey-600" />
 
-            {EXTRA_ITEMS.map((item) => (
-              <DockIcon key={item.id}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button
-                      aria-label={item.label}
-                      onClick={() => setActive(item.id)}
-                      className={cn(
-                        buttonVariants({ variant: "ghost", size: "icon" }),
-                        "size-12 rounded-full transition-colors",
-                        active === item.id
-                          ? "bg-accent text-grey-900 hover:bg-accent"
-                          : "text-grey-300 hover:text-grey-100 hover:bg-grey-700"
-                      )}
-                    >
-                      <item.icon className="size-5" />
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent side="top"><p>{item.label}</p></TooltipContent>
-                </Tooltip>
-              </DockIcon>
-            ))}
+            {EXTRA_ITEMS.map(dockIcon)}
           </Dock>
-        </TooltipProvider>
         </div>
         </motion.div>
         )}
