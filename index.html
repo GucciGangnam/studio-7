@@ -10,12 +10,18 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <title>Studio 7</title>
 
-    <!-- Apply saved theme before paint to avoid a flash (default: dark) -->
+    <!-- Apply theme before paint to avoid a flash. Saved choice wins; with no
+         saved choice, follow the OS preference (falls back to dark). -->
     <script>
       (function () {
         try {
           var t = localStorage.getItem("theme");
-          if (t === "light") document.documentElement.setAttribute("data-theme", "light");
+          var light =
+            t === "light" ||
+            (t !== "dark" &&
+              window.matchMedia &&
+              window.matchMedia("(prefers-color-scheme: light)").matches);
+          if (light) document.documentElement.setAttribute("data-theme", "light");
         } catch (e) {}
       })();
     </script>

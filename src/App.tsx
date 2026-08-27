@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom'
-import { Menu, X, Sun, Moon } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 import { useTheme } from './lib/theme'
+import { HoldThemeToggle } from './components/HoldThemeToggle'
 import Hero from './Hero'
 import Work from './pages/Work'
 import Services from './pages/Services'
@@ -37,10 +38,6 @@ function Nav({ heroScrollP }: { heroScrollP: number }) {
   const [logoHovered, setLogoHovered] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { theme, toggleTheme } = useTheme()
-
-  // Token-based so it looks correct in both themes.
-  const themeToggleCls =
-    'flex items-center justify-center rounded-full border border-foreground/15 bg-foreground/[0.03] text-foreground/60 hover:text-foreground hover:border-foreground/30 transition-colors'
 
   // While the Work intro (dark full-screen video) is on screen, keep the nav
   // light-on-dark regardless of the page theme.
@@ -170,30 +167,19 @@ function Nav({ heroScrollP }: { heroScrollP: number }) {
             </Link>
           ))}
 
-          {/* Theme toggle */}
-          <button
-            onClick={toggleTheme}
-            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-            className={`${themeToggleCls} gap-2 px-6 py-3 mt-1`}
+          {/* Theme toggle — hold & release */}
+          <HoldThemeToggle
+            theme={theme}
+            toggleTheme={toggleTheme}
+            variant="pill"
+            className="px-6 py-3 mt-1 border border-foreground/15 bg-foreground/[0.03] hover:border-foreground/30"
             style={{ animation: `fade-up 0.55s cubic-bezier(0.16,1,0.3,1) both ${55 + navItems.length * 60}ms` }}
-          >
-            {theme === 'dark' ? <Sun size={13} /> : <Moon size={13} />}
-            <span className="font-mono text-[12px] tracking-[0.14em] uppercase">
-              {theme === 'dark' ? 'Light' : 'Dark'}
-            </span>
-          </button>
+          />
         </div>
       )}
 
       {/* Floating nav tabs — hidden on mobile */}
       <nav className="hidden sm:flex fixed top-5 right-8 z-50 items-center gap-1">
-        <button
-          onClick={toggleTheme}
-          aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-          className={`${themeToggleCls} w-8 h-8 mr-1 backdrop-blur-md`}
-        >
-          {theme === 'dark' ? <Sun size={13} /> : <Moon size={13} />}
-        </button>
         {navItems.map(({ label, to }, i) => {
           const active = pathname === to
           return (
@@ -214,6 +200,14 @@ function Nav({ heroScrollP }: { heroScrollP: number }) {
             </Link>
           )
         })}
+        {/* Theme toggle — hold & release; anchored to the right edge so it reads
+            as intentional even before the nav tabs fade in on the home page. */}
+        <HoldThemeToggle
+          theme={theme}
+          toggleTheme={toggleTheme}
+          variant="icon"
+          className="w-8 h-8 ml-1 border border-foreground/15 bg-foreground/[0.03] hover:border-foreground/30 backdrop-blur-md"
+        />
       </nav>
     </div>
   )

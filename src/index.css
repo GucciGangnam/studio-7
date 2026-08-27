@@ -65,6 +65,41 @@
   --color-grey-100: var(--grey-100);
 }
 
+/* ── Theme crossfade ──────────────────────────────────────────────────────
+   Registering the themed colour vars as real <color> properties makes them
+   animatable, so a single `transition` on :root (below) lets the ENTIRE palette
+   fade — background, text, borders, accents — in sync when `data-theme` flips,
+   instead of snapping. Every `var(--…)` usage recomputes live during the fade.
+   Browsers without @property just snap (graceful degradation). initial-value is
+   the dark default; :root always supplies the live value. */
+@property --background          { syntax: "<color>"; inherits: true; initial-value: #151515; }
+@property --foreground          { syntax: "<color>"; inherits: true; initial-value: #ffffff; }
+@property --card                { syntax: "<color>"; inherits: true; initial-value: #1c1c1c; }
+@property --card-foreground     { syntax: "<color>"; inherits: true; initial-value: #ffffff; }
+@property --popover             { syntax: "<color>"; inherits: true; initial-value: #232323; }
+@property --popover-foreground  { syntax: "<color>"; inherits: true; initial-value: #ffffff; }
+@property --primary             { syntax: "<color>"; inherits: true; initial-value: #ffffff; }
+@property --primary-foreground  { syntax: "<color>"; inherits: true; initial-value: #151515; }
+@property --secondary           { syntax: "<color>"; inherits: true; initial-value: #2f2f2f; }
+@property --secondary-foreground{ syntax: "<color>"; inherits: true; initial-value: #ffffff; }
+@property --muted               { syntax: "<color>"; inherits: true; initial-value: #2f2f2f; }
+@property --muted-foreground    { syntax: "<color>"; inherits: true; initial-value: #b3b3b3; }
+@property --accent              { syntax: "<color>"; inherits: true; initial-value: #e8ff47; }
+@property --accent-foreground   { syntax: "<color>"; inherits: true; initial-value: #151515; }
+@property --accent-label        { syntax: "<color>"; inherits: true; initial-value: #e8ff47; }
+@property --border              { syntax: "<color>"; inherits: true; initial-value: #2f2f2f; }
+@property --input               { syntax: "<color>"; inherits: true; initial-value: #2f2f2f; }
+@property --grey-950            { syntax: "<color>"; inherits: true; initial-value: #181818; }
+@property --grey-900            { syntax: "<color>"; inherits: true; initial-value: #1e1e1e; }
+@property --grey-800            { syntax: "<color>"; inherits: true; initial-value: #292929; }
+@property --grey-700            { syntax: "<color>"; inherits: true; initial-value: #2f2f2f; }
+@property --grey-600            { syntax: "<color>"; inherits: true; initial-value: #3f3f3f; }
+@property --grey-500            { syntax: "<color>"; inherits: true; initial-value: #595959; }
+@property --grey-400            { syntax: "<color>"; inherits: true; initial-value: #7c7c7c; }
+@property --grey-300            { syntax: "<color>"; inherits: true; initial-value: #9e9e9e; }
+@property --grey-200            { syntax: "<color>"; inherits: true; initial-value: #d0d0d0; }
+@property --grey-100            { syntax: "<color>"; inherits: true; initial-value: #f5f5f5; }
+
 :root {
   /* ── Dark theme (default) ── lifted one notch off pure black for a softer,
      more premium feel (matches the brightness/contrast lift baked into demos). */
@@ -99,10 +134,36 @@
   --input: #2f2f2f;
   --ring: #e8ff47;
   --radius: 4px;
+
+  /* Crossfade the whole palette when `data-theme` flips (see @property block). A
+     single transition on :root drives every inherited colour var; no initial
+     flash because the first computed values don't transition. */
+  --theme-fade: 420ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    --background var(--theme-fade), --foreground var(--theme-fade),
+    --card var(--theme-fade), --card-foreground var(--theme-fade),
+    --popover var(--theme-fade), --popover-foreground var(--theme-fade),
+    --primary var(--theme-fade), --primary-foreground var(--theme-fade),
+    --secondary var(--theme-fade), --secondary-foreground var(--theme-fade),
+    --muted var(--theme-fade), --muted-foreground var(--theme-fade),
+    --accent var(--theme-fade), --accent-foreground var(--theme-fade),
+    --accent-label var(--theme-fade), --border var(--theme-fade),
+    --input var(--theme-fade),
+    --grey-950 var(--theme-fade), --grey-900 var(--theme-fade),
+    --grey-800 var(--theme-fade), --grey-700 var(--theme-fade),
+    --grey-600 var(--theme-fade), --grey-500 var(--theme-fade),
+    --grey-400 var(--theme-fade), --grey-300 var(--theme-fade),
+    --grey-200 var(--theme-fade), --grey-100 var(--theme-fade);
+
   /* Accent used as TEXT that sits on the page (not on a dark surface). Kept out
      of .surface-dark so it follows the page theme even inside demos: lime reads
      fine on the dark page, but on a light page it must go darker. */
   --accent-label: #e8ff47;
+}
+
+/* Respect reduced-motion: switch themes instantly rather than crossfading. */
+@media (prefers-reduced-motion: reduce) {
+  :root { transition: none; }
 }
 
 /* Pins the dark palette locally — for device/app mockups that should read as
