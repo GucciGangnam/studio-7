@@ -25,6 +25,11 @@ import {
   Settings,
   Bot,
   Headphones,
+  Lock,
+  Check,
+  Fingerprint,
+  KeyRound,
+  FileCheck,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
@@ -2660,49 +2665,147 @@ function IntegrationsShowcase() {
 
 // ─── Security showcase ────────────────────────────────────────────────────────
 
-const SECURITY_LAYERS = [
-  { label: "Transport",      sub: "TLS 1.3 · HSTS · certificate pinning",        op: 1    },
-  { label: "Authentication", sub: "JWT · OAuth 2.0 · MFA support",               op: 0.72 },
-  { label: "Authorization",  sub: "RBAC · policy enforcement · row-level rules",  op: 0.52 },
-  { label: "Encryption",     sub: "AES-256 at rest · bcrypt · key rotation",      op: 0.35 },
-  { label: "Audit",          sub: "Structured logs · alerts · compliance docs",   op: 0.22 },
+const SECURITY_CHECKS = [
+  { label: "Transport",      detail: "TLS 1.3 · HSTS",         Icon: Globe       },
+  { label: "Authentication", detail: "OAuth 2.0 · MFA",        Icon: Fingerprint },
+  { label: "Authorization",  detail: "RBAC · row-level rules", Icon: Lock        },
+  { label: "Encryption",     detail: "AES-256 · bcrypt",       Icon: KeyRound    },
+  { label: "Audit",          detail: "Logs · compliance",      Icon: FileCheck   },
 ]
 
 function SecurityShowcase() {
+  const [scanning, setScanning] = useState(-1)
+  const [passed, setPassed] = useState<Set<number>>(new Set())
+  const [complete, setComplete] = useState(false)
+
+  useEffect(() => {
+    let cancelled = false
+    const wait = (ms: number) => new Promise<void>(r => setTimeout(r, ms))
+    const run = async () => {
+      while (!cancelled) {
+        setPassed(new Set()); setComplete(false); setScanning(-1)
+        await wait(700)
+        for (let i = 0; i < SECURITY_CHECKS.length; i++) {
+          if (cancelled) return
+          setScanning(i)
+          await wait(560)
+          if (cancelled) return
+          setPassed(prev => new Set([...prev, i]))
+          setScanning(-1)
+          await wait(150)
+        }
+        if (cancelled) return
+        setComplete(true)
+        await wait(2800)
+      }
+    }
+    run()
+    return () => { cancelled = true }
+  }, [])
+
+  const passedCount = passed.size
+  const progress = (passedCount / SECURITY_CHECKS.length) * 100
+
   return (
-    <div style={{ maxWidth: 480, display: "flex", flexDirection: "column", gap: 5 }}>
-      {SECURITY_LAYERS.map((layer, i) => (
-        <motion.div
-          key={layer.label}
-          initial={{ opacity: 0, x: -8 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.3, delay: i * 0.09 }}
-          style={{
-            display: "flex", alignItems: "center", gap: 14,
-            background: "#212121",
-            border: `1px solid rgba(232,255,71,${layer.op * 0.1})`,
-            borderRadius: 6, padding: "13px 16px",
-          }}
-        >
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, flexShrink: 0 }}>
-            <div style={{ width: 7, height: 7, borderRadius: "50%", background: `rgba(232,255,71,${layer.op})` }} />
-            {i < SECURITY_LAYERS.length - 1 && (
-              <div style={{ width: 1, height: 12, background: `rgba(232,255,71,${layer.op * 0.2})` }} />
-            )}
-          </div>
-          <div style={{ flex: 1 }}>
-            <p style={{ fontFamily: "Space Grotesk", fontSize: 12, fontWeight: 600, color: `rgba(232,255,71,${Math.min(layer.op * 0.45 + 0.55, 1)})`, margin: "0 0 2px" }}>
-              {layer.label}
-            </p>
-            <p style={{ fontFamily: "Space Mono", fontSize: 9, color: "#8a8a8a", margin: 0, letterSpacing: "0.04em" }}>
-              {layer.sub}
-            </p>
-          </div>
-          <span style={{ fontFamily: "Space Mono", fontSize: 8, color: `rgba(232,255,71,${layer.op * 0.35 + 0.35})`, letterSpacing: "0.08em", flexShrink: 0 }}>
-            L{i + 1}
-          </span>
-        </motion.div>
-      ))}
+    <div style={{
+      width: 520, maxWidth: "100%",
+      background: "#1c1c1c", border: "1px solid #333333",
+      borderRadius: 12, overflow: "hidden",
+    }}>
+      {/* Chrome header */}
+      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 16px", borderBottom: "1px solid #2b2b2b", background: "#212121" }}>
+        <div style={{ display: "flex", gap: 6 }}>
+          {["#ff5f57", "#ffbd2e", "#28c840"].map(c => (
+            <div key={c} style={{ width: 9, height: 9, borderRadius: "50%", background: c }} />
+          ))}
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, marginLeft: 4 }}>
+          <ShieldCheck size={13} color="#e8ff47" strokeWidth={2} />
+          <span style={{ fontFamily: "Space Mono", fontSize: 11, color: "#d0d0d0", letterSpacing: "0.02em" }}>security · audit</span>
+        </div>
+        <div style={{ marginLeft: "auto" }}>
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={complete ? "secure" : "scan"}
+              initial={{ opacity: 0, y: 3 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -3 }} transition={{ duration: 0.2 }}
+              style={{
+                fontFamily: "Space Mono", fontSize: 8.5, letterSpacing: "0.14em", padding: "3px 9px", borderRadius: 20,
+                fontWeight: 700, display: "inline-flex", alignItems: "center", gap: 5,
+                color: complete ? "#0d0d0d" : "#e8ff47",
+                background: complete ? "#e8ff47" : "rgba(232,255,71,0.1)",
+                border: `1px solid ${complete ? "#e8ff47" : "rgba(232,255,71,0.25)"}`,
+              }}
+            >
+              {complete ? (
+                <><ShieldCheck size={9} strokeWidth={3} /> SECURE</>
+              ) : (
+                <><motion.span animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 1, repeat: Infinity }} style={{ width: 5, height: 5, borderRadius: "50%", background: "#e8ff47", display: "inline-block" }} /> SCANNING</>
+              )}
+            </motion.span>
+          </AnimatePresence>
+        </div>
+      </div>
+
+      {/* Body */}
+      <div style={{ padding: "13px 16px", display: "flex", flexDirection: "column", gap: 11 }}>
+        {/* Stat tiles */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+          {[
+            { k: "Checks passed", v: `${passedCount}/${SECURITY_CHECKS.length}`, lit: complete },
+            { k: "Threats",       v: "0",                                        lit: true      },
+            { k: "Score",         v: complete ? "A+" : "—",                      lit: complete  },
+          ].map(({ k, v, lit }) => (
+            <div key={k} style={{ background: "#212121", border: "1px solid #2f2f2f", borderRadius: 8, padding: "9px 11px" }}>
+              <p style={{ fontFamily: "Space Mono", fontSize: 7.5, color: "#7c7c7c", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 5px" }}>{k}</p>
+              <p style={{ fontFamily: "Space Grotesk", fontSize: 18, fontWeight: 700, color: lit ? "#e8ff47" : "#e8e8e8", margin: 0, lineHeight: 1 }}>{v}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Scan progress */}
+        <div style={{ height: 3, background: "#2b2b2b", borderRadius: 2, overflow: "hidden" }}>
+          <motion.div animate={{ width: `${progress}%` }} transition={{ duration: 0.4, ease: "easeOut" }}
+            style={{ height: "100%", background: "#e8ff47", boxShadow: "0 0 8px rgba(232,255,71,0.5)" }} />
+        </div>
+
+        {/* Check rows */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+          {SECURITY_CHECKS.map(({ label, detail, Icon }, i) => {
+            const isPassed = passed.has(i)
+            const isScanning = scanning === i
+            const active = isPassed || isScanning
+            return (
+              <div key={label} style={{
+                display: "flex", alignItems: "center", gap: 11, padding: "7px 12px", borderRadius: 7,
+                background: active ? "rgba(232,255,71,0.05)" : "#212121",
+                border: `1px solid ${isPassed ? "rgba(232,255,71,0.2)" : isScanning ? "rgba(232,255,71,0.4)" : "#2b2b2b"}`,
+                transition: "background 0.3s, border-color 0.3s",
+              }}>
+                <div style={{ color: active ? "#e8ff47" : "#595959", transition: "color 0.3s", flexShrink: 0 }}>
+                  <Icon size={14} strokeWidth={1.75} />
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontFamily: "Space Grotesk", fontSize: 12, fontWeight: 600, color: active ? "#f2f2f2" : "#8f8f8f", margin: 0, transition: "color 0.3s" }}>{label}</p>
+                  <p style={{ fontFamily: "Space Mono", fontSize: 8.5, color: active ? "#8a8a8a" : "#595959", margin: "1px 0 0", letterSpacing: "0.03em", transition: "color 0.3s" }}>{detail}</p>
+                </div>
+                <div style={{ flexShrink: 0, width: 20, height: 20, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  {isPassed ? (
+                    <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 500, damping: 18 }}
+                      style={{ width: 16, height: 16, borderRadius: "50%", background: "#e8ff47", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <Check size={10} strokeWidth={3.5} color="#0d0d0d" />
+                    </motion.div>
+                  ) : isScanning ? (
+                    <motion.div animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
+                      style={{ width: 13, height: 13, borderRadius: "50%", border: "1.5px solid rgba(232,255,71,0.25)", borderTopColor: "#e8ff47" }} />
+                  ) : (
+                    <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#3f3f3f" }} />
+                  )}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
     </div>
   )
 }
