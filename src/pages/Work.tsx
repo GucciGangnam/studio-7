@@ -1928,12 +1928,16 @@ function drawFrame(ctx: CanvasRenderingContext2D, img: HTMLImageElement) {
 // Enough scroll room for intro + all frames + fade + buffer
 const TOTAL_SCROLL = PHASE1_END + FADE_PX + window.innerHeight + 200
 
-function AnimationsShowcase() {
+function AnimationsShowcase({ onReachEnd }: { onReachEnd?: () => void }) {
   const canvasRef   = useRef<HTMLCanvasElement>(null)
   const imagesRef   = useRef<HTMLImageElement[]>([])
   const frameRef    = useRef(0)
   const showCopyRef = useRef(false)
   const hintRef     = useRef(true)
+
+  // Keep the latest callback without re-binding the scroll listener.
+  const onReachEndRef = useRef(onReachEnd)
+  useEffect(() => { onReachEndRef.current = onReachEnd }, [onReachEnd])
 
   const [loaded,   setLoaded]   = useState(false)
   const [showCopy, setShowCopy] = useState(false)
@@ -2027,7 +2031,7 @@ function AnimationsShowcase() {
         if (acc > PHASE1_END) {
           const t = Math.min(1, (acc - PHASE1_END) / FADE_PX)
           canvas.style.opacity = String(1 - t)
-          if (t >= 1 && !showCopyRef.current) { showCopyRef.current = true;  setShowCopy(true)  }
+          if (t >= 1 && !showCopyRef.current) { showCopyRef.current = true;  setShowCopy(true); onReachEndRef.current?.()  }
           if (t  < 1 &&  showCopyRef.current) { showCopyRef.current = false; setShowCopy(false) }
         } else {
           canvas.style.opacity = "1"
@@ -2784,6 +2788,10 @@ const WORK_SECTIONS: WorkSection[] = [
 
 export default function Work() {
   const [active, setActive] = useState<Category>("animations")
+  // The intro "video" (Animations) plays first with no dock. Once the user
+  // scrolls to its end, the dock is revealed — minus the Animations icon,
+  // since that section has now been seen.
+  const [animationDone, setAnimationDone] = useState(false)
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 640)
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 639px)')
@@ -2795,6 +2803,11 @@ export default function Work() {
 
   const section = WORK_SECTIONS.find(s => s.id === active)!
   const index   = WORK_SECTIONS.findIndex(s => s.id === active)
+
+  // Dock is hidden while the intro video is still playing.
+  const dockVisible  = active !== "animations" || animationDone
+  // Drop the already-seen Animations icon from the dock.
+  const dockNavItems = NAV_ITEMS.filter(i => i.id !== "animations")
 
   return (
     <>
@@ -2826,7 +2839,9 @@ export default function Work() {
 
               {/* Demo / showcase */}
               <div className="flex justify-center">
-                <section.Demo />
+                {active === "animations"
+                  ? <AnimationsShowcase onReachEnd={() => setAnimationDone(true)} />
+                  : <section.Demo />}
               </div>
 
             </motion.div>
@@ -2834,12 +2849,21 @@ export default function Work() {
         </div>
       </div>
 
-      {/* Dock — fixed bottom */}
-      <div className="fixed bottom-6 left-0 right-0 flex justify-center px-2 z-[50]">
+      {/* Dock — fixed bottom. Hidden during the intro video; slides up once
+          it ends (Animations icon dropped, as it's already been seen). */}
+      <AnimatePresence>
+        {dockVisible && (
+        <motion.div
+          className="fixed bottom-6 left-0 right-0 flex justify-center px-2 z-[50]"
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 24 }}
+          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+        >
         <div className="overflow-x-auto" style={{ scrollbarWidth: 'none', maxWidth: isMobile ? '98vw' : '100%' }}>
         <TooltipProvider>
           <Dock direction="middle" iconSize={isMobile ? 28 : 44} iconMagnification={isMobile ? 44 : 66} disableMagnification={isMobile} className={isMobile ? "px-6 gap-3" : ""}>
-            {NAV_ITEMS.map((item) => (
+            {dockNavItems.map((item) => (
               <DockIcon key={item.id}>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -2889,7 +2913,9 @@ export default function Work() {
           </Dock>
         </TooltipProvider>
         </div>
-      </div>
+        </motion.div>
+        )}
+      </AnimatePresence>
     </>
   )
 }
