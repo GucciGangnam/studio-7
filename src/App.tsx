@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, Sun, Moon } from 'lucide-react'
+import { useTheme } from './lib/theme'
 import Hero from './Hero'
 import Work from './pages/Work'
 import Services from './pages/Services'
@@ -35,6 +36,11 @@ function Nav({ heroScrollP }: { heroScrollP: number }) {
   const isHome = pathname === '/'
   const [logoHovered, setLogoHovered] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const { theme, toggleTheme } = useTheme()
+
+  // Token-based so it looks correct in both themes.
+  const themeToggleCls =
+    'flex items-center justify-center rounded-full border border-foreground/15 bg-foreground/[0.03] text-foreground/60 hover:text-foreground hover:border-foreground/30 transition-colors'
 
   const openMenu = () => { setMobileMenuOpen(true); setLogoHovered(true) }
   const closeMenu = () => { setMobileMenuOpen(false); setLogoHovered(false) }
@@ -68,12 +74,12 @@ function Nav({ heroScrollP }: { heroScrollP: number }) {
           onMouseLeave={() => { if (!mobileMenuOpen) setLogoHovered(false) }}
           onClick={() => { if (mobileMenuOpen) closeMenu() }}
         >
-          <span className="font-mono text-[13px] font-semibold tracking-[0.18em] text-white/90">
+          <span className="font-mono text-[13px] font-semibold tracking-[0.18em] text-foreground/90">
             S
           </span>
           {/* "TUDIO" expands on hover — same max-width + mask technique as the hero */}
           <span
-            className="font-mono text-[13px] font-semibold tracking-[0.18em] text-white/90 overflow-hidden whitespace-nowrap"
+            className="font-mono text-[13px] font-semibold tracking-[0.18em] text-foreground/90 overflow-hidden whitespace-nowrap"
             style={{
               display: 'inline-block',
               maxWidth: logoHovered ? '5em' : '0',
@@ -99,7 +105,7 @@ function Nav({ heroScrollP }: { heroScrollP: number }) {
 
       {/* Hamburger — mobile only */}
       <button
-        className="sm:hidden fixed top-[18px] right-8 z-50 p-1.5 text-white/60 hover:text-white/90 transition-colors"
+        className="sm:hidden fixed top-[18px] right-8 z-50 p-1.5 text-foreground/60 hover:text-foreground/90 transition-colors"
         onClick={openMenu}
         aria-label="Open menu"
       >
@@ -113,7 +119,8 @@ function Nav({ heroScrollP }: { heroScrollP: number }) {
           style={{
             // Dim + blur the page content behind, rather than hiding it — so
             // the frosted-glass buttons have something to work against.
-            background: 'rgba(6,6,6,0.55)',
+            // Theme-aware: dims to near-black in dark, near-white in light.
+            background: 'color-mix(in srgb, var(--background) 62%, transparent)',
             backdropFilter: 'blur(16px) saturate(120%)',
             WebkitBackdropFilter: 'blur(16px) saturate(120%)',
             animation: 'fade-in 0.18s ease both',
@@ -121,7 +128,7 @@ function Nav({ heroScrollP }: { heroScrollP: number }) {
         >
           {/* Close */}
           <button
-            className="absolute top-[22px] right-8 p-1.5 text-white/35 hover:text-white/80 transition-colors"
+            className="absolute top-[22px] right-8 p-1.5 text-foreground/35 hover:text-foreground/80 transition-colors"
             style={{ animation: 'fade-in 0.3s ease both 0.12s' }}
             onClick={closeMenu}
             aria-label="Close menu"
@@ -139,8 +146,8 @@ function Nav({ heroScrollP }: { heroScrollP: number }) {
                 'font-mono text-[12px] tracking-[0.14em]',
                 'backdrop-blur-md transition-colors duration-150',
                 pathname === to
-                  ? 'border-white/25 bg-white/[0.12] text-white/95'
-                  : 'border-white/[0.14] bg-white/[0.06] text-white/70',
+                  ? 'border-foreground/25 bg-foreground/[0.12] text-foreground/95'
+                  : 'border-foreground/[0.14] bg-foreground/[0.06] text-foreground/70',
               ].join(' ')}
               style={{
                 animation: `fade-up 0.55s cubic-bezier(0.16,1,0.3,1) both ${55 + i * 60}ms`,
@@ -151,11 +158,31 @@ function Nav({ heroScrollP }: { heroScrollP: number }) {
               {label.toUpperCase()}
             </Link>
           ))}
+
+          {/* Theme toggle */}
+          <button
+            onClick={toggleTheme}
+            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            className={`${themeToggleCls} gap-2 px-6 py-3 mt-1`}
+            style={{ animation: `fade-up 0.55s cubic-bezier(0.16,1,0.3,1) both ${55 + navItems.length * 60}ms` }}
+          >
+            {theme === 'dark' ? <Sun size={13} /> : <Moon size={13} />}
+            <span className="font-mono text-[12px] tracking-[0.14em] uppercase">
+              {theme === 'dark' ? 'Light' : 'Dark'}
+            </span>
+          </button>
         </div>
       )}
 
       {/* Floating nav tabs — hidden on mobile */}
       <nav className="hidden sm:flex fixed top-5 right-8 z-50 items-center gap-1">
+        <button
+          onClick={toggleTheme}
+          aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          className={`${themeToggleCls} w-8 h-8 mr-1 backdrop-blur-md`}
+        >
+          {theme === 'dark' ? <Sun size={13} /> : <Moon size={13} />}
+        </button>
         {navItems.map(({ label, to }, i) => {
           const active = pathname === to
           return (
@@ -167,8 +194,8 @@ function Nav({ heroScrollP }: { heroScrollP: number }) {
                 'font-mono text-[11px] tracking-[0.14em]',
                 'transition-colors duration-150',
                 active
-                  ? 'border-white/20 bg-white/[0.06] text-white/90'
-                  : 'border-white/[0.07] bg-white/[0.02] backdrop-blur-md text-white/65 hover:text-white/95 hover:border-white/20 hover:bg-white/[0.04]',
+                  ? 'border-foreground/20 bg-foreground/[0.06] text-foreground/90'
+                  : 'border-foreground/[0.07] bg-foreground/[0.02] backdrop-blur-md text-foreground/65 hover:text-foreground/95 hover:border-foreground/20 hover:bg-foreground/[0.04]',
               ].join(' ')}
               style={itemStyle(i)}
             >

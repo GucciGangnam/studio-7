@@ -9,12 +9,12 @@ const EASE_FLIP = [0.4, 0, 0.2, 1] as const
 function CardLogo() {
   return (
     <div className="flex items-baseline select-none">
-      <span className="font-mono text-[13px] font-semibold tracking-[0.18em] text-white/80">S</span>
+      <span className="font-mono text-[13px] font-semibold tracking-[0.18em] text-foreground/80">S</span>
       <motion.span
         initial={{ maxWidth: 0 }}
         animate={{ maxWidth: '5em' }}
         transition={{ delay: 0.85, duration: 0.55, ease: EASE_OUT }}
-        className="font-mono text-[13px] font-semibold tracking-[0.18em] text-white/80 overflow-hidden whitespace-nowrap inline-block"
+        className="font-mono text-[13px] font-semibold tracking-[0.18em] text-foreground/80 overflow-hidden whitespace-nowrap inline-block"
         style={{ maskImage: 'linear-gradient(to right, black 0, black 80%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to right, black 0, black 80%, transparent 100%)' }}
       >
         TUDIO
@@ -36,7 +36,7 @@ function ContactRow({ icon, value }: { icon: 'mail' | 'phone'; value: string }) 
   return (
     <div className="flex items-center gap-2">
       <Icon size={11} className="text-accent shrink-0" />
-      <span className="font-mono text-[12px] tracking-[0.04em] text-white/40">{value}</span>
+      <span className="font-mono text-[12px] tracking-[0.04em] text-foreground/40">{value}</span>
     </div>
   )
 }
@@ -45,7 +45,7 @@ function ContactRow({ icon, value }: { icon: 'mail' | 'phone'; value: string }) 
 function CardShell({ hasError = false }: { hasError?: boolean }) {
   return (
     <>
-      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#161616] via-[#0f0f0f] to-[#080808] border border-white/[0.07] shadow-[0_32px_80px_rgba(0,0,0,0.8),0_8px_24px_rgba(0,0,0,0.5)]" />
+      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#161616] via-[#0f0f0f] to-[#080808] border border-foreground/[0.07] shadow-[0_32px_80px_rgba(0,0,0,0.8),0_8px_24px_rgba(0,0,0,0.5)]" />
       {/* Top border line — cross-fades between accent and destructive */}
       <div className="absolute top-0 left-12 right-12 h-px">
         <motion.div
@@ -59,7 +59,7 @@ function CardShell({ hasError = false }: { hasError?: boolean }) {
           transition={{ duration: 0.3 }}
         />
       </div>
-      <div className="absolute bottom-0 left-20 right-20 h-px bg-gradient-to-r from-transparent via-white/[0.04] to-transparent" />
+      <div className="absolute bottom-0 left-20 right-20 h-px bg-gradient-to-r from-transparent via-foreground/[0.04] to-transparent" />
       <div
         className="absolute inset-0 rounded-2xl pointer-events-none"
         style={{
@@ -120,10 +120,10 @@ function CardBeam() {
 }
 
 const inputCls =
-  'w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3.5 py-2 text-base sm:text-[13px] font-sans text-white/85 placeholder:text-white/22 outline-none focus:border-accent/40 focus:bg-white/[0.06] transition-colors duration-150'
+  'w-full bg-foreground/[0.04] border border-foreground/[0.08] rounded-lg px-3.5 py-2 text-base sm:text-[13px] font-sans text-foreground/85 placeholder:text-foreground/22 outline-none focus:border-accent/40 focus:bg-foreground/[0.06] transition-colors duration-150'
 
 const inputErrCls =
-  'w-full bg-[#ff4a4a]/[0.04] border border-[#ff4a4a]/50 rounded-lg px-3.5 py-2 text-base sm:text-[13px] font-sans text-white/85 placeholder:text-[#ff4a4a]/40 outline-none focus:border-[#ff4a4a]/70 transition-colors duration-150'
+  'w-full bg-[#ff4a4a]/[0.04] border border-[#ff4a4a]/50 rounded-lg px-3.5 py-2 text-base sm:text-[13px] font-sans text-foreground/85 placeholder:text-[#ff4a4a]/40 outline-none focus:border-[#ff4a4a]/70 transition-colors duration-150'
 
 type Errors = { name: boolean; email: boolean; message: boolean }
 
@@ -202,7 +202,7 @@ export default function Contact() {
         initial={{ opacity: 0, y: -4 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.2, duration: 0.5 }}
-        className="font-mono text-[10px] tracking-[0.35em] text-white/20 uppercase mb-10 relative z-10"
+        className="font-mono text-[10px] tracking-[0.35em] text-foreground/20 uppercase mb-10 relative z-10"
       >
         // contact
       </motion.p>
@@ -210,7 +210,7 @@ export default function Contact() {
       {/* Perspective wrapper — owns the animated height */}
       <motion.div
         style={{ perspective: '1100px' }}
-        className="relative z-10 w-[480px] max-w-[90vw] h-[264px]"
+        className="surface-dark relative z-10 w-[480px] max-w-[90vw] h-[264px]"
         animate={{ height: expanded ? 340 : 264 }}
         transition={{ duration: 0.55, ease: EASE_OUT }}
       >
@@ -244,7 +244,7 @@ export default function Contact() {
                   <h1 className="text-[32px] font-semibold tracking-[-0.03em] text-white leading-none">
                     Studio 7
                   </h1>
-                  <p className="mt-1.5 font-mono text-[10px] tracking-[0.22em] text-white/28 uppercase">
+                  <p className="mt-1.5 font-mono text-[10px] tracking-[0.22em] text-foreground/28 uppercase">
                     Design · Develop · Deploy
                   </p>
                 </div>
@@ -303,7 +303,7 @@ export default function Contact() {
                       initial={{ opacity: 0, y: 6 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.4, delay: 0.35 }}
-                      className="font-mono text-[11px] tracking-[0.22em] text-white/45 uppercase text-center"
+                      className="font-mono text-[11px] tracking-[0.22em] text-foreground/45 uppercase text-center"
                     >
                       Thank you for contacting us
                     </motion.p>
@@ -318,15 +318,15 @@ export default function Contact() {
                   >
                     {/* Header */}
                     <div className="flex items-center justify-between mb-0.5">
-                      <p className="font-mono text-[10px] tracking-[0.28em] text-white/30 uppercase">
+                      <p className="font-mono text-[10px] tracking-[0.28em] text-foreground/30 uppercase">
                         Say hello
                       </p>
                       <button
                         onClick={handleBack}
-                        className="w-7 h-7 rounded-full border border-white/10 bg-white/[0.04] flex items-center justify-center hover:bg-white/[0.08] transition-colors"
+                        className="w-7 h-7 rounded-full border border-foreground/10 bg-foreground/[0.04] flex items-center justify-center hover:bg-foreground/[0.08] transition-colors"
                         aria-label="Back to card"
                       >
-                        <ArrowLeft size={12} className="text-white/45" />
+                        <ArrowLeft size={12} className="text-foreground/45" />
                       </button>
                     </div>
 

@@ -45,7 +45,7 @@ const BeamCircle = forwardRef<HTMLDivElement, { className?: string; children?: R
   ({ className, children }, ref) => (
     <div
       ref={ref}
-      className={cn('z-10 flex size-11 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.04]', className)}
+      className={cn('z-10 flex size-11 items-center justify-center rounded-full border border-foreground/[0.12] bg-foreground/[0.04]', className)}
     >
       {children}
     </div>
@@ -259,7 +259,7 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
           <div className={cn('flex flex-col', isLandscape ? 'flex-1 pt-10' : 'lg:flex-1 pt-24 lg:pt-0')}>
 
             <div style={ss(scrollP, 'fade-up 0.5s ease both 0.1s', 0.52, 0.75)}>
-              <span className="font-mono text-[10px] tracking-[0.28em] text-white/50 uppercase">
+              <span className="font-mono text-[10px] tracking-[0.28em] text-foreground/50 uppercase">
                 Digital Product Studio
               </span>
             </div>
@@ -272,7 +272,7 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
                 : { animation: 'none', opacity: 1 - titleP }
               }
             >
-              <span className="text-white font-sans" style={FONT_STYLE}>S</span>
+              <span className="text-foreground font-sans" style={FONT_STYLE}>S</span>
               <span
                 className="text-white font-sans overflow-hidden whitespace-nowrap"
                 style={{
@@ -292,14 +292,14 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
             </div>
 
             <p
-              className="mt-10 text-xl md:text-2xl font-medium text-white/90 tracking-tight max-w-2xl leading-snug"
+              className="mt-10 text-xl md:text-2xl font-medium text-foreground/90 tracking-tight max-w-2xl leading-snug"
               style={ss(scrollP, 'fade-up 0.7s ease both 2.1s', 0.20, 0.44)}
             >
               Premium software. Built for those who accept nothing less.
             </p>
 
             <p
-              className="mt-5 text-[15px] text-white/65 max-w-lg leading-relaxed"
+              className="mt-5 text-[15px] text-foreground/65 max-w-lg leading-relaxed"
               style={ss(scrollP, 'fade-up 0.7s ease both 2.35s', 0.10, 0.33)}
             >
               Studio 7 is a boutique engineering studio dedicated to crafting exceptional
@@ -317,9 +317,9 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
                   className="group flex flex-col items-start gap-3"
                   style={ss(scrollP, `fade-up 0.5s ease both ${2.65 + i * 0.08}s`, (3-i)*0.025, 0.18+(3-i)*0.025)}
                 >
-                  <Icon size={18} className="text-white/30 group-hover:text-accent transition-colors duration-200" strokeWidth={1.5} />
-                  <span className="font-mono text-[10px] tracking-[0.18em] text-white/40 group-hover:text-white/80 uppercase transition-colors duration-200">{label}</span>
-                  <div className="h-px w-8 bg-white/[0.06] group-hover:bg-accent/50 transition-colors duration-200" />
+                  <Icon size={18} className="text-foreground/30 group-hover:text-accent transition-colors duration-200" strokeWidth={1.5} />
+                  <span className="font-mono text-[10px] tracking-[0.18em] text-foreground/40 group-hover:text-foreground/80 uppercase transition-colors duration-200">{label}</span>
+                  <div className="h-px w-8 bg-foreground/[0.06] group-hover:bg-accent/50 transition-colors duration-200" />
                 </Link>
               ))}
             </div>
@@ -332,16 +332,16 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
                 <Link
                   key={to}
                   to={to}
-                  className="group flex flex-col justify-between p-6 w-40 h-40 border border-white/[0.07] rounded-[4px] hover:border-white/15 hover:bg-white/[0.02] transition-[border-color,background-color] duration-200"
+                  className="group flex flex-col justify-between p-6 w-40 h-40 border border-foreground/[0.07] rounded-[4px] hover:border-foreground/15 hover:bg-foreground/[0.02] transition-[border-color,background-color] duration-200"
                   style={{
                     boxShadow: '0 1px 3px rgba(0,0,0,0.5)',
                     ...ss(scrollP, `fade-up 0.45s cubic-bezier(0.16,1,0.3,1) both ${2.55 + i * 0.07}s`, (3-i)*0.025, 0.18+(3-i)*0.025),
                   }}
                 >
-                  <Icon size={20} className="text-white/25 group-hover:text-accent transition-colors duration-200" strokeWidth={1.5} />
+                  <Icon size={20} className="text-foreground/25 group-hover:text-accent transition-colors duration-200" strokeWidth={1.5} />
                   <div className="flex flex-col gap-1.5">
-                    <span className="font-mono text-[10px] tracking-[0.18em] text-white/40 group-hover:text-white/80 uppercase transition-colors duration-200">{label}</span>
-                    <div className="h-px w-8 bg-white/[0.08] group-hover:bg-accent/50 group-hover:w-full transition-all duration-300" />
+                    <span className="font-mono text-[10px] tracking-[0.18em] text-foreground/40 group-hover:text-foreground/80 uppercase transition-colors duration-200">{label}</span>
+                    <div className="h-px w-8 bg-foreground/[0.08] group-hover:bg-accent/50 group-hover:w-full transition-all duration-300" />
                   </div>
                 </Link>
               ))}
@@ -357,7 +357,7 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
 
           {/* Label */}
           <div style={s2(scrollP, 0.78, 0.96, 1.65, 1.80)}>
-            <span className="font-mono text-[10px] tracking-[0.28em] text-white/50 uppercase">
+            <span className="font-mono text-[10px] tracking-[0.28em] text-foreground/50 uppercase">
               Full Stack · End to End
             </span>
           </div>
@@ -373,13 +373,13 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
                     letterSpacing: '-0.035em',
                     lineHeight: 1.0,
                     display: 'block',
-                    color: '#ffffff',
+                    color: 'var(--foreground)',
                     fontFamily: 'var(--font-sans)',
                   }}
                 >
                   {word}
-                  {i === 2 && <span style={{ color: '#e8ff47' }}>.</span>}
-                  {i !== 2 && <span style={{ color: 'rgba(255,255,255,0.25)' }}>.</span>}
+                  {i === 2 && <span style={{ color: 'var(--accent)' }}>.</span>}
+                  {i !== 2 && <span style={{ color: 'color-mix(in srgb, var(--foreground) 25%, transparent)' }}>.</span>}
                 </span>
               </div>
             ))}
@@ -387,7 +387,7 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
 
           {/* Copy */}
           <p
-            className={cn('text-[15px] text-white/65 max-w-xl leading-relaxed', isLandscape ? 'hidden' : 'mt-8')}
+            className={cn('text-[15px] text-foreground/65 max-w-xl leading-relaxed', isLandscape ? 'hidden' : 'mt-8')}
             style={s2(scrollP, 1.10, 1.30, 1.85, 2.00)}
           >
             We take your concept through the complete product lifecycle — requirements,
@@ -401,15 +401,15 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
             {platforms.map(({ label, desc, Icon }, i) => (
               <div
                 key={label}
-                className="flex flex-col gap-3 pr-10 mr-10 border-r border-white/[0.06]"
+                className="flex flex-col gap-3 pr-10 mr-10 border-r border-foreground/[0.06]"
                 style={s2(scrollP, 1.20 + i * 0.07, 1.40 + i * 0.07, 1.88 + i * 0.03, 2.03 + i * 0.03)}
               >
-                <Icon size={18} className="text-white/35" strokeWidth={1.5} />
+                <Icon size={18} className="text-foreground/35" strokeWidth={1.5} />
                 <div>
-                  <p className="font-mono text-[10px] tracking-[0.16em] text-white/75 uppercase font-medium">{label}</p>
-                  <p className="text-[13px] text-white/40 mt-1 leading-relaxed">{desc}</p>
+                  <p className="font-mono text-[10px] tracking-[0.16em] text-foreground/75 uppercase font-medium">{label}</p>
+                  <p className="text-[13px] text-foreground/40 mt-1 leading-relaxed">{desc}</p>
                 </div>
-                <div className="h-px w-8 bg-white/[0.08]" />
+                <div className="h-px w-8 bg-foreground/[0.08]" />
               </div>
             ))}
 
@@ -422,7 +422,7 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
               <ArrowUpRight size={18} className="text-accent/50 group-hover:text-accent transition-colors duration-200" strokeWidth={1.5} />
               <div>
                 <p className="font-mono text-[10px] tracking-[0.16em] text-accent/60 group-hover:text-accent uppercase font-medium transition-colors duration-200">All Services</p>
-                <p className="text-[13px] text-white/35 mt-1 leading-relaxed group-hover:text-white/55 transition-colors duration-200">See the full suite</p>
+                <p className="text-[13px] text-foreground/35 mt-1 leading-relaxed group-hover:text-foreground/55 transition-colors duration-200">See the full suite</p>
               </div>
               <div className="h-px w-8 bg-accent/25 group-hover:w-full group-hover:bg-accent/50 transition-all duration-500" />
             </Link>
@@ -440,7 +440,7 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
           <div className={cn('flex flex-col', isLandscape ? 'flex-1 pt-0' : 'lg:flex-1 pt-16 lg:pt-0')}>
 
             <div style={s25(scrollP, 2.08, 2.24, 3.00, 3.15)}>
-              <span className="font-mono text-[10px] tracking-[0.28em] text-white/50 uppercase">
+              <span className="font-mono text-[10px] tracking-[0.28em] text-foreground/50 uppercase">
                 Bespoke · Tailored · Yours
               </span>
             </div>
@@ -452,15 +452,15 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
                 letterSpacing: '-0.035em',
                 lineHeight: 1.0,
                 display: 'block',
-                color: '#ffffff',
+                color: 'var(--foreground)',
                 fontFamily: 'var(--font-sans)',
               }}>
-                Built for<br />you<span style={{ color: '#e8ff47' }}>.</span>
+                Built for<br />you<span style={{ color: 'var(--accent)' }}>.</span>
               </span>
             </div>
 
             <p
-              className={cn('text-[15px] text-white/65 max-w-lg leading-relaxed', isLandscape ? 'mt-4 text-[13px]' : 'mt-8')}
+              className={cn('text-[15px] text-foreground/65 max-w-lg leading-relaxed', isLandscape ? 'mt-4 text-[13px]' : 'mt-8')}
               style={s25(scrollP, 2.26, 2.46, 3.05, 3.20)}
             >
               Whatever you need, we build it. AI integration, customer support systems,
@@ -477,7 +477,7 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
               <ArrowUpRight size={16} className="text-accent/50 group-hover:text-accent transition-colors duration-200" strokeWidth={1.5} />
               <div>
                 <p className="font-mono text-[10px] tracking-[0.16em] text-accent/60 group-hover:text-accent uppercase font-medium transition-colors duration-200">View our work</p>
-                <p className="text-[13px] text-white/35 mt-1 group-hover:text-white/55 transition-colors duration-200">See what we've built</p>
+                <p className="text-[13px] text-foreground/35 mt-1 group-hover:text-foreground/55 transition-colors duration-200">See what we've built</p>
               </div>
               <div className="h-px w-8 bg-accent/25 group-hover:w-full group-hover:bg-accent/50 transition-all duration-500" />
             </Link>
@@ -490,23 +490,23 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
             style={s25(scrollP, 2.15, 2.38, 3.02, 3.18)}
           >
             <div
-              className="relative w-full max-w-[390px] lg:max-w-[390px] rounded-lg overflow-hidden border border-white/[0.08]"
+              className="surface-dark relative w-full max-w-[390px] lg:max-w-[390px] rounded-lg overflow-hidden border border-foreground/[0.08]"
               style={{
                 background: 'rgba(8,8,8,0.95)',
                 boxShadow: '0 0 0 1px rgba(255,255,255,0.03), 0 32px 80px rgba(0,0,0,0.85)',
               }}
             >
               {/* Window chrome */}
-              <div className="flex items-center gap-3 px-4 py-2.5 border-b border-white/[0.06]" style={{ background: 'rgba(255,255,255,0.015)' }}>
+              <div className="flex items-center gap-3 px-4 py-2.5 border-b border-foreground/[0.06]" style={{ background: 'rgba(255,255,255,0.015)' }}>
                 <div className="flex gap-1.5">
                   <div className="w-2 h-2 rounded-full bg-red-500/50" />
                   <div className="w-2 h-2 rounded-full bg-yellow-400/40" />
                   <div className="w-2 h-2 rounded-full bg-green-500/35" />
                 </div>
                 <div className="flex-1 flex justify-center">
-                  <div className="flex items-center gap-1.5 px-3 py-1 rounded border border-white/[0.06] bg-white/[0.02]">
+                  <div className="flex items-center gap-1.5 px-3 py-1 rounded border border-foreground/[0.06] bg-foreground/[0.02]">
                     <div className="w-1.5 h-1.5 rounded-full bg-accent/60" />
-                    <span className="font-mono text-[9px] text-white/20 tracking-wider">yourapp.io</span>
+                    <span className="font-mono text-[9px] text-foreground/20 tracking-wider">yourapp.io</span>
                   </div>
                 </div>
               </div>
@@ -516,7 +516,7 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
 
                 {/* Sidebar */}
                 <div
-                  className="flex flex-col w-[126px] shrink-0 border-r border-white/[0.06] py-3 px-2 gap-0.5"
+                  className="flex flex-col w-[126px] shrink-0 border-r border-foreground/[0.06] py-3 px-2 gap-0.5"
                   style={{ background: 'rgba(255,255,255,0.008)' }}
                 >
                   {sidebarItems.map(({ label, Icon, active }) => (
@@ -527,7 +527,7 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
                       <Icon
                         size={12}
                         strokeWidth={active ? 2.5 : 1.5}
-                        className={active ? 'text-accent' : 'text-white/18'}
+                        className={active ? 'text-accent' : 'text-foreground/18'}
                       />
                       <span
                         className="text-[11px] font-medium"
@@ -544,19 +544,19 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
 
                   {/* Feature card 1 — AI chat */}
                   <div
-                    className="shrink-0 rounded-[6px] border border-white/[0.07] p-3 flex flex-col gap-2"
+                    className="shrink-0 rounded-[6px] border border-foreground/[0.07] p-3 flex flex-col gap-2"
                     style={{ background: 'rgba(255,255,255,0.02)', ...featureCard(scrollP, 0) }}
                   >
                     <div className="flex items-center gap-1.5">
                       <Sparkles size={11} strokeWidth={1.5} className="text-accent/80" />
-                      <span className="font-mono text-[9px] tracking-[0.14em] text-white/35 uppercase">AI Assistant</span>
+                      <span className="font-mono text-[9px] tracking-[0.14em] text-foreground/35 uppercase">AI Assistant</span>
                     </div>
                     <div className="flex flex-col gap-1.5">
-                      <div className="self-end max-w-[82%] px-2.5 py-1.5 rounded-[4px] bg-white/[0.06]">
-                        <p className="text-[10px] text-white/55 leading-snug">Summarise last month's orders</p>
+                      <div className="self-end max-w-[82%] px-2.5 py-1.5 rounded-[4px] bg-foreground/[0.06]">
+                        <p className="text-[10px] text-foreground/55 leading-snug">Summarise last month's orders</p>
                       </div>
                       <div className="self-start max-w-[92%] px-2.5 py-1.5 rounded-[4px] border border-accent/[0.15] bg-accent/[0.07]">
-                        <p className="text-[10px] text-white/55 leading-snug">Of course! Here's a breakdown of your 1,204 orders, totalling $48.2k...</p>
+                        <p className="text-[10px] text-foreground/55 leading-snug">Of course! Here's a breakdown of your 1,204 orders, totalling $48.2k...</p>
                       </div>
                       <div className="self-start flex items-center gap-1 px-1.5 py-0.5">
                         {[0, 0.2, 0.4].map((d, i) => (
@@ -572,16 +572,16 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
 
                   {/* Feature card 2 — Analytics */}
                   <div
-                    className="shrink-0 rounded-[6px] border border-white/[0.07] p-2.5 flex flex-col gap-1.5"
+                    className="shrink-0 rounded-[6px] border border-foreground/[0.07] p-2.5 flex flex-col gap-1.5"
                     style={{ background: 'rgba(255,255,255,0.02)', ...featureCard(scrollP, 1) }}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1.5">
                         <BarChart2 size={11} strokeWidth={1.5} className="text-accent/80" />
-                        <span className="font-mono text-[9px] tracking-[0.14em] text-white/35 uppercase">Revenue</span>
+                        <span className="font-mono text-[9px] tracking-[0.14em] text-foreground/35 uppercase">Revenue</span>
                       </div>
                       <div className="flex items-baseline gap-1.5">
-                        <span className="text-[12px] font-semibold text-white/75">$48.2k</span>
+                        <span className="text-[12px] font-semibold text-foreground/75">$48.2k</span>
                         <span className="font-mono text-[9px] text-accent">↑ 24%</span>
                       </div>
                     </div>
@@ -593,7 +593,7 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
                           style={{
                             height: `${h}%`,
                             background: i === chartBars.length - 1
-                              ? '#e8ff47'
+                              ? 'var(--accent)'
                               : i >= chartBars.length - 3
                               ? 'rgba(232,255,71,0.35)'
                               : 'rgba(255,255,255,0.08)',
@@ -605,22 +605,22 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
 
                   {/* Feature card 3 — Support queue */}
                   <div
-                    className="shrink-0 rounded-[6px] border border-white/[0.07] p-2.5 flex flex-col gap-1.5"
+                    className="shrink-0 rounded-[6px] border border-foreground/[0.07] p-2.5 flex flex-col gap-1.5"
                     style={{ background: 'rgba(255,255,255,0.02)', ...featureCard(scrollP, 2) }}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1.5">
                         <MessageSquare size={11} strokeWidth={1.5} className="text-accent/80" />
-                        <span className="font-mono text-[9px] tracking-[0.14em] text-white/35 uppercase">Support</span>
+                        <span className="font-mono text-[9px] tracking-[0.14em] text-foreground/35 uppercase">Support</span>
                       </div>
-                      <span className="font-mono text-[9px] text-white/22">3 open · avg 4m</span>
+                      <span className="font-mono text-[9px] text-foreground/22">3 open · avg 4m</span>
                     </div>
                     {[
                       { label: 'Cannot access the dashboard',   time: '2m',  hot: true  },
                       { label: 'Export to CSV not working',     time: '14m', hot: false },
                     ].map(({ label, time, hot }) => (
-                      <div key={label} className="flex items-center gap-2 pt-1.5 border-t border-white/[0.04]">
-                        <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${hot ? 'bg-accent' : 'bg-white/[0.14]'}`} />
+                      <div key={label} className="flex items-center gap-2 pt-1.5 border-t border-foreground/[0.04]">
+                        <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${hot ? 'bg-accent' : 'bg-foreground/[0.14]'}`} />
                         <p className="flex-1 text-[10px] leading-none truncate" style={{ color: 'rgba(255,255,255,0.42)' }}>{label}</p>
                         <span className="font-mono text-[8px] shrink-0" style={{ color: 'rgba(255,255,255,0.18)' }}>{time} ago</span>
                       </div>
@@ -643,7 +643,7 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
           <div className={cn('flex flex-col', isLandscape ? 'flex-1 pt-0' : 'lg:flex-1 pt-16 lg:pt-0')}>
 
             <div style={s3(scrollP, 3.38, 3.52)}>
-              <span className="font-mono text-[10px] tracking-[0.28em] text-white/50 uppercase">
+              <span className="font-mono text-[10px] tracking-[0.28em] text-foreground/50 uppercase">
                 Lifecycle · Handover · Maintenance
               </span>
             </div>
@@ -655,15 +655,15 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
                 letterSpacing: '-0.035em',
                 lineHeight: 1.0,
                 display: 'block',
-                color: '#ffffff',
+                color: 'var(--foreground)',
                 fontFamily: 'var(--font-sans)',
               }}>
-                Full stack<br />management<span style={{ color: '#e8ff47' }}>.</span>
+                Full stack<br />management<span style={{ color: 'var(--accent)' }}>.</span>
               </span>
             </div>
 
             <p
-              className={cn('mt-8 text-[15px] text-white/65 max-w-lg leading-relaxed', isLandscape ? 'hidden' : 'hidden lg:block')}
+              className={cn('mt-8 text-[15px] text-foreground/65 max-w-lg leading-relaxed', isLandscape ? 'hidden' : 'hidden lg:block')}
               style={s3(scrollP, 3.54, 3.72)}
             >
               We take complete ownership of your product — from initial discovery
@@ -686,8 +686,8 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
                 >
                   <div className="mt-2 h-px w-4 bg-accent/60 shrink-0" />
                   <div>
-                    <p className="font-mono text-[10px] tracking-[0.16em] text-white/75 uppercase font-medium">{label}</p>
-                    <p className="text-[13px] text-white/40 mt-0.5">{desc}</p>
+                    <p className="font-mono text-[10px] tracking-[0.16em] text-foreground/75 uppercase font-medium">{label}</p>
+                    <p className="text-[13px] text-foreground/40 mt-0.5">{desc}</p>
                   </div>
                 </div>
               ))}
@@ -702,7 +702,7 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
               <ArrowUpRight size={16} className="text-accent/50 group-hover:text-accent transition-colors duration-200" strokeWidth={1.5} />
               <div>
                 <p className="font-mono text-[10px] tracking-[0.16em] text-accent/60 group-hover:text-accent uppercase font-medium transition-colors duration-200">Start a project</p>
-                <p className="text-[13px] text-white/35 mt-1 group-hover:text-white/55 transition-colors duration-200">Get in touch today</p>
+                <p className="text-[13px] text-foreground/35 mt-1 group-hover:text-foreground/55 transition-colors duration-200">Get in touch today</p>
               </div>
               <div className="h-px w-8 bg-accent/25 group-hover:w-full group-hover:bg-accent/50 transition-all duration-500" />
             </Link>
@@ -724,7 +724,7 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
                 <div className="flex flex-col justify-between py-2">
                   {activePhaseNodes.map(({ Icon, label }, i) => (
                     <BeamCircle key={label} ref={phaseRefs[i]}>
-                      <Icon size={15} className="text-white/35" strokeWidth={1.5} />
+                      <Icon size={15} className="text-foreground/35" strokeWidth={1.5} />
                     </BeamCircle>
                   ))}
                 </div>
@@ -732,14 +732,14 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
                 {/* Studio 7 hub */}
                 <div className="flex flex-col justify-center">
                   <BeamCircle ref={studioHubRef} className="size-16 border-accent/25 bg-accent/[0.06]">
-                    <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: '17px', color: '#e8ff47', letterSpacing: '-0.02em' }}>S7</span>
+                    <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: '17px', color: 'var(--accent)', letterSpacing: '-0.02em' }}>S7</span>
                   </BeamCircle>
                 </div>
 
                 {/* Client node */}
                 <div className="flex flex-col justify-center">
                   <BeamCircle ref={clientNodeRef}>
-                    <User size={15} className="text-white/35" strokeWidth={1.5} />
+                    <User size={15} className="text-foreground/35" strokeWidth={1.5} />
                   </BeamCircle>
                 </div>
               </div>
@@ -751,10 +751,10 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
                   containerRef={beamContainerRef}
                   fromRef={phaseRefs[i]}
                   toRef={studioHubRef}
-                  pathColor="rgba(255,255,255,0.07)"
+                  pathColor="color-mix(in srgb, var(--foreground) 10%, transparent)"
                   pathWidth={1.5}
                   gradientStartColor="#e8ff47"
-                  gradientStopColor="rgba(255,255,255,0.5)"
+                  gradientStopColor="color-mix(in srgb, var(--foreground) 50%, transparent)"
                   duration={1.5 + i * 0.1}
                   delay={delay}
                 />
@@ -768,10 +768,10 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
                   fromRef={phaseRefs[i]}
                   toRef={studioHubRef}
                   reverse
-                  pathColor="rgba(255,255,255,0.07)"
+                  pathColor="color-mix(in srgb, var(--foreground) 10%, transparent)"
                   pathWidth={1.5}
                   gradientStartColor="#e8ff47"
-                  gradientStopColor="rgba(255,255,255,0.5)"
+                  gradientStopColor="color-mix(in srgb, var(--foreground) 50%, transparent)"
                   duration={1.5 + i * 0.1}
                   delay={delay + 0.75}
                 />
@@ -782,10 +782,10 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
                 containerRef={beamContainerRef}
                 fromRef={studioHubRef}
                 toRef={clientNodeRef}
-                pathColor="rgba(255,255,255,0.07)"
+                pathColor="color-mix(in srgb, var(--foreground) 10%, transparent)"
                 pathWidth={1.5}
                 gradientStartColor="#e8ff47"
-                gradientStopColor="rgba(255,255,255,0.5)"
+                gradientStopColor="color-mix(in srgb, var(--foreground) 50%, transparent)"
                 duration={1.5}
               />
 
@@ -795,10 +795,10 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
                 fromRef={studioHubRef}
                 toRef={clientNodeRef}
                 reverse
-                pathColor="rgba(255,255,255,0.07)"
+                pathColor="color-mix(in srgb, var(--foreground) 10%, transparent)"
                 pathWidth={1.5}
                 gradientStartColor="#e8ff47"
-                gradientStopColor="rgba(255,255,255,0.5)"
+                gradientStopColor="color-mix(in srgb, var(--foreground) 50%, transparent)"
                 duration={1.5}
                 delay={0.75}
               />
@@ -815,7 +815,7 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
           return (
             <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 pointer-events-none">
               <span
-                className="font-mono text-[9px] tracking-[0.28em] text-white/30 uppercase"
+                className="font-mono text-[9px] tracking-[0.28em] text-foreground/30 uppercase"
                 style={atRest
                   ? { animation: 'fade-up 0.6s ease both 3.2s' }
                   : { animation: 'none', opacity: 1 - labelP, transform: `translateY(${labelP * 10}px)` }
@@ -833,7 +833,7 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
                 <ChevronDown
                   size={13}
                   strokeWidth={1.5}
-                  className={cn('text-white/25', atRest && 'animate-bounce')}
+                  className={cn('text-foreground/25', atRest && 'animate-bounce')}
                 />
               </div>
             </div>
@@ -845,13 +845,13 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
       {/* Scroll progress bar — fixed bottom, accent green */}
       <div
         className="fixed bottom-0 left-0 z-50 w-full"
-        style={{ height: '2px', background: 'rgba(255,255,255,0.04)' }}
+        style={{ height: '2px', background: 'color-mix(in srgb, var(--foreground) 8%, transparent)' }}
       >
         <div
           style={{
             height: '100%',
             width: `${Math.min(scrollP / SNAP_POINTS[SNAP_POINTS.length - 1], 1) * 100}%`,
-            background: '#e8ff47',
+            background: 'var(--accent)',
             boxShadow: '0 0 6px rgba(232,255,71,0.55)',
             transition: 'width 80ms linear',
           }}

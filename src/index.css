@@ -6,26 +6,15 @@
   --font-sans: 'Space Grotesk', sans-serif;
   --font-mono: 'Space Mono', monospace;
 
-  /* Space Grotesque accent palette */
-  --color-accent: #e8ff47;
+  /* Space Grotesque accent palette (statics that don't flip by theme) */
   --color-accent-dim: #b8cc2e;
   --color-accent-muted: #2a2e0a;
   --color-sg-blue: #4a8cff;
   --color-sg-blue-dim: #1a3a7a;
   --color-sg-red: #ff4a4a;
   --color-sg-red-dim: #7a1a1a;
-
-  /* Grey scale */
-  --color-grey-950: #050505;
-  --color-grey-900: #0a0a0a;
-  --color-grey-800: #141414;
-  --color-grey-700: #1a1a1a;
-  --color-grey-600: #2a2a2a;
-  --color-grey-500: #444444;
-  --color-grey-400: #666666;
-  --color-grey-300: #888888;
-  --color-grey-200: #bbbbbb;
-  --color-grey-100: #eeeeee;
+  /* NOTE: --color-accent and the grey scale are theme-aware — see the
+     @theme inline mappings and the :root / :root[data-theme=light] blocks. */
 
   /* Letter-spacing scale */
   --tracking-tightest: -0.04em;
@@ -63,9 +52,32 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  /* Theme-aware grey scale */
+  --color-grey-950: var(--grey-950);
+  --color-grey-900: var(--grey-900);
+  --color-grey-800: var(--grey-800);
+  --color-grey-700: var(--grey-700);
+  --color-grey-600: var(--grey-600);
+  --color-grey-500: var(--grey-500);
+  --color-grey-400: var(--grey-400);
+  --color-grey-300: var(--grey-300);
+  --color-grey-200: var(--grey-200);
+  --color-grey-100: var(--grey-100);
 }
 
 :root {
+  /* ── Dark theme (default) ── */
+  --grey-950: #050505;
+  --grey-900: #0a0a0a;
+  --grey-800: #141414;
+  --grey-700: #1a1a1a;
+  --grey-600: #2a2a2a;
+  --grey-500: #444444;
+  --grey-400: #666666;
+  --grey-300: #888888;
+  --grey-200: #bbbbbb;
+  --grey-100: #eeeeee;
+
   --background: #000000;
   --foreground: #ffffff;
   --card: #080808;
@@ -86,6 +98,75 @@
   --input: #1a1a1a;
   --ring: #e8ff47;
   --radius: 4px;
+}
+
+/* Pins the dark palette locally — for device/app mockups that should read as
+   dark product screenshots regardless of the page theme. */
+.surface-dark {
+  --grey-950: #050505;
+  --grey-900: #0a0a0a;
+  --grey-800: #141414;
+  --grey-700: #1a1a1a;
+  --grey-600: #2a2a2a;
+  --grey-500: #444444;
+  --grey-400: #666666;
+  --grey-300: #888888;
+  --grey-200: #bbbbbb;
+  --grey-100: #eeeeee;
+  --background: #000000;
+  --foreground: #ffffff;
+  --card: #080808;
+  --card-foreground: #ffffff;
+  --popover: #0f0f0f;
+  --popover-foreground: #ffffff;
+  --primary: #ffffff;
+  --primary-foreground: #000000;
+  --secondary: #1a1a1a;
+  --secondary-foreground: #ffffff;
+  --muted: #1a1a1a;
+  --muted-foreground: #a0a0a0;
+  --accent: #e8ff47;
+  --accent-foreground: #000000;
+  --destructive: #ff4a4a;
+  --border: #1a1a1a;
+  --input: #1a1a1a;
+  --ring: #e8ff47;
+}
+
+:root[data-theme="light"] {
+  /* ── Light theme ── grey ramp inverted (dark ends ↔ light ends),
+     mid-greys roughly preserved so borders/dividers still read. ── */
+  --grey-950: #ffffff;
+  --grey-900: #f7f7f7;
+  --grey-800: #efefef;
+  --grey-700: #e6e6e6;
+  --grey-600: #d6d6d6;
+  --grey-500: #b4b4b4;
+  --grey-400: #8c8c8c;
+  --grey-300: #6a6a6a;
+  --grey-200: #3a3a3a;
+  --grey-100: #141414;
+
+  --background: #ffffff;
+  --foreground: #0a0a0a;
+  --card: #ffffff;
+  --card-foreground: #0a0a0a;
+  --popover: #ffffff;
+  --popover-foreground: #0a0a0a;
+  --primary: #0a0a0a;
+  --primary-foreground: #ffffff;
+  --secondary: #f0f0f0;
+  --secondary-foreground: #0a0a0a;
+  --muted: #f0f0f0;
+  --muted-foreground: #5a5a5a;
+  /* Deeper lime keeps the brand but stays legible on white */
+  --accent: #b6cc00;
+  --accent-foreground: #0a0a0a;
+  --destructive: #d92c2c;
+  --destructive-foreground: #ffffff;
+  --border: #e4e4e4;
+  --input: #e4e4e4;
+  --ring: #b6cc00;
 }
 
 /* Typed custom property — lets the browser interpolate it as a length in calc() */
@@ -130,5 +211,6 @@
     font-family: var(--font-sans);
     margin: 0;
     -ms-overflow-style: none; /* IE/Edge legacy */
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 }

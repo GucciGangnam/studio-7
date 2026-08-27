@@ -41,8 +41,8 @@ function useCardAnimation(mountDelay: number) {
 function CardBg() {
   return (
     <>
-      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#161616] via-[#0f0f0f] to-[#080808] border border-white/[0.07] shadow-[0_32px_80px_rgba(0,0,0,0.8),0_8px_24px_rgba(0,0,0,0.5)]" />
-      <div className="absolute bottom-0 left-20 right-20 h-px bg-gradient-to-r from-transparent via-white/[0.04] to-transparent" />
+      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#161616] via-[#0f0f0f] to-[#080808] border border-foreground/[0.07] shadow-[0_32px_80px_rgba(0,0,0,0.8),0_8px_24px_rgba(0,0,0,0.5)]" />
+      <div className="absolute bottom-0 left-20 right-20 h-px bg-gradient-to-r from-transparent via-foreground/[0.04] to-transparent" />
       <div
         className="absolute inset-0 rounded-2xl pointer-events-none"
         style={{
@@ -145,7 +145,7 @@ function CustomCardBack({ onBack }: { onBack: () => void }) {
   }, [])
 
   return (
-    <div ref={containerRef} className="relative h-full rounded-2xl overflow-hidden">
+    <div ref={containerRef} className="surface-dark relative h-full rounded-2xl overflow-hidden">
       <CardBg />
       <div className="relative h-full flex flex-col">
 
@@ -154,10 +154,10 @@ function CustomCardBack({ onBack }: { onBack: () => void }) {
           <p className="font-mono text-[10px] tracking-[0.32em] uppercase text-accent/60">
             custom engagement
           </p>
-          <p className="mt-1.5 text-[16px] font-semibold text-white/80 tracking-[-0.02em]">
+          <p className="mt-1.5 text-[16px] font-semibold text-foreground/80 tracking-[-0.02em]">
             We plug in. You move forward.
           </p>
-          <p className="mt-4 text-[13px] font-sans leading-relaxed text-white/38">
+          <p className="mt-4 text-[13px] font-sans leading-relaxed text-foreground/38">
             We integrate directly into your existing infrastructure and team — no
             rip-and-replace. Just new features and custom solutions built on top of
             what you already have.
@@ -183,7 +183,7 @@ function CustomCardBack({ onBack }: { onBack: () => void }) {
               >
                 <User size={18} strokeWidth={1.5} className="text-accent" />
               </div>
-              <span className="font-mono text-[9px] tracking-[0.14em] uppercase text-white/30 text-center leading-tight">
+              <span className="font-mono text-[9px] tracking-[0.14em] uppercase text-foreground/30 text-center leading-tight">
                 your<br />infra
               </span>
             </div>
@@ -233,7 +233,7 @@ function CustomCardBack({ onBack }: { onBack: () => void }) {
               >
                 <span className="font-mono text-[11px] font-bold text-accent tracking-[-0.02em]">S7</span>
               </div>
-              <span className="font-mono text-[9px] tracking-[0.14em] uppercase text-white/30 text-center leading-tight">
+              <span className="font-mono text-[9px] tracking-[0.14em] uppercase text-foreground/30 text-center leading-tight">
                 new<br />features
               </span>
             </div>
@@ -248,7 +248,7 @@ function CustomCardBack({ onBack }: { onBack: () => void }) {
             className={`w-full flex items-center justify-center gap-2 py-[11px] rounded-xl border font-mono text-[11px] tracking-[0.18em] uppercase font-bold transition-colors duration-500 ${
               ctaReady
                 ? 'border-accent bg-accent/10 text-accent hover:bg-accent hover:text-black'
-                : 'border-white/[0.09] bg-white/[0.04] text-white/25 pointer-events-none'
+                : 'border-foreground/[0.09] bg-foreground/[0.04] text-foreground/25 pointer-events-none'
             }`}
           >
             Get in touch
@@ -256,7 +256,7 @@ function CustomCardBack({ onBack }: { onBack: () => void }) {
           </Link>
           <button
             onClick={onBack}
-            className="font-mono text-[11px] tracking-[0.18em] text-white/30 hover:text-white/60 uppercase transition-colors text-center"
+            className="font-mono text-[11px] tracking-[0.18em] text-foreground/30 hover:text-foreground/60 uppercase transition-colors text-center"
           >
             ← Back
           </button>
@@ -376,7 +376,7 @@ function MvpCardBack({ onBack }: { onBack: () => void }) {
   const isLit = (k: AnyKey) => lit.has(k)
 
   return (
-    <div ref={containerRef} className="relative h-full rounded-2xl overflow-hidden">
+    <div ref={containerRef} className="surface-dark relative h-full rounded-2xl overflow-hidden">
       <CardBg />
       <div className="relative h-full flex flex-col">
 
@@ -385,10 +385,10 @@ function MvpCardBack({ onBack }: { onBack: () => void }) {
           <p className="font-mono text-[10px] tracking-[0.32em] uppercase text-accent/60">
             What S7 builds
           </p>
-          <p className="mt-1.5 text-[16px] font-semibold text-white/80 tracking-[-0.02em]">
+          <p className="mt-1.5 text-[16px] font-semibold text-foreground/80 tracking-[-0.02em]">
             Every layer. Handed to you.
           </p>
-          <p className="mt-4 text-[13px] font-sans leading-relaxed text-white/38">
+          <p className="mt-4 text-[13px] font-sans leading-relaxed text-foreground/38">
             Lean on our expertise to shape your concept and design your software.
             We handle every layer — from discovery and architecture through to a
             fully deployed stack — then hand it all over as one complete,
@@ -472,7 +472,7 @@ function MvpCardBack({ onBack }: { onBack: () => void }) {
             className={`w-full flex items-center justify-center gap-2 py-[11px] rounded-xl border font-mono text-[11px] tracking-[0.18em] uppercase font-bold transition-colors duration-500 ${
               animDone
                 ? 'border-accent bg-accent/10 text-accent hover:bg-accent hover:text-black'
-                : 'border-white/[0.09] bg-white/[0.04] text-white/25'
+                : 'border-foreground/[0.09] bg-foreground/[0.04] text-foreground/25'
             }`}
           >
             Get in touch
@@ -480,7 +480,7 @@ function MvpCardBack({ onBack }: { onBack: () => void }) {
           </Link>
           <button
             onClick={onBack}
-            className="font-mono text-[11px] tracking-[0.18em] text-white/30 hover:text-white/60 uppercase transition-colors text-center"
+            className="font-mono text-[11px] tracking-[0.18em] text-foreground/30 hover:text-foreground/60 uppercase transition-colors text-center"
           >
             ← Back
           </button>
@@ -528,7 +528,7 @@ function ServiceCard({
         className="absolute top-0 left-12 right-12 h-px z-10"
         style={{ transformOrigin: '50% 0' }}
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-foreground/15 to-transparent" />
         <motion.div
           animate={{ opacity: isActive ? 1 : 0 }}
           transition={{ duration: 0.5, delay: 0 }}
@@ -541,7 +541,7 @@ function ServiceCard({
         initial={{ clipPath: 'inset(0 0 100% 0 round 16px)' }}
         animate={{ clipPath: 'inset(0 0 0% 0 round 16px)' }}
         transition={{ delay: delay + 0.3, duration: 0.7, ease: EASE_OUT }}
-        className="h-full rounded-2xl relative overflow-hidden"
+        className="surface-dark h-full rounded-2xl relative overflow-hidden"
       >
         <CardBg />
         <div className="relative h-full">{children}</div>
@@ -611,13 +611,13 @@ export default function Services() {
         transition={{ duration: 0.6, ease: EASE_OUT }}
         className="text-center mb-20 max-w-[520px] relative z-10"
       >
-        <p className="font-mono text-[10px] tracking-[0.35em] text-white/20 uppercase mb-5">
+        <p className="font-mono text-[10px] tracking-[0.35em] text-foreground/20 uppercase mb-5">
           // services
         </p>
-        <h1 className="text-[48px] leading-[1.1] font-semibold tracking-[-0.03em] text-white">
+        <h1 className="text-[48px] leading-[1.1] font-semibold tracking-[-0.03em] text-foreground">
           What we <span className="text-accent">build</span>
         </h1>
-        <p className="mt-5 text-[15px] text-white/38 font-sans leading-relaxed">
+        <p className="mt-5 text-[15px] text-foreground/38 font-sans leading-relaxed">
           From a concept to a complete product, or elevating what you already
           have — we craft digital products with precision and care.
         </p>
@@ -671,10 +671,10 @@ export default function Services() {
                             >
                               MVP Package
                             </motion.p>
-                            <h2 className="text-[28px] font-semibold tracking-[-0.025em] text-white leading-tight">
+                            <h2 className="text-[28px] font-semibold tracking-[-0.025em] text-foreground leading-tight">
                               Build &amp; Handover
                             </h2>
-                            <p className="mt-2.5 text-[13px] text-white/38 font-sans leading-relaxed">
+                            <p className="mt-2.5 text-[13px] text-foreground/38 font-sans leading-relaxed">
                               You bring the concept. We build, deploy, and hand over a
                               complete production-ready MVP — front to back, yours to keep.
                             </p>
@@ -689,15 +689,15 @@ export default function Services() {
                                 >
                                   <Check size={10} strokeWidth={3} />
                                 </motion.span>
-                                <span className="font-mono text-[12px] tracking-[0.025em] text-white/52">{f}</span>
+                                <span className="font-mono text-[12px] tracking-[0.025em] text-foreground/52">{f}</span>
                               </li>
                             ))}
                           </ul>
                         </div>
                         <div className="flex flex-col gap-4 mt-auto pt-7">
-                          <div className="h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
+                          <div className="h-px bg-gradient-to-r from-transparent via-foreground/[0.08] to-transparent" />
                           <div>
-                            <p className="font-mono text-[10px] tracking-[0.28em] text-white/22 uppercase mb-1.5">
+                            <p className="font-mono text-[10px] tracking-[0.28em] text-foreground/22 uppercase mb-1.5">
                               Starting from
                             </p>
                             <motion.p
@@ -707,7 +707,7 @@ export default function Services() {
                             >
                               $6,000
                             </motion.p>
-                            <p className="mt-2 font-mono text-[11px] tracking-[0.1em] text-white/25">
+                            <p className="mt-2 font-mono text-[11px] tracking-[0.1em] text-foreground/25">
                               complete package · full code & infrastructure handover
                             </p>
                           </div>
@@ -741,7 +741,7 @@ export default function Services() {
                     {activeCard === 'mvp' && flipped ? (
                       <MvpCardBack onBack={handleBack} />
                     ) : (
-                      <div className="relative h-full rounded-2xl overflow-hidden">
+                      <div className="surface-dark relative h-full rounded-2xl overflow-hidden">
                         <CardBg />
                       </div>
                     )}
@@ -789,10 +789,10 @@ export default function Services() {
                             >
                               Custom Engagement
                             </motion.p>
-                            <h2 className="text-[28px] font-semibold tracking-[-0.025em] text-white leading-tight">
+                            <h2 className="text-[28px] font-semibold tracking-[-0.025em] text-foreground leading-tight">
                               Tailored Solutions
                             </h2>
-                            <p className="mt-2.5 text-[13px] text-white/38 font-sans leading-relaxed">
+                            <p className="mt-2.5 text-[13px] text-foreground/38 font-sans leading-relaxed">
                               Already have a product? We work within your existing stack to
                               optimise, redesign, and extend — scoped entirely around you.
                             </p>
@@ -807,15 +807,15 @@ export default function Services() {
                                 >
                                   <Check size={10} strokeWidth={3} />
                                 </motion.span>
-                                <span className="font-mono text-[12px] tracking-[0.025em] text-white/52">{f}</span>
+                                <span className="font-mono text-[12px] tracking-[0.025em] text-foreground/52">{f}</span>
                               </li>
                             ))}
                           </ul>
                         </div>
                         <div className="flex flex-col gap-4 mt-auto pt-7">
-                          <div className="h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
+                          <div className="h-px bg-gradient-to-r from-transparent via-foreground/[0.08] to-transparent" />
                           <div>
-                            <p className="font-mono text-[10px] tracking-[0.28em] text-white/22 uppercase mb-1.5">
+                            <p className="font-mono text-[10px] tracking-[0.28em] text-foreground/22 uppercase mb-1.5">
                               Pricing
                             </p>
                             <motion.p
@@ -825,7 +825,7 @@ export default function Services() {
                             >
                               Scoped to your needs
                             </motion.p>
-                            <p className="mt-2 font-mono text-[11px] tracking-[0.1em] text-white/25">
+                            <p className="mt-2 font-mono text-[11px] tracking-[0.1em] text-foreground/25">
                               every project is unique · let's scope it together
                             </p>
                           </div>
@@ -859,7 +859,7 @@ export default function Services() {
                     {activeCard === 'custom' && flipped ? (
                       <CustomCardBack onBack={handleBack} />
                     ) : (
-                      <div className="relative h-full rounded-2xl overflow-hidden"><CardBg /></div>
+                      <div className="surface-dark relative h-full rounded-2xl overflow-hidden"><CardBg /></div>
                     )}
                   </div>
                 </motion.div>
@@ -875,7 +875,7 @@ export default function Services() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.6, duration: 0.6 }}
-        className="mt-16 font-mono text-[10px] tracking-[0.28em] text-white/12 uppercase relative z-10"
+        className="mt-16 font-mono text-[10px] tracking-[0.28em] text-foreground/12 uppercase relative z-10"
       >
         Not sure which fits? Just reach out.
       </motion.p>

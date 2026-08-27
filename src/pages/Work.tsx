@@ -2824,7 +2824,7 @@ export default function Work() {
         {!isMobile && (
           <span
             role="tooltip"
-            className="pointer-events-none absolute bottom-full left-1/2 mb-3 -translate-x-1/2 translate-y-1 whitespace-nowrap rounded-md border border-white/10 bg-[#0f0f0f] px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-white/85 opacity-0 shadow-md transition duration-150 group-hover:translate-y-0 group-hover:opacity-100"
+            className="pointer-events-none absolute bottom-full left-1/2 mb-3 -translate-x-1/2 translate-y-1 whitespace-nowrap rounded-md border border-border bg-popover px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-popover-foreground/85 opacity-0 shadow-md transition duration-150 group-hover:translate-y-0 group-hover:opacity-100"
           >
             {item.label}
           </span>
@@ -2847,22 +2847,23 @@ export default function Work() {
             >
               {/* Section header — guide style */}
               <div className="flex items-baseline gap-5 mb-10">
-                <span className="font-mono text-[11px] text-white/20 tracking-widest">
+                <span className="font-mono text-[11px] text-foreground/20 tracking-widest">
                   {String(index + 1).padStart(2, "0")}
                 </span>
-                <h2 className="font-mono text-[11px] tracking-[0.18em] text-white/50 uppercase">
+                <h2 className="font-mono text-[11px] tracking-[0.18em] text-foreground/50 uppercase">
                   {section.label}
                 </h2>
-                <div className="flex-1 border-t border-white/[0.06] self-center" />
+                <div className="flex-1 border-t border-foreground/[0.06] self-center" />
               </div>
 
               {/* Copy */}
-              <p className="text-sm text-white/40 leading-relaxed max-w-xl mb-12">
+              <p className="text-sm text-foreground/40 leading-relaxed max-w-xl mb-12">
                 {section.copy}
               </p>
 
-              {/* Demo / showcase */}
-              <div className="flex justify-center">
+              {/* Demo / showcase — dark-scoped so the device mockups read as
+                  dark product screenshots regardless of page theme. */}
+              <div className="surface-dark flex justify-center">
                 {active === "animations"
                   ? <AnimationsShowcase onReachEnd={() => setAnimationDone(true)} />
                   : <section.Demo />}
