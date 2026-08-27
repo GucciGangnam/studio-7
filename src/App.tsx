@@ -9,6 +9,7 @@ import Dev from './pages/Dev'
 import NotFound from './pages/NotFound'
 
 const navItems = [
+  { label: 'Home',     to: '/'         },
   { label: 'Work',     to: '/work'     },
   { label: 'Services', to: '/services' },
   { label: 'Contact',  to: '/contact'  },
@@ -109,7 +110,14 @@ function Nav({ heroScrollP }: { heroScrollP: number }) {
       {mobileMenuOpen && (
         <div
           className="sm:hidden fixed inset-0 z-[60] flex flex-col items-center justify-center gap-5"
-          style={{ background: 'rgba(4,4,4,0.97)', backdropFilter: 'blur(12px)', animation: 'fade-in 0.18s ease both' }}
+          style={{
+            // Dim + blur the page content behind, rather than hiding it — so
+            // the frosted-glass buttons have something to work against.
+            background: 'rgba(6,6,6,0.55)',
+            backdropFilter: 'blur(16px) saturate(120%)',
+            WebkitBackdropFilter: 'blur(16px) saturate(120%)',
+            animation: 'fade-in 0.18s ease both',
+          }}
         >
           {/* Close */}
           <button
@@ -129,12 +137,15 @@ function Nav({ heroScrollP }: { heroScrollP: number }) {
               className={[
                 'px-6 py-3 border rounded-full',
                 'font-mono text-[12px] tracking-[0.14em]',
-                'transition-colors duration-150',
+                'backdrop-blur-md transition-colors duration-150',
                 pathname === to
-                  ? 'border-white/20 bg-white/[0.06] text-white/90'
-                  : 'border-white/[0.07] bg-white/[0.02] text-white/60',
+                  ? 'border-white/25 bg-white/[0.12] text-white/95'
+                  : 'border-white/[0.14] bg-white/[0.06] text-white/70',
               ].join(' ')}
-              style={{ animation: `fade-up 0.55s cubic-bezier(0.16,1,0.3,1) both ${55 + i * 60}ms` }}
+              style={{
+                animation: `fade-up 0.55s cubic-bezier(0.16,1,0.3,1) both ${55 + i * 60}ms`,
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.09), 0 2px 10px rgba(0,0,0,0.28)',
+              }}
               onClick={closeMenu}
             >
               {label.toUpperCase()}
