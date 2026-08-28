@@ -844,32 +844,29 @@ const desktopFrame = { width: 800, height: 490, borderRadius: 10 }
 const phoneScreen   = { left: 4, right: 4, bottom: 18, borderRadius: 38 }
 const desktopScreen = { left: 0, right: 0, bottom: 0,  borderRadius: 0  }
 
-// Natural dimensions of the demo content (label + gaps + frame + button)
+// Natural dimensions of the demo content (label + gap + frame)
 const DEMO_W = 840
-const DEMO_H = 680
+const DEMO_H = 610
 
 type DemoPhase = "mobile" | "web" | "internal"
 
 function PhoneToDesktopDemo() {
   const [phase, setPhase] = useState<DemoPhase>("mobile")
-  const [looping, setLooping] = useState(true)
   const scale = useDemoScale(DEMO_W, DEMO_H)
 
   // initial delay before first transition
   useEffect(() => {
-    if (!looping) return
     const first = setTimeout(() => setPhase("web"), 1600)
     return () => clearTimeout(first)
-  }, [looping])
+  }, [])
 
   // cycle: mobile → web → internal → mobile → …
   useEffect(() => {
-    if (!looping) return
     const holdMs: Record<DemoPhase, number> = { mobile: 2200, web: 2800, internal: 2600 }
     const next:   Record<DemoPhase, DemoPhase> = { mobile: "web", web: "internal", internal: "mobile" }
     const t = setTimeout(() => setPhase(p => next[p]), holdMs[phase])
     return () => clearTimeout(t)
-  }, [phase, looping])
+  }, [phase])
 
   const isDesktop = phase !== "mobile"
 
@@ -1031,32 +1028,6 @@ function PhoneToDesktopDemo() {
           </AnimatePresence>
         </motion.div>
       </div>
-
-      {/* Pause / resume loop */}
-      <motion.button
-        onClick={() => setLooping(l => !l)}
-        whileHover={{ scale: 1.03 }}
-        whileTap={{ scale: 0.97 }}
-        style={{
-          background: "transparent",
-          border: "1px solid #3f3f3f",
-          color: "#6a6a6a",
-          fontFamily: "Space Mono",
-          fontSize: 10,
-          letterSpacing: "0.08em",
-          padding: "7px 18px",
-          borderRadius: 6,
-          cursor: "pointer",
-          display: "flex",
-          alignItems: "center",
-          gap: 7,
-          transition: "border-color 0.2s, color 0.2s",
-        }}
-        onMouseEnter={e => { e.currentTarget.style.borderColor = "#e8ff47"; e.currentTarget.style.color = "#e8ff47" }}
-        onMouseLeave={e => { e.currentTarget.style.borderColor = "#3f3f3f"; e.currentTarget.style.color = "#6a6a6a" }}
-      >
-        {looping ? "⏸ Pause" : "▶ Resume"}
-      </motion.button>
     </div>
     </div>
     </div>
@@ -1267,16 +1238,14 @@ function BackendPipeline({ phase }: { phase: BackendPhase }) {
 
 function BackendFlowDemo() {
   const [phase, setPhase] = useState<BackendPhase>("rest")
-  const [looping, setLooping] = useState(true)
   const scale = useDemoScale(BACKEND_W, BACKEND_H)
 
   useEffect(() => {
-    if (!looping) return
     const hold: Record<BackendPhase, number> = { rest: 4800, realtime: 4500, queue: 5000 }
     const next: Record<BackendPhase, BackendPhase> = { rest: "realtime", realtime: "queue", queue: "rest" }
     const t = setTimeout(() => setPhase(p => next[p]), hold[phase])
     return () => clearTimeout(t)
-  }, [phase, looping])
+  }, [phase])
 
   const meta = BACKEND_META[phase]
   const PhaseIcon = meta.icon
@@ -1346,24 +1315,6 @@ function BackendFlowDemo() {
           </AnimatePresence>
         </div>
       </div>
-
-      {/* Pause / resume */}
-      <motion.button
-        onClick={() => setLooping(l => !l)}
-        whileHover={{ scale: 1.03 }}
-        whileTap={{ scale: 0.97 }}
-        style={{
-          background: "transparent", border: "1px solid #3f3f3f", color: "#6a6a6a",
-          fontFamily: "Space Mono", fontSize: 10, letterSpacing: "0.08em",
-          padding: "7px 18px", borderRadius: 6, cursor: "pointer",
-          display: "flex", alignItems: "center", gap: 7,
-          transition: "border-color 0.2s, color 0.2s",
-        }}
-        onMouseEnter={e => { e.currentTarget.style.borderColor = "#e8ff47"; e.currentTarget.style.color = "#e8ff47" }}
-        onMouseLeave={e => { e.currentTarget.style.borderColor = "#3f3f3f"; e.currentTarget.style.color = "#6a6a6a" }}
-      >
-        {looping ? "⏸ Pause" : "▶ Resume"}
-      </motion.button>
 
     </div>
     </div>
@@ -1887,24 +1838,6 @@ function AnalyticsDashboardDemo() {
           </AnimatePresence>
         </div>
       </div>
-
-      {/* Pause / resume */}
-      <motion.button
-        onClick={() => setLooping(l => !l)}
-        whileHover={{ scale: 1.03 }}
-        whileTap={{ scale: 0.97 }}
-        style={{
-          background: "transparent", border: "1px solid #3f3f3f", color: "#6a6a6a",
-          fontFamily: "Space Mono", fontSize: 10, letterSpacing: "0.08em",
-          padding: "7px 18px", borderRadius: 6, cursor: "pointer",
-          display: "flex", alignItems: "center", gap: 7,
-          transition: "border-color 0.2s, color 0.2s",
-        }}
-        onMouseEnter={e => { e.currentTarget.style.borderColor = "#e8ff47"; e.currentTarget.style.color = "#e8ff47" }}
-        onMouseLeave={e => { e.currentTarget.style.borderColor = "#3f3f3f"; e.currentTarget.style.color = "#6a6a6a" }}
-      >
-        {looping ? "⏸ Pause" : "▶ Resume"}
-      </motion.button>
 
     </div>
     </div>
