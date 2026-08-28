@@ -1909,293 +1909,406 @@ function AnalyticsDashboardDemo() {
   )
 }
 
-// ─── Animations showcase ─────────────────────────────────────────────────────
+// ─── Device scroll intro ──────────────────────────────────────────────────────
+// Landing intro for /work. Scroll-driven: an iPhone animates in and scrubs the
+// VinaHouse portrait frame sequence, then morphs into a desktop browser that
+// scrubs the original project frames. Everything is driven imperatively off
+// window.scrollY (no per-tick React re-render); a tall spacer gives scroll room.
 
-const SCRUB_FRAMES = 103
-const SCRUB_PX     = 8
-const INTRO_PX     = 120   // scroll distance over which frame 1 fades in
-const FADE_PX      = 300
-const PHASE1_END   = INTRO_PX + (SCRUB_FRAMES - 1) * SCRUB_PX
+const PHONE_FRAMES = 151   // VinaHouse portrait sequence (/vinahouse-frames)
+const DESK_FRAMES  = 103   // original landscape sequence (/animation-frames)
+const PX_PER_FRAME = 7     // scroll distance per frame advance
 
+const ENTER_PX = 240       // phone animates in over this distance
+const MORPH_PX = 380       // phone → desktop morph distance
+const OUTRO_PX = 440       // scroll distance over which the final desktop scrolls up + fades to 0
+const OUTRO_UP = 440       // px the desktop scrolls up across the outro (1:1 with scroll)
 
-const ANIM_COPY = "Fluid transitions, scroll-driven motion, and micro-interactions that feel deliberate, not decorative. Every animated element is tuned for performance and purpose — guiding attention without getting in the way."
+const PHONE_PX = (PHONE_FRAMES - 1) * PX_PER_FRAME
+const DESK_PX  = (DESK_FRAMES  - 1) * PX_PER_FRAME
 
-function drawFrame(ctx: CanvasRenderingContext2D, img: HTMLImageElement) {
-  ctx.drawImage(img, 0, 0)
+// Phase boundaries along window.scrollY.
+const B_ENTER = ENTER_PX
+const B_PHONE = B_ENTER + PHONE_PX
+const B_MORPH = B_PHONE + MORPH_PX
+const B_DESK  = B_MORPH + DESK_PX
+const B_OUTRO = B_DESK  + OUTRO_PX
+
+const INTRO_SCROLL =
+  B_OUTRO + (typeof window !== "undefined" ? window.innerHeight : 800) + 200
+
+const clamp01 = (n: number) => (n < 0 ? 0 : n > 1 ? 1 : n)
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t
+const smooth = (a: number, b: number, t: number) => {
+  const x = clamp01((t - a) / (b - a))
+  return x * x * (3 - 2 * x)
 }
 
-// Enough scroll room for intro + all frames + fade + buffer
-const TOTAL_SCROLL = PHASE1_END + FADE_PX + window.innerHeight + 200
+// Cover-fit an image into a canvas buffer (VinaHouse's draw()): fill the frame,
+// cropping overflow, anchored vertically at `anchorY`.
+function drawCover(canvas: HTMLCanvasElement, img: HTMLImageElement, anchorY: number) {
+  const ctx = canvas.getContext("2d")
+  if (!ctx) return
+  const cw = canvas.width, ch = canvas.height
+  const iw = img.naturalWidth, ih = img.naturalHeight
+  if (!iw || !ih) return
+  const scale = Math.max(cw / iw, ch / ih)
+  const dw = iw * scale, dh = ih * scale
+  ctx.clearRect(0, 0, cw, ch)
+  ctx.drawImage(img, (cw - dw) / 2, (ch - dh) * anchorY, dw, dh)
+}
 
-function AnimationsShowcase({ onReachEnd }: { onReachEnd?: () => void }) {
-  const canvasRef   = useRef<HTMLCanvasElement>(null)
-  const imagesRef   = useRef<HTMLImageElement[]>([])
-  const frameRef    = useRef(0)
-  const showCopyRef = useRef(false)
-  const hintRef     = useRef(true)
+// Intro-local device geometry (independent of PhoneToDesktopDemo's shared frame).
+// Phone: thin uniform bezel with the status bar overlaid on the screen (screen
+// starts near the top). Desktop: keeps a 44px browser-chrome bar above the screen.
+const IN_FRAME_PHONE  = { w: 280, h: 560, radius: 34 }
+const IN_FRAME_DESK   = { w: 800, h: 490, radius: 10 }
+const IN_SCREEN_PHONE = { top: 4, left: 4, right: 4, bottom: 4, radius: 24 }
+const IN_SCREEN_DESK  = { top: 44, left: 0, right: 0, bottom: 0, radius: 0 }
 
-  // Keep the latest callback without re-binding the scroll listener.
+function DeviceScrollIntro({ onReachEnd }: { onReachEnd?: () => void }) {
+  const enterRef       = useRef<HTMLDivElement>(null)
+  const frameRef       = useRef<HTMLDivElement>(null)
+  const screenRef      = useRef<HTMLDivElement>(null)
+  const phoneChromeRef = useRef<HTMLDivElement>(null)
+  const webChromeRef   = useRef<HTMLDivElement>(null)
+  const sideBtnRef     = useRef<HTMLDivElement>(null)
+  const homeRef        = useRef<HTMLDivElement>(null)
+  const phoneCanvasRef = useRef<HTMLCanvasElement>(null)
+  const deskCanvasRef  = useRef<HTMLCanvasElement>(null)
+
+  const phoneImgsRef = useRef<HTMLImageElement[]>([])
+  const deskImgsRef  = useRef<HTMLImageElement[]>([])
+  const lastPhoneIdx = useRef(-1)
+  const lastDeskIdx  = useRef(-1)
+  const layoutScaleRef = useRef(1)
+  const hintDomRef = useRef<HTMLDivElement>(null)
+  const endedRef = useRef(false)
+  const renderRef = useRef<() => void>(() => {})
+
   const onReachEndRef = useRef(onReachEnd)
   useEffect(() => { onReachEndRef.current = onReachEnd }, [onReachEnd])
 
-  const [loaded,   setLoaded]   = useState(false)
-  const [showCopy, setShowCopy] = useState(false)
-  const [hint,     setHint]     = useState(true)
-  const isTouch = typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches
+  const [loaded, setLoaded] = useState(false)
+  const isTouch =
+    typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches
 
-  // Scroll to top on mount so animation always starts fresh.
-  // Restore on unmount so other sections aren't offset.
+  // Fresh start on mount + resize cursor. The backdrop follows the page theme,
+  // so the nav uses its normal theme styling (no s7:introdark override).
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" })
     document.documentElement.style.cursor = "ns-resize"
-    // Tell the nav it's sitting over the dark intro so it can stay light.
-    window.dispatchEvent(new CustomEvent("s7:introdark", { detail: true }))
     return () => {
       window.scrollTo({ top: 0, behavior: "instant" })
       document.documentElement.style.cursor = ""
-      window.dispatchEvent(new CustomEvent("s7:introdark", { detail: false }))
     }
   }, [])
 
-  // Canvas buffer stays at source resolution (1280×720).
+  // The core imperative tick — maps window.scrollY to every animated property.
   useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    canvas.width         = 1280
-    canvas.height        = 720
-    canvas.style.opacity = "0"
-    const position = () => {
-      const scale = Math.max(window.innerWidth / 1280, window.innerHeight / 720)
-      const w = 1280 * scale
-      const h = 720  * scale
-      canvas.style.width  = `${w}px`
-      canvas.style.height = `${h}px`
-      canvas.style.left   = `${(window.innerWidth  - w) / 2}px`
-      canvas.style.top    = `${(window.innerHeight - h) / 2}px`
-    }
-    position()
-    window.addEventListener("resize", position)
-    return () => window.removeEventListener("resize", position)
-  }, [])
+    const dpr = Math.min(window.devicePixelRatio || 1, 2)
 
-  // Preload all frames
-  useEffect(() => {
-    const images: HTMLImageElement[] = new Array(SCRUB_FRAMES)
-    let count = 0
-    for (let i = 0; i < SCRUB_FRAMES; i++) {
-      const img = new Image()
-      img.src = `/animation-frames/ezgif-frame-${String(i + 1).padStart(3, "0")}.jpg`
-      img.onload = () => {
-        count++
-        if (i === 0) {
-          const canvas = canvasRef.current
-          if (canvas) {
-            const ctx = canvas.getContext("2d")
-            if (ctx) drawFrame(ctx, img)
-          }
-        }
-        if (count === SCRUB_FRAMES) setLoaded(true)
-      }
-      images[i] = img
-    }
-    imagesRef.current = images
-  }, [])
-
-  // window.scroll drives the scrub.
-  // pointer-events: none on the canvas lets touches pass through to the body,
-  // so iOS Safari sees real document scroll and hides its toolbar.
-  useEffect(() => {
-    const onScroll = () => {
-      const acc = window.scrollY
-
-      if (acc === 0 && !hintRef.current) { hintRef.current = true;  setHint(true)  }
-      if (acc  >  0 &&  hintRef.current) { hintRef.current = false; setHint(false) }
-
-      const canvas = canvasRef.current
-
-      if (acc <= INTRO_PX) {
-        if (canvas) canvas.style.opacity = String(acc / INTRO_PX)
-        if (showCopyRef.current) { showCopyRef.current = false; setShowCopy(false) }
-        return
-      }
-
-      const frame = Math.min(SCRUB_FRAMES - 1, Math.floor((acc - INTRO_PX) / SCRUB_PX))
-      if (frame !== frameRef.current) {
-        frameRef.current = frame
-        const img = imagesRef.current[frame]
-        if (canvas && img?.complete) {
-          const ctx = canvas.getContext("2d")
-          if (ctx) drawFrame(ctx, img)
-        }
-      }
-
-      if (canvas) {
-        if (acc > PHASE1_END) {
-          const t = Math.min(1, (acc - PHASE1_END) / FADE_PX)
-          canvas.style.opacity = String(1 - t)
-          if (t >= 1 && !showCopyRef.current) { showCopyRef.current = true;  setShowCopy(true); onReachEndRef.current?.()  }
-          if (t  < 1 &&  showCopyRef.current) { showCopyRef.current = false; setShowCopy(false) }
-        } else {
-          canvas.style.opacity = "1"
-          if (showCopyRef.current) { showCopyRef.current = false; setShowCopy(false) }
-        }
-      }
+    const computeScale = () => {
+      const vw = window.innerWidth, vh = window.innerHeight
+      const margin = vw < 640 ? 32 : 96
+      layoutScaleRef.current = Math.max(
+        0.2,
+        Math.min(1, (vw - margin) / IN_FRAME_DESK.w, (vh - 200) / IN_FRAME_DESK.h),
+      )
     }
 
+    const render = () => {
+      // Once the end is reached we freeze on the final desktop frame while the
+      // handoff to the Frontend section plays out — further scroll (including the
+      // scroll-to-top on unmount) must not reset the device or re-show the hint.
+      // Once the scroll-up is far enough in, we freeze and let the section swap
+      // auto-complete the handoff — further scroll must not reset the device.
+      if (endedRef.current) return
+      const y = window.scrollY
+
+      const enterT = clamp01(y / ENTER_PX)
+      const morphT = clamp01((y - B_PHONE) / MORPH_PX)
+      const outroT = clamp01((y - B_DESK) / OUTRO_PX)
+
+      // Centred scroll indicator: fades out as the phone fades in.
+      if (hintDomRef.current) hintDomRef.current.style.opacity = String(clamp01(1 - enterT / 0.45))
+
+      // Enter-in, plus the scroll-driven outro: past the last frame the desktop
+      // scrolls up (translateY) and fades all the way to 0 — imperatively on this
+      // descendant (never a transform on the fixed layer's ancestor, which would
+      // snap the fixed positioning).
+      const enter = enterRef.current
+      if (enter) {
+        enter.style.opacity = String(enterT * (1 - outroT))
+        const ty = (1 - enterT) * 46 - outroT * OUTRO_UP
+        const sc = 0.9 + enterT * 0.1
+        enter.style.transform =
+          `scale(${layoutScaleRef.current}) translateY(${ty}px) scale(${sc})`
+      }
+
+      // Device geometry morph (phone → desktop).
+      const fw = lerp(IN_FRAME_PHONE.w, IN_FRAME_DESK.w, morphT)
+      const fh = lerp(IN_FRAME_PHONE.h, IN_FRAME_DESK.h, morphT)
+      const fr = lerp(IN_FRAME_PHONE.radius, IN_FRAME_DESK.radius, morphT)
+      const frame = frameRef.current
+      if (frame) {
+        frame.style.width = `${fw}px`
+        frame.style.height = `${fh}px`
+        frame.style.borderRadius = `${fr}px`
+      }
+
+      const st = lerp(IN_SCREEN_PHONE.top,    IN_SCREEN_DESK.top,    morphT)
+      const sl = lerp(IN_SCREEN_PHONE.left,   IN_SCREEN_DESK.left,   morphT)
+      const sr = lerp(IN_SCREEN_PHONE.right,  IN_SCREEN_DESK.right,  morphT)
+      const sb = lerp(IN_SCREEN_PHONE.bottom, IN_SCREEN_DESK.bottom, morphT)
+      const srad = lerp(IN_SCREEN_PHONE.radius, IN_SCREEN_DESK.radius, morphT)
+      const screen = screenRef.current
+      if (screen) {
+        screen.style.top = `${st}px`
+        screen.style.left = `${sl}px`
+        screen.style.right = `${sr}px`
+        screen.style.bottom = `${sb}px`
+        screen.style.borderRadius = `${srad}px`
+      }
+
+      // Chrome + phone-ornament crossfade.
+      if (phoneChromeRef.current) phoneChromeRef.current.style.opacity = String(1 - smooth(0, 0.5, morphT))
+      if (webChromeRef.current)   webChromeRef.current.style.opacity   = String(smooth(0.4, 0.95, morphT))
+      const ornamentOpacity = String(1 - smooth(0, 0.35, morphT))
+      if (sideBtnRef.current) sideBtnRef.current.style.opacity = ornamentOpacity
+      if (homeRef.current)    homeRef.current.style.opacity    = String((1 - smooth(0, 0.35, morphT)) * 0.3)
+
+      // Canvas crossfade (portrait sequence hands off to landscape sequence).
+      const cf = smooth(0.3, 0.7, morphT)
+      const pc = phoneCanvasRef.current
+      const dc = deskCanvasRef.current
+      if (pc) pc.style.opacity = String(1 - cf)
+      if (dc) dc.style.opacity = String(cf)
+
+      const phoneIdx = Math.min(PHONE_FRAMES - 1, Math.max(0, Math.floor((y - B_ENTER) / PX_PER_FRAME)))
+      const deskIdx  = Math.min(DESK_FRAMES  - 1, Math.max(0, Math.floor((y - B_MORPH) / PX_PER_FRAME)))
+
+      // Resize canvas buffers to the current screen size (changes during morph).
+      const screenW = fw - sl - sr
+      const screenH = fh - st - sb
+      const bw = Math.max(1, Math.round(screenW * dpr))
+      const bh = Math.max(1, Math.round(screenH * dpr))
+      let resized = false
+      if (pc && dc && (pc.width !== bw || pc.height !== bh)) {
+        pc.width = bw; pc.height = bh
+        dc.width = bw; dc.height = bh
+        resized = true
+      }
+
+      const pImg = phoneImgsRef.current[phoneIdx]
+      if (pc && pImg && pImg.complete && (resized || phoneIdx !== lastPhoneIdx.current)) {
+        drawCover(pc, pImg, 0.42)
+        lastPhoneIdx.current = phoneIdx
+      }
+      const dImg = deskImgsRef.current[deskIdx]
+      if (dc && dImg && dImg.complete && (resized || deskIdx !== lastDeskIdx.current)) {
+        drawCover(dc, dImg, 0.5)
+        lastDeskIdx.current = deskIdx
+      }
+
+      // Fully scrolled through the outro (desktop faded to 0): freeze and hand off.
+      // handleIntroEnd mounts the Frontend and unmounts this intro, so the user
+      // cannot scroll back up into the landing animation.
+      if (outroT >= 1 && !endedRef.current) { endedRef.current = true; onReachEndRef.current?.() }
+    }
+
+    computeScale()
+    render()
+    renderRef.current = render
+
+    const onScroll = () => render()
+    const onResize = () => {
+      computeScale()
+      lastPhoneIdx.current = -1
+      lastDeskIdx.current = -1
+      render()
+    }
     window.addEventListener("scroll", onScroll, { passive: true })
-    return () => window.removeEventListener("scroll", onScroll)
+    window.addEventListener("resize", onResize)
+    return () => {
+      window.removeEventListener("scroll", onScroll)
+      window.removeEventListener("resize", onResize)
+    }
   }, [])
 
-  const words = ANIM_COPY.split(" ")
+  // Preload both sequences. Phone frames gate the loader; desktop frames decode
+  // in the background so they're ready by the time the user scrubs into them.
+  useEffect(() => {
+    const load = (
+      dir: string,
+      n: number,
+      targetRef: React.MutableRefObject<HTMLImageElement[]>,
+      onFirst?: () => void,
+      onAll?: () => void,
+    ) => {
+      const imgs: HTMLImageElement[] = new Array(n)
+      let count = 0
+      for (let i = 0; i < n; i++) {
+        const img = new Image()
+        img.decoding = "async"
+        const done = () => {
+          count++
+          if (i === 0) onFirst?.()
+          if (count === n) onAll?.()
+        }
+        img.onload = done
+        img.onerror = done
+        img.src = `${dir}/ezgif-frame-${String(i + 1).padStart(3, "0")}.jpg`
+        imgs[i] = img
+      }
+      targetRef.current = imgs
+    }
+
+    load("/vinahouse-frames", PHONE_FRAMES, phoneImgsRef,
+      () => { lastPhoneIdx.current = -1; renderRef.current() },
+      () => setLoaded(true))
+    load("/animation-frames", DESK_FRAMES, deskImgsRef,
+      () => { lastDeskIdx.current = -1; renderRef.current() })
+  }, [])
 
   return (
     <>
-      {/* Visual layer — fixed, pointer-events off so body scrolls natively */}
+      {/* Fixed visual layer — pointer-events off so the body scrolls natively. */}
       <div
         style={{
           position: "fixed", inset: 0, zIndex: 10,
-          background: "#151515", pointerEvents: "none",
+          background: "var(--background)", pointerEvents: "none", overflow: "hidden",
         }}
       >
-      <canvas
-        ref={canvasRef}
-        style={{ position: "absolute" }}
-      />
-
-      {/* Loading overlay */}
-      {!loaded && (
+        {/* Centered device */}
         <div style={{
-          position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center",
-          fontFamily: "Space Mono", fontSize: 13, color: "#595959", zIndex: 1,
+          position: "absolute", inset: 0,
+          display: "flex", alignItems: "center", justifyContent: "center",
         }}>
-          loading frames…
-        </div>
-      )}
+          <div ref={enterRef} style={{
+            transformOrigin: "center center",
+            willChange: "transform, opacity",
+            opacity: 0,
+          }}>
+            <div style={{ position: "relative" }}>
+              {/* Ambient glow */}
+              <div style={{
+                position: "absolute", inset: -40,
+                background: "radial-gradient(ellipse at 50% 50%, rgba(232,255,71,0.06) 0%, transparent 65%)",
+                pointerEvents: "none", zIndex: 0,
+              }} />
 
-      {/* Scroll prompt */}
-      <AnimatePresence>
-        {loaded && hint && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
+              {/* Phone side buttons — sit outside the frame, fade out on morph */}
+              <div ref={sideBtnRef} style={{ zIndex: 2 }}>
+                <div style={{ position: "absolute", right: -3, top: 110, width: 3, height: 38, background: "#333333", borderRadius: "0 2px 2px 0" }} />
+                <div style={{ position: "absolute", left: -3, top: 88,  width: 3, height: 26, background: "#333333", borderRadius: "2px 0 0 2px" }} />
+                <div style={{ position: "absolute", left: -3, top: 122, width: 3, height: 26, background: "#333333", borderRadius: "2px 0 0 2px" }} />
+                <div style={{ position: "absolute", left: -3, top: 62,  width: 3, height: 18, background: "#333333", borderRadius: "2px 0 0 2px" }} />
+              </div>
+
+              {/* Morphing device frame */}
+              <div ref={frameRef} style={{
+                position: "relative",
+                overflow: "hidden",
+                width: IN_FRAME_PHONE.w,
+                height: IN_FRAME_PHONE.h,
+                borderRadius: IN_FRAME_PHONE.radius,
+                background: "#292929",
+                border: "1px solid #3b3b3b",
+                boxShadow: "0 36px 90px rgba(0,0,0,0.75), inset 0 1px 0 rgba(255,255,255,0.04)",
+                zIndex: 1,
+              }}>
+                {/* Top chrome band — phone status bar crossfades to browser chrome */}
+                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 44, zIndex: 20, pointerEvents: "none" }}>
+                  <div ref={phoneChromeRef} style={{ position: "absolute", inset: 0 }}>
+                    <PhoneChrome />
+                  </div>
+                  <div ref={webChromeRef} style={{ position: "absolute", inset: 0, opacity: 0 }}>
+                    <BrowserChrome />
+                  </div>
+                </div>
+
+                {/* Screen — hosts the two crossfading frame canvases */}
+                <div ref={screenRef} style={{
+                  position: "absolute", top: IN_SCREEN_PHONE.top,
+                  left: IN_SCREEN_PHONE.left, right: IN_SCREEN_PHONE.right, bottom: IN_SCREEN_PHONE.bottom,
+                  borderRadius: IN_SCREEN_PHONE.radius,
+                  overflow: "hidden", background: "#0d0d0d",
+                }}>
+                  <canvas ref={phoneCanvasRef} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block" }} />
+                  <canvas ref={deskCanvasRef}  style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block", opacity: 0 }} />
+                </div>
+
+                {/* Home indicator — phone only */}
+                <div ref={homeRef} style={{
+                  position: "absolute", bottom: 5, left: "50%", transform: "translateX(-50%)",
+                  width: 96, height: 4, background: "#f5f5f5", borderRadius: 2,
+                  opacity: 0.3, zIndex: 20,
+                }} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Loading overlay */}
+        {!loaded && (
+          <div style={{
+            position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center",
+            fontFamily: "Space Mono", fontSize: 13, color: "var(--muted-foreground)", zIndex: 1,
+          }}>
+            loading frames…
+          </div>
+        )}
+
+        {/* Scroll indicator — centred, theme accent-green, fades out (opacity set
+            imperatively in render) as the phone fades in. */}
+        {loaded && (
+          <div
+            ref={hintDomRef}
             style={{
               position: "absolute", inset: 0,
-              display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10,
-              zIndex: 2, pointerEvents: "none",
+              display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12,
+              zIndex: 3, pointerEvents: "none", color: "var(--accent)", opacity: 1,
+              willChange: "opacity",
             }}
           >
             {isTouch ? (
-              /* Finger swipe icon for touch devices */
               <motion.div
                 animate={{ y: [0, -10, 0] }}
                 transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
               >
                 <svg width="28" height="40" viewBox="0 0 28 40" fill="none">
-                  {/* finger body */}
-                  <rect x="10" y="14" width="8" height="18" rx="4" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5"/>
-                  {/* swipe arc */}
-                  <path d="M6 20 C6 10 22 10 22 20" stroke="rgba(255,255,255,0.2)" strokeWidth="1.2" strokeDasharray="2 2"/>
+                  <rect x="10" y="14" width="8" height="18" rx="4" stroke="currentColor" strokeOpacity={0.85} strokeWidth="1.5"/>
+                  <path d="M6 20 C6 10 22 10 22 20" stroke="currentColor" strokeOpacity={0.5} strokeWidth="1.2" strokeDasharray="2 2"/>
                 </svg>
               </motion.div>
             ) : (
-              /* Mouse outline with bouncing scroll wheel */
               <div style={{ position: "relative", width: 26, height: 40 }}>
                 <svg width="26" height="40" viewBox="0 0 26 40" fill="none">
-                  <rect x="1" y="1" width="24" height="38" rx="12" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5"/>
+                  <rect x="1" y="1" width="24" height="38" rx="12" stroke="currentColor" strokeOpacity={0.8} strokeWidth="1.5"/>
                 </svg>
                 <motion.div
                   animate={{ y: [0, 10, 0] }}
                   transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
                   style={{
                     position: "absolute", top: 8, left: "50%", transform: "translateX(-50%)",
-                    width: 2, height: 7, borderRadius: 1, background: "rgba(255,255,255,0.5)",
+                    width: 2, height: 7, borderRadius: 1, background: "currentColor", opacity: 0.9,
                   }}
                 />
               </div>
             )}
             <span style={{
-              fontFamily: "Space Mono", fontSize: 9, color: "rgba(255,255,255,0.25)",
+              fontFamily: "Space Mono", fontSize: 9, color: "currentColor", opacity: 0.75,
               letterSpacing: "0.14em",
             }}>
               {isTouch ? "SWIPE" : "SCROLL"}
             </span>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
+      </div>
 
-      {/* Copy cascade */}
-      <AnimatePresence>
-        {showCopy && (
-          <motion.div
-            initial={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            style={{
-              position: "absolute", inset: 0,
-              display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-              gap: "1.4em",
-              padding: "0 12% 80px", zIndex: 2, pointerEvents: "none",
-            }}
-          >
-            {/* Heading */}
-            <div style={{
-              display: "flex", flexWrap: "wrap", gap: "0.25em", justifyContent: "center",
-            }}>
-              {"We power your design".split(" ").map((word, i) => (
-                <motion.span
-                  key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{
-                    opacity: 1,
-                    y: 0,
-                    color: ["#ffffff", "#e8ff47"],
-                  }}
-                  transition={{
-                    opacity: { duration: 0.5, delay: i * 0.08, ease: "easeOut" },
-                    y:       { duration: 0.5, delay: i * 0.08, ease: "easeOut" },
-                    color:   { duration: 1.2, delay: 0.6 + i * 0.08, ease: "easeInOut" },
-                  }}
-                  style={{
-                    fontFamily: "Space Grotesk",
-                    fontSize: "clamp(28px, 4vw, 56px)",
-                    fontWeight: 700,
-                    lineHeight: 1.1,
-                    color: "#fff",
-                  }}
-                >
-                  {word}
-                </motion.span>
-              ))}
-            </div>
-
-            {/* Body copy */}
-            <p style={{
-              fontFamily: "Space Grotesk",
-              fontSize: "clamp(16px, 2vw, 28px)",
-              color: "#fff",
-              lineHeight: 1.7,
-              textAlign: "center",
-              display: "flex", flexWrap: "wrap", gap: "0.3em", justifyContent: "center",
-            }}>
-              {words.map((word, i) => (
-                <motion.span
-                  key={i}
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.5 + i * 0.045, ease: "easeOut" }}
-                >
-                  {word}
-                </motion.span>
-              ))}
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
-      </div>{/* end fixed visual layer */}
-
-      {/* Scroll spacer in normal flow — makes the body tall enough for window.scrollY to reach TOTAL_SCROLL */}
-      <div style={{ height: TOTAL_SCROLL }} />
+      {/* Scroll spacer in normal flow — makes the body tall enough for the scrub. */}
+      <div style={{ height: INTRO_SCROLL }} />
     </>
   )
 }
@@ -2838,7 +2951,7 @@ const WORK_SECTIONS: WorkSection[] = [
     icon: Sparkles,
     label: "Animations",
     copy: "Fluid transitions, scroll-driven motion, and micro-interactions that feel deliberate, not decorative. Every animated element is tuned for performance and purpose — guiding attention without getting in the way.",
-    Demo: AnimationsShowcase,
+    Demo: DeviceScrollIntro,
   },
   {
     id:   "frontend",
@@ -2906,6 +3019,13 @@ export default function Work() {
   // scrolls to its end, the dock is revealed — minus the Animations icon,
   // since that section has now been seen.
   const [animationDone, setAnimationDone] = useState(false)
+  // When the intro reaches its end, it auto-fades out and hands off to the
+  // Frontend section (dock icon focused, PhoneToDesktopDemo auto-mounting from its
+  // iPhone/mobile phase) — so the user never lands on a dead blank/white screen.
+  const handleIntroEnd = () => {
+    setActive("frontend")
+    setAnimationDone(true)
+  }
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 640)
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 639px)')
@@ -2962,8 +3082,15 @@ export default function Work() {
               key={active}
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.22 }}
+              exit={
+                // The intro fades/scrolls itself out imperatively (in DeviceScrollIntro),
+                // so its section exit is opacity-only — NO transform, which would snap
+                // the intro's fixed layer. Other sections keep the small y cross-fade.
+                active === "animations"
+                  ? { opacity: 0, transition: { duration: 0.3 } }
+                  : { opacity: 0, y: -8 }
+              }
+              transition={{ duration: 0.4 }}
             >
               {/* Section header — guide style */}
               <div className="flex items-baseline gap-5 mb-10">
@@ -2983,9 +3110,9 @@ export default function Work() {
 
               {/* Demo / showcase — dark-scoped so the device mockups read as
                   dark product screenshots regardless of page theme. */}
-              <div className={active === "design" ? "flex justify-center" : "surface-dark flex justify-center"}>
+              <div className={active === "design" || active === "animations" ? "flex justify-center" : "surface-dark flex justify-center"}>
                 {active === "animations"
-                  ? <AnimationsShowcase onReachEnd={() => setAnimationDone(true)} />
+                  ? <DeviceScrollIntro onReachEnd={handleIntroEnd} />
                   : <div className={active === "design" ? undefined : "demo-lift"}><section.Demo /></div>}
               </div>
 
