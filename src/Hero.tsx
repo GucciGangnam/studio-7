@@ -325,22 +325,28 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
             </div>
           </div>
 
-          {/* Right: 2×2 desktop grid — also visible in landscape */}
-          <div className={cn('items-center justify-center', isLandscape ? 'flex flex-1' : 'hidden lg:flex lg:flex-1')}>
-            <div className="grid grid-cols-3 gap-3">
+          {/* Right: 2×2 desktop grid — also visible in landscape.
+              In landscape the column is only ~half a phone-width wide, so the
+              cards go fluid (square, sharing the row) instead of keeping their
+              fixed 160px width, which used to overflow and overlap. */}
+          <div className={cn('items-center justify-center', isLandscape ? 'flex flex-1 min-w-0' : 'hidden lg:flex lg:flex-1')}>
+            <div className={cn('grid grid-cols-3', isLandscape ? 'w-full max-w-[420px] gap-2' : 'gap-3')}>
               {pages.map(({ label, to, Icon }, i) => (
                 <Link
                   key={to}
                   to={to}
-                  className="group flex flex-col justify-between p-6 w-40 h-40 border border-foreground/[0.07] rounded-[4px] hover:border-foreground/15 hover:bg-foreground/[0.02] transition-[border-color,background-color] duration-200"
+                  className={cn(
+                    'group flex flex-col justify-between border border-foreground/[0.07] rounded-[4px] hover:border-foreground/15 hover:bg-foreground/[0.02] transition-[border-color,background-color] duration-200',
+                    isLandscape ? 'min-w-0 w-full aspect-square p-3.5' : 'p-6 w-40 h-40',
+                  )}
                   style={{
                     boxShadow: '0 1px 3px rgba(0,0,0,0.5)',
                     ...ss(scrollP, `fade-up 0.45s cubic-bezier(0.16,1,0.3,1) both ${2.55 + i * 0.07}s`, (3-i)*0.025, 0.18+(3-i)*0.025),
                   }}
                 >
-                  <Icon size={20} className="text-foreground/25 group-hover:text-accent transition-colors duration-200" strokeWidth={1.5} />
-                  <div className="flex flex-col gap-1.5">
-                    <span className="font-mono text-[10px] tracking-[0.18em] text-foreground/40 group-hover:text-foreground/80 uppercase transition-colors duration-200">{label}</span>
+                  <Icon size={isLandscape ? 17 : 20} className="text-foreground/25 group-hover:text-accent transition-colors duration-200" strokeWidth={1.5} />
+                  <div className="flex flex-col gap-1.5 min-w-0">
+                    <span className={cn('font-mono text-foreground/40 group-hover:text-foreground/80 uppercase transition-colors duration-200 truncate', isLandscape ? 'text-[9px] tracking-[0.12em]' : 'text-[10px] tracking-[0.18em]')}>{label}</span>
                     <div className="h-px w-8 bg-foreground/[0.08] group-hover:bg-accent/50 group-hover:w-full transition-all duration-300" />
                   </div>
                 </Link>

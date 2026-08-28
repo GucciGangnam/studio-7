@@ -800,6 +800,39 @@ function MockAppContent() {
   )
 }
 
+// ─── demo scaling ─────────────────────────────────────────────────────────────
+// The Frontend / Backend / Analytics demos are laid out at a fixed natural size
+// and scaled down to fit. On a tall viewport we reserve DEMO_CHROME for the
+// section header, copy and dock so the whole demo lands on one screen.
+//
+// On a SHORT viewport — a phone in landscape, or a desktop browser window that
+// only uses part of the screen height — that reserve leaves almost nothing
+// behind and collapses the demo to an illegible thumbnail. So the height budget
+// is floored at DEMO_MIN_H: below ~780px tall we stop trying to fit everything
+// on one screen, keep the demo readable, and let the page scroll instead.
+const DEMO_CHROME = 350
+const DEMO_MIN_H = 430
+
+const demoScale = (naturalW: number, naturalH: number) => {
+  if (typeof window === "undefined") return 1
+  const budgetH = Math.max(window.innerHeight - DEMO_CHROME, DEMO_MIN_H)
+  return Math.min(1, (window.innerWidth - 48) / naturalW, budgetH / naturalH)
+}
+
+function useDemoScale(naturalW: number, naturalH: number) {
+  const [scale, setScale] = useState(() => demoScale(naturalW, naturalH))
+  useEffect(() => {
+    const recalc = () => setScale(demoScale(naturalW, naturalH))
+    window.addEventListener("resize", recalc)
+    window.addEventListener("orientationchange", recalc)
+    return () => {
+      window.removeEventListener("resize", recalc)
+      window.removeEventListener("orientationchange", recalc)
+    }
+  }, [naturalW, naturalH])
+  return scale
+}
+
 // ─── Phone-to-Desktop demo ────────────────────────────────────────────────────
 
 const EASING = [0.4, 0, 0.2, 1] as const
@@ -811,42 +844,29 @@ const desktopFrame = { width: 800, height: 490, borderRadius: 10 }
 const phoneScreen   = { left: 4, right: 4, bottom: 18, borderRadius: 38 }
 const desktopScreen = { left: 0, right: 0, bottom: 0,  borderRadius: 0  }
 
-// Natural dimensions of the demo content (label + gaps + frame + button)
+// Natural dimensions of the demo content (label + gap + frame)
 const DEMO_W = 840
-const DEMO_H = 680
+const DEMO_H = 610
 
 type DemoPhase = "mobile" | "web" | "internal"
 
 function PhoneToDesktopDemo() {
   const [phase, setPhase] = useState<DemoPhase>("mobile")
-  const [looping, setLooping] = useState(true)
-  const [scale, setScale] = useState(() => {
-    if (typeof window === "undefined") return 1
-    return Math.min(1, (window.innerWidth - 48) / DEMO_W, (window.innerHeight - 350) / DEMO_H)
-  })
-
-  useEffect(() => {
-    const recalc = () =>
-      setScale(Math.min(1, (window.innerWidth - 48) / DEMO_W, (window.innerHeight - 350) / DEMO_H))
-    window.addEventListener("resize", recalc)
-    return () => window.removeEventListener("resize", recalc)
-  }, [])
+  const scale = useDemoScale(DEMO_W, DEMO_H)
 
   // initial delay before first transition
   useEffect(() => {
-    if (!looping) return
     const first = setTimeout(() => setPhase("web"), 1600)
     return () => clearTimeout(first)
-  }, [looping])
+  }, [])
 
   // cycle: mobile → web → internal → mobile → …
   useEffect(() => {
-    if (!looping) return
     const holdMs: Record<DemoPhase, number> = { mobile: 2200, web: 2800, internal: 2600 }
     const next:   Record<DemoPhase, DemoPhase> = { mobile: "web", web: "internal", internal: "mobile" }
     const t = setTimeout(() => setPhase(p => next[p]), holdMs[phase])
     return () => clearTimeout(t)
-  }, [phase, looping])
+  }, [phase])
 
   const isDesktop = phase !== "mobile"
 
@@ -1008,32 +1028,6 @@ function PhoneToDesktopDemo() {
           </AnimatePresence>
         </motion.div>
       </div>
-
-      {/* Pause / resume loop */}
-      <motion.button
-        onClick={() => setLooping(l => !l)}
-        whileHover={{ scale: 1.03 }}
-        whileTap={{ scale: 0.97 }}
-        style={{
-          background: "transparent",
-          border: "1px solid #3f3f3f",
-          color: "#6a6a6a",
-          fontFamily: "Space Mono",
-          fontSize: 10,
-          letterSpacing: "0.08em",
-          padding: "7px 18px",
-          borderRadius: 6,
-          cursor: "pointer",
-          display: "flex",
-          alignItems: "center",
-          gap: 7,
-          transition: "border-color 0.2s, color 0.2s",
-        }}
-        onMouseEnter={e => { e.currentTarget.style.borderColor = "#e8ff47"; e.currentTarget.style.color = "#e8ff47" }}
-        onMouseLeave={e => { e.currentTarget.style.borderColor = "#3f3f3f"; e.currentTarget.style.color = "#6a6a6a" }}
-      >
-        {looping ? "⏸ Pause" : "▶ Resume"}
-      </motion.button>
     </div>
     </div>
     </div>
@@ -1244,26 +1238,14 @@ function BackendPipeline({ phase }: { phase: BackendPhase }) {
 
 function BackendFlowDemo() {
   const [phase, setPhase] = useState<BackendPhase>("rest")
-  const [looping, setLooping] = useState(true)
-  const [scale, setScale] = useState(() =>
-    typeof window === "undefined" ? 1
-      : Math.min(1, (window.innerWidth - 48) / BACKEND_W, (window.innerHeight - 350) / BACKEND_H)
-  )
+  const scale = useDemoScale(BACKEND_W, BACKEND_H)
 
   useEffect(() => {
-    const recalc = () =>
-      setScale(Math.min(1, (window.innerWidth - 48) / BACKEND_W, (window.innerHeight - 350) / BACKEND_H))
-    window.addEventListener("resize", recalc)
-    return () => window.removeEventListener("resize", recalc)
-  }, [])
-
-  useEffect(() => {
-    if (!looping) return
     const hold: Record<BackendPhase, number> = { rest: 4800, realtime: 4500, queue: 5000 }
     const next: Record<BackendPhase, BackendPhase> = { rest: "realtime", realtime: "queue", queue: "rest" }
     const t = setTimeout(() => setPhase(p => next[p]), hold[phase])
     return () => clearTimeout(t)
-  }, [phase, looping])
+  }, [phase])
 
   const meta = BACKEND_META[phase]
   const PhaseIcon = meta.icon
@@ -1333,24 +1315,6 @@ function BackendFlowDemo() {
           </AnimatePresence>
         </div>
       </div>
-
-      {/* Pause / resume */}
-      <motion.button
-        onClick={() => setLooping(l => !l)}
-        whileHover={{ scale: 1.03 }}
-        whileTap={{ scale: 0.97 }}
-        style={{
-          background: "transparent", border: "1px solid #3f3f3f", color: "#6a6a6a",
-          fontFamily: "Space Mono", fontSize: 10, letterSpacing: "0.08em",
-          padding: "7px 18px", borderRadius: 6, cursor: "pointer",
-          display: "flex", alignItems: "center", gap: 7,
-          transition: "border-color 0.2s, color 0.2s",
-        }}
-        onMouseEnter={e => { e.currentTarget.style.borderColor = "#e8ff47"; e.currentTarget.style.color = "#e8ff47" }}
-        onMouseLeave={e => { e.currentTarget.style.borderColor = "#3f3f3f"; e.currentTarget.style.color = "#6a6a6a" }}
-      >
-        {looping ? "⏸ Pause" : "▶ Resume"}
-      </motion.button>
 
     </div>
     </div>
@@ -1644,17 +1608,7 @@ const RETENTION_ROWS = [
 function AnalyticsDashboardDemo() {
   const [view, setView] = useState<AnalyticsView>("overview")
   const [looping, setLooping] = useState(true)
-  const [scale, setScale] = useState(() =>
-    typeof window === "undefined" ? 1
-      : Math.min(1, (window.innerWidth - 48) / ANALYTICS_W, (window.innerHeight - 350) / ANALYTICS_H)
-  )
-
-  useEffect(() => {
-    const recalc = () =>
-      setScale(Math.min(1, (window.innerWidth - 48) / ANALYTICS_W, (window.innerHeight - 350) / ANALYTICS_H))
-    window.addEventListener("resize", recalc)
-    return () => window.removeEventListener("resize", recalc)
-  }, [])
+  const scale = useDemoScale(ANALYTICS_W, ANALYTICS_H)
 
   useEffect(() => {
     if (!looping) return
@@ -1884,24 +1838,6 @@ function AnalyticsDashboardDemo() {
           </AnimatePresence>
         </div>
       </div>
-
-      {/* Pause / resume */}
-      <motion.button
-        onClick={() => setLooping(l => !l)}
-        whileHover={{ scale: 1.03 }}
-        whileTap={{ scale: 0.97 }}
-        style={{
-          background: "transparent", border: "1px solid #3f3f3f", color: "#6a6a6a",
-          fontFamily: "Space Mono", fontSize: 10, letterSpacing: "0.08em",
-          padding: "7px 18px", borderRadius: 6, cursor: "pointer",
-          display: "flex", alignItems: "center", gap: 7,
-          transition: "border-color 0.2s, color 0.2s",
-        }}
-        onMouseEnter={e => { e.currentTarget.style.borderColor = "#e8ff47"; e.currentTarget.style.color = "#e8ff47" }}
-        onMouseLeave={e => { e.currentTarget.style.borderColor = "#3f3f3f"; e.currentTarget.style.color = "#6a6a6a" }}
-      >
-        {looping ? "⏸ Pause" : "▶ Resume"}
-      </motion.button>
 
     </div>
     </div>
@@ -3035,6 +2971,18 @@ export default function Work() {
     return () => mq.removeEventListener('change', handler)
   }, [])
 
+  // Short viewport — a phone in landscape, or a browser window using only part
+  // of the screen height. The demos overflow and the page scrolls there, so the
+  // surrounding chrome tightens up to give them as much of the screen as it can.
+  const [isShort, setIsShort] = useState(() => typeof window !== 'undefined' && window.innerHeight < 700)
+  useEffect(() => {
+    const mq = window.matchMedia('(max-height: 699px)')
+    const handler = (e: MediaQueryListEvent) => setIsShort(e.matches)
+    mq.addEventListener('change', handler)
+    setIsShort(mq.matches)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
+
   const section = WORK_SECTIONS.find(s => s.id === active)!
   const index   = WORK_SECTIONS.findIndex(s => s.id === active)
 
@@ -3075,7 +3023,10 @@ export default function Work() {
 
   return (
     <>
-      <div className="min-h-screen flex flex-col justify-center px-10 pt-20 sm:pt-8 pb-32">
+      <div className={cn(
+        "min-h-screen flex flex-col justify-center px-10 pt-20 sm:pt-8",
+        isShort ? "pb-24" : "pb-32",
+      )}>
         <div className="max-w-4xl mx-auto w-full">
           <AnimatePresence mode="wait">
             <motion.div
@@ -3093,7 +3044,7 @@ export default function Work() {
               transition={{ duration: 0.4 }}
             >
               {/* Section header — guide style */}
-              <div className="flex items-baseline gap-5 mb-10">
+              <div className={cn("flex items-baseline gap-5", isShort ? "mb-5" : "mb-10")}>
                 <span className="font-mono text-[11px] text-foreground/20 tracking-widest">
                   {String(index + 1).padStart(2, "0")}
                 </span>
@@ -3104,7 +3055,7 @@ export default function Work() {
               </div>
 
               {/* Copy */}
-              <p className="text-sm text-foreground/40 leading-relaxed max-w-xl mb-12">
+              <p className={cn("text-sm text-foreground/40 leading-relaxed max-w-xl", isShort ? "mb-6" : "mb-12")}>
                 {section.copy}
               </p>
 
