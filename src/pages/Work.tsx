@@ -1917,6 +1917,75 @@ const IN_SCREEN_PHONE  = { top: 4,  left: 4,  right: 4,  bottom: 4,  radius: 24 
 const IN_SCREEN_TABLET = { top: 14, left: 14, right: 14, bottom: 14, radius: 18 }
 const IN_SCREEN_DESK   = { top: 44, left: 0,  right: 0,  bottom: 0,  radius: 0  }
 
+// ─── Intro copy ───────────────────────────────────────────────────────────────
+// Minimal, accent-coloured context for the landing scrub. The eyebrow + headline
+// are constant; the per-stage line cross-fades in sync with the device screen
+// (phone → tablet → desktop) to hint at the range of motion work.
+const INTRO_EYEBROW  = "// MOTION"
+const INTRO_HEADLINE = "Production-grade motion that commands attention."
+const STAGE_LINES = [
+  "Construction, in motion",   // phone   — on-site build captured frame by frame
+  "Products, deconstructed",   // tablet  — exploded product teardown
+  "Interfaces, alive",         // desktop — custom UI motion
+] as const
+
+// Layout: text and device share the screen. Landscape (and wide enough) puts the
+// copy on the left and the device on the right; portrait stacks copy above the
+// device. The device's scale is measured off its own pane (see computeScale), so
+// this CSS owns the layout and the JS just fits the device into whatever it gets.
+const INTRO_COPY_CSS = `
+  .s7-intro-stage {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+  }
+  .s7-intro-copy {
+    flex: 0 0 auto;
+    display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
+    text-align: center;
+    padding: clamp(78px, 12vh, 128px) 24px 0;
+    z-index: 4;
+  }
+  .s7-intro-device {
+    position: relative;
+    flex: 1 1 auto;
+    display: flex; align-items: center; justify-content: center;
+    min-width: 0; min-height: 0;
+  }
+  .s7-eyebrow {
+    font-family: "Space Mono", monospace; font-size: 10px; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--accent); opacity: 0.7; margin: 0 0 14px;
+  }
+  .s7-headline {
+    font-family: "Space Grotesk", sans-serif; font-weight: 600;
+    font-size: clamp(21px, 2.6vw, 37px); line-height: 1.16; letter-spacing: -0.02em;
+    color: var(--accent); margin: 0; max-width: 15ch;
+  }
+  .s7-stageline-wrap { position: relative; height: 20px; margin-top: 20px; width: 100%; }
+  .s7-stageline {
+    position: absolute; left: 0; right: 0;
+    font-family: "Space Mono", monospace; font-size: 12px; letter-spacing: 0.08em;
+    color: var(--accent); opacity: 0; will-change: opacity;
+  }
+  @media (orientation: landscape) and (min-width: 760px) {
+    .s7-intro-stage { flex-direction: row; align-items: stretch; }
+    .s7-intro-copy {
+      flex: 0 0 42%; max-width: 540px;
+      justify-content: center; align-items: flex-start; text-align: left;
+      padding: 0 clamp(32px, 4.5vw, 76px);
+    }
+    .s7-intro-device { flex: 1 1 58%; }
+    .s7-stageline { text-align: left; }
+  }
+  @keyframes s7-intro-copy-in {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .s7-intro-copy-inner {
+    width: 100%; display: flex; flex-direction: column; align-items: inherit;
+    animation: s7-intro-copy-in 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
+  }
+`
+
 function DeviceScrollIntro({ onReachEnd }: { onReachEnd?: () => void }) {
   const enterRef        = useRef<HTMLDivElement>(null)
   const frameRef        = useRef<HTMLDivElement>(null)
@@ -1929,6 +1998,11 @@ function DeviceScrollIntro({ onReachEnd }: { onReachEnd?: () => void }) {
   const phoneCanvasRef  = useRef<HTMLCanvasElement>(null)
   const tabletCanvasRef = useRef<HTMLCanvasElement>(null)
   const deskCanvasRef   = useRef<HTMLCanvasElement>(null)
+  const devicePaneRef   = useRef<HTMLDivElement>(null)
+  const copyRef         = useRef<HTMLDivElement>(null)
+  const line0Ref        = useRef<HTMLDivElement>(null)
+  const line1Ref        = useRef<HTMLDivElement>(null)
+  const line2Ref        = useRef<HTMLDivElement>(null)
 
   const phoneImgsRef  = useRef<HTMLImageElement[]>([])
   const tabletImgsRef = useRef<HTMLImageElement[]>([])
@@ -1964,11 +2038,17 @@ function DeviceScrollIntro({ onReachEnd }: { onReachEnd?: () => void }) {
     const dpr = Math.min(window.devicePixelRatio || 1, 2)
 
     const computeScale = () => {
-      const vw = window.innerWidth, vh = window.innerHeight
-      const margin = vw < 640 ? 32 : 96
+      // Fit the device into its own pane (CSS decides how big that is per the
+      // two-pane / stacked layout), not the whole viewport.
+      const pane = devicePaneRef.current
+      const vw = window.innerWidth
+      const availW = pane ? pane.clientWidth  : vw
+      const availH = pane ? pane.clientHeight : window.innerHeight
+      const marginX = vw < 640 ? 28 : 56
+      const marginY = 64
       layoutScaleRef.current = Math.max(
         0.2,
-        Math.min(1, (vw - margin) / IN_FRAME_DESK.w, (vh - 200) / IN_FRAME_DESK.h),
+        Math.min(1, (availW - marginX) / IN_FRAME_DESK.w, (availH - marginY) / IN_FRAME_DESK.h),
       )
     }
 
@@ -2001,6 +2081,10 @@ function DeviceScrollIntro({ onReachEnd }: { onReachEnd?: () => void }) {
         enter.style.transform =
           `scale(${layoutScaleRef.current}) translateY(${ty}px) scale(${sc})`
       }
+
+      // Intro copy: visible from the start (mount-fades in via CSS), fades out
+      // together with the device across the outro.
+      if (copyRef.current) copyRef.current.style.opacity = String(1 - outroT)
 
       // Device geometry morph: phone → tablet (morph1) → desktop (morph2). While
       // morph2 is inactive we're on the phone→tablet leg, which rests at full
@@ -2057,6 +2141,11 @@ function DeviceScrollIntro({ onReachEnd }: { onReachEnd?: () => void }) {
       if (tc) tc.style.opacity = String(toTablet * (1 - toDesk))
       if (dc) dc.style.opacity = String(toDesk)
 
+      // Per-stage copy line — cross-fades in lock-step with the screen content.
+      if (line0Ref.current) line0Ref.current.style.opacity = String(1 - toTablet)
+      if (line1Ref.current) line1Ref.current.style.opacity = String(toTablet * (1 - toDesk))
+      if (line2Ref.current) line2Ref.current.style.opacity = String(toDesk)
+
       const phoneIdx  = Math.min(PHONE_FRAMES  - 1, Math.max(0, Math.floor((y - B_ENTER)  / PX_PER_FRAME)))
       const tabletIdx = Math.min(TABLET_FRAMES - 1, Math.max(0, Math.floor((y - B_MORPH1) / PX_PER_FRAME)))
       const deskIdx   = Math.min(DESK_FRAMES   - 1, Math.max(0, Math.floor((y - B_MORPH2) / PX_PER_FRAME)))
@@ -2096,23 +2185,32 @@ function DeviceScrollIntro({ onReachEnd }: { onReachEnd?: () => void }) {
       if (outroT >= 1 && !endedRef.current) { endedRef.current = true; onReachEndRef.current?.() }
     }
 
-    computeScale()
-    render()
-    renderRef.current = render
-
-    const onScroll = () => render()
-    const onResize = () => {
+    const recomputeAndRender = () => {
       computeScale()
       lastPhoneIdx.current = -1
       lastTabletIdx.current = -1
       lastDeskIdx.current = -1
       render()
     }
+
+    computeScale()
+    render()
+    renderRef.current = render
+
+    const onScroll = () => render()
     window.addEventListener("scroll", onScroll, { passive: true })
-    window.addEventListener("resize", onResize)
+    window.addEventListener("resize", recomputeAndRender)
+
+    // Measure the device pane off its own laid-out size — a ResizeObserver fires
+    // once with the settled size (fixing the mount-time race where the flex/media
+    // layout hasn't applied yet) and again on every layout/orientation change.
+    const ro = new ResizeObserver(recomputeAndRender)
+    if (devicePaneRef.current) ro.observe(devicePaneRef.current)
+
     return () => {
       window.removeEventListener("scroll", onScroll)
-      window.removeEventListener("resize", onResize)
+      window.removeEventListener("resize", recomputeAndRender)
+      ro.disconnect()
     }
   }, [])
 
@@ -2163,11 +2261,26 @@ function DeviceScrollIntro({ onReachEnd }: { onReachEnd?: () => void }) {
           background: "var(--background)", pointerEvents: "none", overflow: "hidden",
         }}
       >
-        {/* Centered device */}
-        <div style={{
-          position: "absolute", inset: 0,
-          display: "flex", alignItems: "center", justifyContent: "center",
-        }}>
+        <style>{INTRO_COPY_CSS}</style>
+
+        {/* Two-pane stage: copy + device (row on wide landscape, stacked otherwise) */}
+        <div className="s7-intro-stage">
+
+          {/* ── Copy pane (accent context) ── */}
+          <div className="s7-intro-copy" ref={copyRef} style={{ opacity: 1 }}>
+            <div className="s7-intro-copy-inner">
+              <p className="s7-eyebrow">{INTRO_EYEBROW}</p>
+              <h2 className="s7-headline">{INTRO_HEADLINE}</h2>
+              <div className="s7-stageline-wrap">
+                <div className="s7-stageline" ref={line0Ref}>{STAGE_LINES[0]}</div>
+                <div className="s7-stageline" ref={line1Ref}>{STAGE_LINES[1]}</div>
+                <div className="s7-stageline" ref={line2Ref}>{STAGE_LINES[2]}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* ── Device pane (scaled to fit this box) ── */}
+          <div className="s7-intro-device" ref={devicePaneRef}>
           <div ref={enterRef} style={{
             transformOrigin: "center center",
             willChange: "transform, opacity",
@@ -2240,17 +2353,16 @@ function DeviceScrollIntro({ onReachEnd }: { onReachEnd?: () => void }) {
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Loading overlay */}
-        {!loaded && (
-          <div style={{
-            position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center",
-            fontFamily: "Space Mono", fontSize: 13, color: "var(--muted-foreground)", zIndex: 1,
-          }}>
-            loading frames…
-          </div>
-        )}
+          {/* Loading overlay — centred in the device pane */}
+          {!loaded && (
+            <div style={{
+              position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center",
+              fontFamily: "Space Mono", fontSize: 13, color: "var(--muted-foreground)", zIndex: 1,
+            }}>
+              loading frames…
+            </div>
+          )}
 
         {/* Scroll indicator — centred, theme accent-green, fades out (opacity set
             imperatively in render) as the phone fades in. */}
@@ -2297,6 +2409,9 @@ function DeviceScrollIntro({ onReachEnd }: { onReachEnd?: () => void }) {
             </span>
           </div>
         )}
+
+          </div>{/* .s7-intro-device */}
+        </div>{/* .s7-intro-stage */}
       </div>
 
       {/* Scroll spacer in normal flow — makes the body tall enough for the scrub. */}
