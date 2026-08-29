@@ -1847,28 +1847,39 @@ function AnalyticsDashboardDemo() {
 
 // ─── Device scroll intro ──────────────────────────────────────────────────────
 // Landing intro for /work. Scroll-driven: an iPhone animates in and scrubs the
-// VinaHouse portrait frame sequence, then morphs into a desktop browser that
-// scrubs the original project frames. Everything is driven imperatively off
+// phone (portrait) frame sequence, then morphs into a tablet (iPad) that scrubs
+// the tablet (portrait) sequence, then into a desktop browser that scrubs the
+// desktop (landscape) sequence. Everything is driven imperatively off
 // window.scrollY (no per-tick React re-render); a tall spacer gives scroll room.
+//
+// Each stage is a <canvas> scrubbed the same way: frames live in public/ as
+// `<device>-frames/ezgif-frame-001..NNN.jpg` (plain static JPGs, no build
+// optimisation), preloaded by load() and drawn cover-fit via drawCover(). The
+// three canvases stack in one screen and cross-fade during the morphs.
 
-const PHONE_FRAMES = 151   // VinaHouse portrait sequence (/vinahouse-frames)
-const DESK_FRAMES  = 103   // original landscape sequence (/animation-frames)
-const PX_PER_FRAME = 7     // scroll distance per frame advance
+const PHONE_FRAMES  = 151   // portrait phone sequence   (/phone-frames)
+const TABLET_FRAMES = 151   // portrait tablet sequence  (/tablet-frames)
+const DESK_FRAMES   = 103   // landscape desktop sequence (/desktop-frames)
+const PX_PER_FRAME  = 7     // scroll distance per frame advance
 
-const ENTER_PX = 240       // phone animates in over this distance
-const MORPH_PX = 380       // phone → desktop morph distance
-const OUTRO_PX = 440       // scroll distance over which the final desktop scrolls up + fades to 0
-const OUTRO_UP = 440       // px the desktop scrolls up across the outro (1:1 with scroll)
+const ENTER_PX  = 240      // phone animates in over this distance
+const MORPH1_PX = 360      // phone → tablet morph distance
+const MORPH2_PX = 360      // tablet → desktop morph distance
+const OUTRO_PX  = 440      // scroll distance over which the final desktop scrolls up + fades to 0
+const OUTRO_UP  = 440      // px the desktop scrolls up across the outro (1:1 with scroll)
 
-const PHONE_PX = (PHONE_FRAMES - 1) * PX_PER_FRAME
-const DESK_PX  = (DESK_FRAMES  - 1) * PX_PER_FRAME
+const PHONE_PX  = (PHONE_FRAMES  - 1) * PX_PER_FRAME
+const TABLET_PX = (TABLET_FRAMES - 1) * PX_PER_FRAME   // tablet scrub distance
+const DESK_PX   = (DESK_FRAMES   - 1) * PX_PER_FRAME
 
 // Phase boundaries along window.scrollY.
-const B_ENTER = ENTER_PX
-const B_PHONE = B_ENTER + PHONE_PX
-const B_MORPH = B_PHONE + MORPH_PX
-const B_DESK  = B_MORPH + DESK_PX
-const B_OUTRO = B_DESK  + OUTRO_PX
+const B_ENTER  = ENTER_PX
+const B_PHONE  = B_ENTER  + PHONE_PX    // phone scrub ends → phone→tablet morph begins
+const B_MORPH1 = B_PHONE  + MORPH1_PX   // tablet dwell begins
+const B_TABLET = B_MORPH1 + TABLET_PX   // tablet dwell ends → tablet→desktop morph begins
+const B_MORPH2 = B_TABLET + MORPH2_PX   // desktop scrub begins
+const B_DESK   = B_MORPH2 + DESK_PX     // desktop scrub ends → outro begins
+const B_OUTRO  = B_DESK   + OUTRO_PX
 
 const INTRO_SCROLL =
   B_OUTRO + (typeof window !== "undefined" ? window.innerHeight : 800) + 200
@@ -1896,27 +1907,35 @@ function drawCover(canvas: HTMLCanvasElement, img: HTMLImageElement, anchorY: nu
 
 // Intro-local device geometry (independent of PhoneToDesktopDemo's shared frame).
 // Phone: thin uniform bezel with the status bar overlaid on the screen (screen
-// starts near the top). Desktop: keeps a 44px browser-chrome bar above the screen.
+// starts near the top). Tablet: a portrait iPad with a uniform bezel and a small
+// camera dot, no chrome bar. Desktop: keeps a 44px browser-chrome bar above the
+// screen. The morph runs phone → tablet → desktop across two segments.
 const IN_FRAME_PHONE  = { w: 280, h: 560, radius: 34 }
+const IN_FRAME_TABLET = { w: 452, h: 588, radius: 30 }  // portrait iPad (~3:4)
 const IN_FRAME_DESK   = { w: 800, h: 490, radius: 10 }
-const IN_SCREEN_PHONE = { top: 4, left: 4, right: 4, bottom: 4, radius: 24 }
-const IN_SCREEN_DESK  = { top: 44, left: 0, right: 0, bottom: 0, radius: 0 }
+const IN_SCREEN_PHONE  = { top: 4,  left: 4,  right: 4,  bottom: 4,  radius: 24 }
+const IN_SCREEN_TABLET = { top: 14, left: 14, right: 14, bottom: 14, radius: 18 }
+const IN_SCREEN_DESK   = { top: 44, left: 0,  right: 0,  bottom: 0,  radius: 0  }
 
 function DeviceScrollIntro({ onReachEnd }: { onReachEnd?: () => void }) {
-  const enterRef       = useRef<HTMLDivElement>(null)
-  const frameRef       = useRef<HTMLDivElement>(null)
-  const screenRef      = useRef<HTMLDivElement>(null)
-  const phoneChromeRef = useRef<HTMLDivElement>(null)
-  const webChromeRef   = useRef<HTMLDivElement>(null)
-  const sideBtnRef     = useRef<HTMLDivElement>(null)
-  const homeRef        = useRef<HTMLDivElement>(null)
-  const phoneCanvasRef = useRef<HTMLCanvasElement>(null)
-  const deskCanvasRef  = useRef<HTMLCanvasElement>(null)
+  const enterRef        = useRef<HTMLDivElement>(null)
+  const frameRef        = useRef<HTMLDivElement>(null)
+  const screenRef       = useRef<HTMLDivElement>(null)
+  const phoneChromeRef  = useRef<HTMLDivElement>(null)
+  const webChromeRef    = useRef<HTMLDivElement>(null)
+  const sideBtnRef      = useRef<HTMLDivElement>(null)
+  const tabletCamRef    = useRef<HTMLDivElement>(null)
+  const homeRef         = useRef<HTMLDivElement>(null)
+  const phoneCanvasRef  = useRef<HTMLCanvasElement>(null)
+  const tabletCanvasRef = useRef<HTMLCanvasElement>(null)
+  const deskCanvasRef   = useRef<HTMLCanvasElement>(null)
 
-  const phoneImgsRef = useRef<HTMLImageElement[]>([])
-  const deskImgsRef  = useRef<HTMLImageElement[]>([])
-  const lastPhoneIdx = useRef(-1)
-  const lastDeskIdx  = useRef(-1)
+  const phoneImgsRef  = useRef<HTMLImageElement[]>([])
+  const tabletImgsRef = useRef<HTMLImageElement[]>([])
+  const deskImgsRef   = useRef<HTMLImageElement[]>([])
+  const lastPhoneIdx  = useRef(-1)
+  const lastTabletIdx = useRef(-1)
+  const lastDeskIdx   = useRef(-1)
   const layoutScaleRef = useRef(1)
   const hintDomRef = useRef<HTMLDivElement>(null)
   const endedRef = useRef(false)
@@ -1962,9 +1981,10 @@ function DeviceScrollIntro({ onReachEnd }: { onReachEnd?: () => void }) {
       if (endedRef.current) return
       const y = window.scrollY
 
-      const enterT = clamp01(y / ENTER_PX)
-      const morphT = clamp01((y - B_PHONE) / MORPH_PX)
-      const outroT = clamp01((y - B_DESK) / OUTRO_PX)
+      const enterT  = clamp01(y / ENTER_PX)
+      const morph1T = clamp01((y - B_PHONE)  / MORPH1_PX)  // phone → tablet
+      const morph2T = clamp01((y - B_TABLET) / MORPH2_PX)  // tablet → desktop
+      const outroT  = clamp01((y - B_DESK)   / OUTRO_PX)
 
       // Centred scroll indicator: fades out as the phone fades in.
       if (hintDomRef.current) hintDomRef.current.style.opacity = String(clamp01(1 - enterT / 0.45))
@@ -1982,10 +2002,19 @@ function DeviceScrollIntro({ onReachEnd }: { onReachEnd?: () => void }) {
           `scale(${layoutScaleRef.current}) translateY(${ty}px) scale(${sc})`
       }
 
-      // Device geometry morph (phone → desktop).
-      const fw = lerp(IN_FRAME_PHONE.w, IN_FRAME_DESK.w, morphT)
-      const fh = lerp(IN_FRAME_PHONE.h, IN_FRAME_DESK.h, morphT)
-      const fr = lerp(IN_FRAME_PHONE.radius, IN_FRAME_DESK.radius, morphT)
+      // Device geometry morph: phone → tablet (morph1) → desktop (morph2). While
+      // morph2 is inactive we're on the phone→tablet leg, which rests at full
+      // tablet geometry through the dwell (morph1T === 1).
+      const onDeskLeg = morph2T > 0
+      const fromF = onDeskLeg ? IN_FRAME_TABLET  : IN_FRAME_PHONE
+      const toF   = onDeskLeg ? IN_FRAME_DESK    : IN_FRAME_TABLET
+      const fromS = onDeskLeg ? IN_SCREEN_TABLET : IN_SCREEN_PHONE
+      const toS   = onDeskLeg ? IN_SCREEN_DESK   : IN_SCREEN_TABLET
+      const gt    = onDeskLeg ? morph2T : morph1T
+
+      const fw = lerp(fromF.w, toF.w, gt)
+      const fh = lerp(fromF.h, toF.h, gt)
+      const fr = lerp(fromF.radius, toF.radius, gt)
       const frame = frameRef.current
       if (frame) {
         frame.style.width = `${fw}px`
@@ -1993,11 +2022,11 @@ function DeviceScrollIntro({ onReachEnd }: { onReachEnd?: () => void }) {
         frame.style.borderRadius = `${fr}px`
       }
 
-      const st = lerp(IN_SCREEN_PHONE.top,    IN_SCREEN_DESK.top,    morphT)
-      const sl = lerp(IN_SCREEN_PHONE.left,   IN_SCREEN_DESK.left,   morphT)
-      const sr = lerp(IN_SCREEN_PHONE.right,  IN_SCREEN_DESK.right,  morphT)
-      const sb = lerp(IN_SCREEN_PHONE.bottom, IN_SCREEN_DESK.bottom, morphT)
-      const srad = lerp(IN_SCREEN_PHONE.radius, IN_SCREEN_DESK.radius, morphT)
+      const st = lerp(fromS.top,    toS.top,    gt)
+      const sl = lerp(fromS.left,   toS.left,   gt)
+      const sr = lerp(fromS.right,  toS.right,  gt)
+      const sb = lerp(fromS.bottom, toS.bottom, gt)
+      const srad = lerp(fromS.radius, toS.radius, gt)
       const screen = screenRef.current
       if (screen) {
         screen.style.top = `${st}px`
@@ -2007,22 +2036,30 @@ function DeviceScrollIntro({ onReachEnd }: { onReachEnd?: () => void }) {
         screen.style.borderRadius = `${srad}px`
       }
 
-      // Chrome + phone-ornament crossfade.
-      if (phoneChromeRef.current) phoneChromeRef.current.style.opacity = String(1 - smooth(0, 0.5, morphT))
-      if (webChromeRef.current)   webChromeRef.current.style.opacity   = String(smooth(0.4, 0.95, morphT))
-      const ornamentOpacity = String(1 - smooth(0, 0.35, morphT))
-      if (sideBtnRef.current) sideBtnRef.current.style.opacity = ornamentOpacity
-      if (homeRef.current)    homeRef.current.style.opacity    = String((1 - smooth(0, 0.35, morphT)) * 0.3)
+      // Chrome + ornament crossfade. Phone status bar fades out over morph1;
+      // browser chrome fades in over morph2 (the tablet stage shows neither).
+      if (phoneChromeRef.current) phoneChromeRef.current.style.opacity = String(1 - smooth(0, 0.55, morph1T))
+      if (webChromeRef.current)   webChromeRef.current.style.opacity   = String(smooth(0.35, 0.95, morph2T))
+      // Phone side buttons: phone only, fade out over morph1.
+      if (sideBtnRef.current) sideBtnRef.current.style.opacity = String(1 - smooth(0, 0.4, morph1T))
+      // Tablet camera dot: fades in over morph1, back out over morph2.
+      if (tabletCamRef.current) tabletCamRef.current.style.opacity = String(smooth(0.5, 1, morph1T) * (1 - smooth(0, 0.5, morph2T)))
+      // Home indicator: on phone + tablet, fades out over morph2.
+      if (homeRef.current) homeRef.current.style.opacity = String((1 - smooth(0, 0.4, morph2T)) * 0.3)
 
-      // Canvas crossfade (portrait sequence hands off to landscape sequence).
-      const cf = smooth(0.3, 0.7, morphT)
+      // Screen crossfade: phone frames → tablet frames → desktop frames.
+      const toTablet = smooth(0.3, 0.7, morph1T)  // 0 on phone, 1 on tablet
+      const toDesk   = smooth(0.3, 0.7, morph2T)  // 0 on tablet, 1 on desktop
       const pc = phoneCanvasRef.current
+      const tc = tabletCanvasRef.current
       const dc = deskCanvasRef.current
-      if (pc) pc.style.opacity = String(1 - cf)
-      if (dc) dc.style.opacity = String(cf)
+      if (pc) pc.style.opacity = String(1 - toTablet)
+      if (tc) tc.style.opacity = String(toTablet * (1 - toDesk))
+      if (dc) dc.style.opacity = String(toDesk)
 
-      const phoneIdx = Math.min(PHONE_FRAMES - 1, Math.max(0, Math.floor((y - B_ENTER) / PX_PER_FRAME)))
-      const deskIdx  = Math.min(DESK_FRAMES  - 1, Math.max(0, Math.floor((y - B_MORPH) / PX_PER_FRAME)))
+      const phoneIdx  = Math.min(PHONE_FRAMES  - 1, Math.max(0, Math.floor((y - B_ENTER)  / PX_PER_FRAME)))
+      const tabletIdx = Math.min(TABLET_FRAMES - 1, Math.max(0, Math.floor((y - B_MORPH1) / PX_PER_FRAME)))
+      const deskIdx   = Math.min(DESK_FRAMES   - 1, Math.max(0, Math.floor((y - B_MORPH2) / PX_PER_FRAME)))
 
       // Resize canvas buffers to the current screen size (changes during morph).
       const screenW = fw - sl - sr
@@ -2030,8 +2067,9 @@ function DeviceScrollIntro({ onReachEnd }: { onReachEnd?: () => void }) {
       const bw = Math.max(1, Math.round(screenW * dpr))
       const bh = Math.max(1, Math.round(screenH * dpr))
       let resized = false
-      if (pc && dc && (pc.width !== bw || pc.height !== bh)) {
+      if (pc && tc && dc && (pc.width !== bw || pc.height !== bh)) {
         pc.width = bw; pc.height = bh
+        tc.width = bw; tc.height = bh
         dc.width = bw; dc.height = bh
         resized = true
       }
@@ -2040,6 +2078,11 @@ function DeviceScrollIntro({ onReachEnd }: { onReachEnd?: () => void }) {
       if (pc && pImg && pImg.complete && (resized || phoneIdx !== lastPhoneIdx.current)) {
         drawCover(pc, pImg, 0.42)
         lastPhoneIdx.current = phoneIdx
+      }
+      const tImg = tabletImgsRef.current[tabletIdx]
+      if (tc && tImg && tImg.complete && (resized || tabletIdx !== lastTabletIdx.current)) {
+        drawCover(tc, tImg, 0.5)
+        lastTabletIdx.current = tabletIdx
       }
       const dImg = deskImgsRef.current[deskIdx]
       if (dc && dImg && dImg.complete && (resized || deskIdx !== lastDeskIdx.current)) {
@@ -2061,6 +2104,7 @@ function DeviceScrollIntro({ onReachEnd }: { onReachEnd?: () => void }) {
     const onResize = () => {
       computeScale()
       lastPhoneIdx.current = -1
+      lastTabletIdx.current = -1
       lastDeskIdx.current = -1
       render()
     }
@@ -2072,8 +2116,9 @@ function DeviceScrollIntro({ onReachEnd }: { onReachEnd?: () => void }) {
     }
   }, [])
 
-  // Preload both sequences. Phone frames gate the loader; desktop frames decode
-  // in the background so they're ready by the time the user scrubs into them.
+  // Preload all three sequences. Phone frames gate the loader; tablet and desktop
+  // frames decode in the background so they're ready by the time the user scrubs
+  // into them.
   useEffect(() => {
     const load = (
       dir: string,
@@ -2100,10 +2145,12 @@ function DeviceScrollIntro({ onReachEnd }: { onReachEnd?: () => void }) {
       targetRef.current = imgs
     }
 
-    load("/vinahouse-frames", PHONE_FRAMES, phoneImgsRef,
+    load("/phone-frames", PHONE_FRAMES, phoneImgsRef,
       () => { lastPhoneIdx.current = -1; renderRef.current() },
       () => setLoaded(true))
-    load("/animation-frames", DESK_FRAMES, deskImgsRef,
+    load("/tablet-frames", TABLET_FRAMES, tabletImgsRef,
+      () => { lastTabletIdx.current = -1; renderRef.current() })
+    load("/desktop-frames", DESK_FRAMES, deskImgsRef,
       () => { lastDeskIdx.current = -1; renderRef.current() })
   }, [])
 
@@ -2164,18 +2211,27 @@ function DeviceScrollIntro({ onReachEnd }: { onReachEnd?: () => void }) {
                   </div>
                 </div>
 
-                {/* Screen — hosts the two crossfading frame canvases */}
+                {/* Screen — hosts the three crossfading frame canvases (phone → tablet → desktop) */}
                 <div ref={screenRef} style={{
                   position: "absolute", top: IN_SCREEN_PHONE.top,
                   left: IN_SCREEN_PHONE.left, right: IN_SCREEN_PHONE.right, bottom: IN_SCREEN_PHONE.bottom,
                   borderRadius: IN_SCREEN_PHONE.radius,
                   overflow: "hidden", background: "#0d0d0d",
                 }}>
-                  <canvas ref={phoneCanvasRef} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block" }} />
-                  <canvas ref={deskCanvasRef}  style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block", opacity: 0 }} />
+                  <canvas ref={phoneCanvasRef}  style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block" }} />
+                  <canvas ref={tabletCanvasRef} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block", opacity: 0 }} />
+                  <canvas ref={deskCanvasRef}   style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block", opacity: 0 }} />
                 </div>
 
-                {/* Home indicator — phone only */}
+                {/* Tablet camera dot — fades in on the tablet stage, out into desktop */}
+                <div ref={tabletCamRef} style={{
+                  position: "absolute", top: 7, left: "50%", transform: "translateX(-50%)",
+                  width: 5, height: 5, borderRadius: "50%",
+                  background: "#0d0d0d", border: "1px solid #3f3f3f",
+                  opacity: 0, zIndex: 20,
+                }} />
+
+                {/* Home indicator — phone + tablet */}
                 <div ref={homeRef} style={{
                   position: "absolute", bottom: 5, left: "50%", transform: "translateX(-50%)",
                   width: 96, height: 4, background: "#f5f5f5", borderRadius: 2,
