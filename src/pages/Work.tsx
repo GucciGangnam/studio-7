@@ -1919,14 +1919,30 @@ const IN_SCREEN_DESK   = { top: 44, left: 0,  right: 0,  bottom: 0,  radius: 0  
 
 // ─── Intro copy ───────────────────────────────────────────────────────────────
 // Minimal, accent-coloured context for the landing scrub. The eyebrow + headline
-// are constant; the per-stage line cross-fades in sync with the device screen
-// (phone → tablet → desktop) to hint at the range of motion work.
-const INTRO_EYEBROW  = "// MOTION"
-const INTRO_HEADLINE = "Production-grade motion that commands attention."
-const STAGE_LINES = [
-  "Construction, in motion",   // phone   — on-site build captured frame by frame
-  "Products, deconstructed",   // tablet  — exploded product teardown
-  "Interfaces, alive",         // desktop — custom UI motion
+// Each of the three device stages carries its own use-case copy, written in the
+// home page's house style: a mono eyebrow, a big Space Grotesk headline ending in
+// an accent period, and a supporting line. As the device morphs phone → tablet →
+// desktop, the blocks cross-fade + float (home-page section transition), so each
+// stage highlights a different kind of motion work:
+//   phone   — build / progress over time   (construction time-lapse)
+//   tablet  — inner detail of a product     (exploded teardown)
+//   desktop — bespoke high-production motion (custom brand graphics)
+const INTRO_STAGES = [
+  {
+    eyebrow: "Built · Over · Time",
+    headline: "Watch it take shape",
+    support: "Time-lapse motion that follows a project from ground to finished build.",
+  },
+  {
+    eyebrow: "Layer · By · Layer",
+    headline: "Every detail, revealed",
+    support: "Exploded views that show the engineering beneath the surface.",
+  },
+  {
+    eyebrow: "Bespoke · By · Design",
+    headline: "Production-grade motion",
+    support: "Custom motion graphics, engineered to command attention.",
+  },
 ] as const
 
 // Layout: text and device share the screen. Landscape (and wide enough) puts the
@@ -1951,37 +1967,39 @@ const INTRO_COPY_CSS = `
     display: flex; align-items: center; justify-content: center;
     min-width: 0; min-height: 0;
   }
+  /* The three stage blocks stack in one grid cell and cross-fade in place. */
+  .s7-intro-copy-inner { width: 100%; display: grid; }
+  .s7-stage-block { grid-area: 1 / 1; width: 100%; will-change: opacity, transform; }
   .s7-eyebrow {
-    font-family: "Space Mono", monospace; font-size: 10px; letter-spacing: 0.3em;
-    text-transform: uppercase; color: var(--accent); opacity: 0.7; margin: 0 0 14px;
+    font-family: "Space Mono", monospace; font-size: 10px; letter-spacing: 0.28em;
+    text-transform: uppercase; color: var(--accent); opacity: 0.85; margin: 0 0 16px;
   }
   .s7-headline {
-    font-family: "Space Grotesk", sans-serif; font-weight: 600;
-    font-size: clamp(21px, 2.6vw, 37px); line-height: 1.16; letter-spacing: -0.02em;
-    color: var(--accent); margin: 0; max-width: 15ch;
+    font-family: "Space Grotesk", sans-serif; font-weight: 700;
+    font-size: clamp(26px, 3.3vw, 47px); line-height: 1.06; letter-spacing: -0.035em;
+    color: var(--foreground); margin: 0 auto; max-width: 13ch;
   }
-  .s7-stageline-wrap { position: relative; height: 20px; margin-top: 20px; width: 100%; }
-  .s7-stageline {
-    position: absolute; left: 0; right: 0;
-    font-family: "Space Mono", monospace; font-size: 12px; letter-spacing: 0.08em;
-    color: var(--accent); opacity: 0; will-change: opacity;
+  .s7-headline .dot { color: var(--accent); }
+  .s7-support {
+    font-family: "Space Grotesk", sans-serif; font-size: 13.5px; line-height: 1.55;
+    color: color-mix(in srgb, var(--foreground) 58%, transparent);
+    margin: 18px auto 0; max-width: 32ch;
   }
   @media (orientation: landscape) and (min-width: 760px) {
     .s7-intro-stage { flex-direction: row; align-items: stretch; }
     .s7-intro-copy {
-      flex: 0 0 42%; max-width: 540px;
+      flex: 0 0 44%; max-width: 560px;
       justify-content: center; align-items: flex-start; text-align: left;
       padding: 0 clamp(32px, 4.5vw, 76px);
     }
-    .s7-intro-device { flex: 1 1 58%; }
-    .s7-stageline { text-align: left; }
+    .s7-intro-device { flex: 1 1 56%; }
+    .s7-headline, .s7-support { margin-left: 0; margin-right: 0; }
   }
   @keyframes s7-intro-copy-in {
     from { opacity: 0; transform: translateY(14px); }
     to   { opacity: 1; transform: translateY(0); }
   }
   .s7-intro-copy-inner {
-    width: 100%; display: flex; flex-direction: column; align-items: inherit;
     animation: s7-intro-copy-in 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
   }
 `
@@ -2000,9 +2018,9 @@ function DeviceScrollIntro({ onReachEnd }: { onReachEnd?: () => void }) {
   const deskCanvasRef   = useRef<HTMLCanvasElement>(null)
   const devicePaneRef   = useRef<HTMLDivElement>(null)
   const copyRef         = useRef<HTMLDivElement>(null)
-  const line0Ref        = useRef<HTMLDivElement>(null)
-  const line1Ref        = useRef<HTMLDivElement>(null)
-  const line2Ref        = useRef<HTMLDivElement>(null)
+  const stage0Ref       = useRef<HTMLDivElement>(null)
+  const stage1Ref       = useRef<HTMLDivElement>(null)
+  const stage2Ref       = useRef<HTMLDivElement>(null)
 
   const phoneImgsRef  = useRef<HTMLImageElement[]>([])
   const tabletImgsRef = useRef<HTMLImageElement[]>([])
@@ -2141,10 +2159,23 @@ function DeviceScrollIntro({ onReachEnd }: { onReachEnd?: () => void }) {
       if (tc) tc.style.opacity = String(toTablet * (1 - toDesk))
       if (dc) dc.style.opacity = String(toDesk)
 
-      // Per-stage copy line — cross-fades in lock-step with the screen content.
-      if (line0Ref.current) line0Ref.current.style.opacity = String(1 - toTablet)
-      if (line1Ref.current) line1Ref.current.style.opacity = String(toTablet * (1 - toDesk))
-      if (line2Ref.current) line2Ref.current.style.opacity = String(toDesk)
+      // Per-stage copy blocks — cross-fade + float in the home-page section style,
+      // in lock-step with the device morph (incoming rises from +SHIFT to 0; the
+      // outgoing slides up to -SHIFT and fades).
+      const SHIFT = 22
+      const b0 = stage0Ref.current, b1 = stage1Ref.current, b2 = stage2Ref.current
+      if (b0) {
+        b0.style.opacity = String(1 - toTablet)
+        b0.style.transform = `translateY(${-toTablet * SHIFT}px)`
+      }
+      if (b1) {
+        b1.style.opacity = String(toTablet * (1 - toDesk))
+        b1.style.transform = `translateY(${(1 - toTablet) * SHIFT - toDesk * SHIFT}px)`
+      }
+      if (b2) {
+        b2.style.opacity = String(toDesk)
+        b2.style.transform = `translateY(${(1 - toDesk) * SHIFT}px)`
+      }
 
       const phoneIdx  = Math.min(PHONE_FRAMES  - 1, Math.max(0, Math.floor((y - B_ENTER)  / PX_PER_FRAME)))
       const tabletIdx = Math.min(TABLET_FRAMES - 1, Math.max(0, Math.floor((y - B_MORPH1) / PX_PER_FRAME)))
@@ -2266,16 +2297,21 @@ function DeviceScrollIntro({ onReachEnd }: { onReachEnd?: () => void }) {
         {/* Two-pane stage: copy + device (row on wide landscape, stacked otherwise) */}
         <div className="s7-intro-stage">
 
-          {/* ── Copy pane (accent context) ── */}
+          {/* ── Copy pane — per-stage use-case blocks (stacked, cross-fade) ── */}
           <div className="s7-intro-copy" ref={copyRef} style={{ opacity: 1 }}>
             <div className="s7-intro-copy-inner">
-              <p className="s7-eyebrow">{INTRO_EYEBROW}</p>
-              <h2 className="s7-headline">{INTRO_HEADLINE}</h2>
-              <div className="s7-stageline-wrap">
-                <div className="s7-stageline" ref={line0Ref}>{STAGE_LINES[0]}</div>
-                <div className="s7-stageline" ref={line1Ref}>{STAGE_LINES[1]}</div>
-                <div className="s7-stageline" ref={line2Ref}>{STAGE_LINES[2]}</div>
-              </div>
+              {INTRO_STAGES.map((s, i) => (
+                <div
+                  key={i}
+                  className="s7-stage-block"
+                  ref={[stage0Ref, stage1Ref, stage2Ref][i]}
+                  style={{ opacity: i === 0 ? 1 : 0 }}
+                >
+                  <p className="s7-eyebrow">{s.eyebrow}</p>
+                  <h2 className="s7-headline">{s.headline}<span className="dot">.</span></h2>
+                  <p className="s7-support">{s.support}</p>
+                </div>
+              ))}
             </div>
           </div>
 
