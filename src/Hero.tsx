@@ -722,30 +722,30 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
           >
             <div
               ref={beamContainerRef}
-              className={cn('relative flex w-full max-w-xs items-center justify-center overflow-hidden', isLandscape ? 'h-[240px]' : 'h-[300px] lg:h-[500px]')}
+              className={cn('relative flex w-full max-w-xs items-center justify-center overflow-hidden', isLandscape ? 'h-[clamp(260px,74vh,330px)]' : 'h-[300px] lg:h-[500px]')}
             >
               <div className="flex size-full flex-row items-stretch justify-between px-4">
 
                 {/* Phase nodes */}
                 <div className="flex flex-col justify-between py-2">
                   {activePhaseNodes.map(({ Icon, label }, i) => (
-                    <BeamCircle key={label} ref={phaseRefs[i]}>
-                      <Icon size={15} className="text-foreground/35" strokeWidth={1.5} />
+                    <BeamCircle key={label} ref={phaseRefs[i]} className={isLandscape ? 'size-9' : undefined}>
+                      <Icon size={isLandscape ? 13 : 15} className="text-foreground/35" strokeWidth={1.5} />
                     </BeamCircle>
                   ))}
                 </div>
 
                 {/* Studio 7 hub */}
                 <div className="flex flex-col justify-center">
-                  <BeamCircle ref={studioHubRef} className="size-16 border-accent/25 bg-accent/[0.06]">
-                    <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: '17px', color: 'var(--accent)', letterSpacing: '-0.02em' }}>S7</span>
+                  <BeamCircle ref={studioHubRef} className={cn('border-accent/25 bg-accent/[0.06]', isLandscape ? 'size-14' : 'size-16')}>
+                    <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: isLandscape ? '15px' : '17px', color: 'var(--accent)', letterSpacing: '-0.02em' }}>S7</span>
                   </BeamCircle>
                 </div>
 
                 {/* Client node */}
                 <div className="flex flex-col justify-center">
-                  <BeamCircle ref={clientNodeRef}>
-                    <User size={15} className="text-foreground/35" strokeWidth={1.5} />
+                  <BeamCircle ref={clientNodeRef} className={isLandscape ? 'size-9' : undefined}>
+                    <User size={isLandscape ? 13 : 15} className="text-foreground/35" strokeWidth={1.5} />
                   </BeamCircle>
                 </div>
               </div>
