@@ -9,6 +9,7 @@ import Services from './pages/Services'
 import Clients from './pages/Clients'
 import Contact from './pages/Contact'
 import Dev from './pages/Dev'
+import Components from './pages/Components'
 import NotFound from './pages/NotFound'
 
 const navItems = [
@@ -239,6 +240,7 @@ function AppInner() {
         <Route path="/clients"  element={<Clients />}    />
         <Route path="/contact"  element={<Contact />}    />
         <Route path="/dev"      element={<Dev />}        />
+        <Route path="/components" element={<Components />} />
         <Route path="*"         element={<NotFound />}   />
       </Routes>
     </div>

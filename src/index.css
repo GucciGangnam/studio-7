@@ -273,6 +273,40 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* Live-recording waveform: each bar scales vertically about its centre. Paired
+   with `alternate` + a per-bar duration/delay it desyncs into an organic,
+   voice-like ripple. `--lo` is the bar's resting fraction of its full height. */
+@keyframes s7-voicewave {
+  from { transform: scaleY(var(--lo, 0.3)); }
+  to   { transform: scaleY(1); }
+}
+
+/* Face ID scan line: sweeps the beam down and back across the face region. */
+@keyframes s7-facescan {
+  0%   { transform: translateY(-15px); }
+  50%  { transform: translateY(15px); }
+  100% { transform: translateY(-15px); }
+}
+
+/* Upload: progress bar fills left→right. */
+@keyframes s7-uploadfill {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+/* Upload: arrow bounces up into the folder and fades, on a loop. */
+@keyframes s7-uploadarrow {
+  0%   { transform: translateY(7px);  opacity: 0; }
+  30%  { opacity: 1; }
+  100% { transform: translateY(-7px); opacity: 0; }
+}
+
+/* Draw an SVG stroke path on: pair with stroke-dasharray = path length. */
+@keyframes s7-drawstroke {
+  from { stroke-dashoffset: var(--len, 40); }
+  to   { stroke-dashoffset: 0; }
+}
+
 @layer base {
   * {
     @apply border-border;
