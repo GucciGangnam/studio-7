@@ -6,6 +6,7 @@ import { HoldThemeToggle } from './components/HoldThemeToggle'
 import Hero from './Hero'
 import Work from './pages/Work'
 import Services from './pages/Services'
+import Clients from './pages/Clients'
 import Contact from './pages/Contact'
 import Dev from './pages/Dev'
 import NotFound from './pages/NotFound'
@@ -14,6 +15,7 @@ const navItems = [
   { label: 'Home',     to: '/'         },
   { label: 'Work',     to: '/work'     },
   { label: 'Services', to: '/services' },
+  { label: 'Clients',  to: '/clients'  },
   { label: 'Contact',  to: '/contact'  },
 ]
 
@@ -29,8 +31,10 @@ const ep = (sp: number, start: number, end: number) =>
  * Per-item scroll-driven progress for nav entry on home page.
  * Mirrors the hero exit stagger: Contact (i=3) enters first, Work (i=0) last.
  */
-const navItemP = (heroScrollP: number, i: number) =>
-  ep(heroScrollP, 0.08 + (3 - i) * 0.03, 0.24 + (3 - i) * 0.03)
+const navItemP = (heroScrollP: number, i: number) => {
+  const last = navItems.length - 1
+  return ep(heroScrollP, 0.08 + (last - i) * 0.03, 0.24 + (last - i) * 0.03)
+}
 
 function Nav({ heroScrollP }: { heroScrollP: number }) {
   const { pathname } = useLocation()
@@ -232,6 +236,7 @@ function AppInner() {
         <Route path="/"         element={<Hero onScrollChange={setHeroScrollP} />} />
         <Route path="/work"     element={<Work />}       />
         <Route path="/services" element={<Services />}   />
+        <Route path="/clients"  element={<Clients />}    />
         <Route path="/contact"  element={<Contact />}    />
         <Route path="/dev"      element={<Dev />}        />
         <Route path="*"         element={<NotFound />}   />

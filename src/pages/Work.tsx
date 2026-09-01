@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react"
+import { createPortal } from "react-dom"
 import { motion, AnimatePresence } from "motion/react"
 import {
   Sparkles,
@@ -1884,6 +1885,17 @@ const B_OUTRO  = B_DESK   + OUTRO_PX
 const INTRO_SCROLL =
   B_OUTRO + (typeof window !== "undefined" ? window.innerHeight : 800) + 200
 
+// The four intro stages shown by the scroll dots. `target` = a scroll position
+// that lands you inside that stage (the last jumps to the outro, which hands off
+// to the Frontend). `switchAt` = the scrollY where the active dot flips to this
+// stage (the midpoint of each morph / the outro), used to highlight the dot.
+const INTRO_DOT_STAGES = [
+  { label: "iPhone UI",  target: (B_ENTER  + B_PHONE)  / 2, switchAt: 0 },
+  { label: "Tablet UI",  target: (B_MORPH1 + B_TABLET) / 2, switchAt: (B_PHONE  + B_MORPH1) / 2 },
+  { label: "Website UI", target: (B_MORPH2 + B_DESK)   / 2, switchAt: (B_TABLET + B_MORPH2) / 2 },
+  { label: "Frontend",   target: B_OUTRO,                    switchAt: (B_DESK   + B_OUTRO)  / 2 },
+]
+
 const clamp01 = (n: number) => (n < 0 ? 0 : n > 1 ? 1 : n)
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t
 const smooth = (a: number, b: number, t: number) => {
@@ -2030,6 +2042,7 @@ function DeviceScrollIntro({ onReachEnd }: { onReachEnd?: () => void }) {
   const lastDeskIdx   = useRef(-1)
   const layoutScaleRef = useRef(1)
   const hintDomRef = useRef<HTMLDivElement>(null)
+  const dotRailRef = useRef<HTMLDivElement>(null)
   const endedRef = useRef(false)
   const renderRef = useRef<() => void>(() => {})
 
@@ -2037,8 +2050,25 @@ function DeviceScrollIntro({ onReachEnd }: { onReachEnd?: () => void }) {
   useEffect(() => { onReachEndRef.current = onReachEnd }, [onReachEnd])
 
   const [loaded, setLoaded] = useState(false)
+  const [stage, setStage] = useState(0) // active scroll dot (0–3)
   const isTouch =
     typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches
+
+  // Track which of the four stages the scroll is in, to light the right dot.
+  // Only updates on a stage change, so it re-renders ~3 times across the intro.
+  useEffect(() => {
+    const onScroll = () => {
+      const y = window.scrollY
+      let s = 0
+      for (let i = INTRO_DOT_STAGES.length - 1; i >= 0; i--) {
+        if (y >= INTRO_DOT_STAGES[i].switchAt) { s = i; break }
+      }
+      setStage(prev => (prev === s ? prev : s))
+    }
+    onScroll()
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => window.removeEventListener("scroll", onScroll)
+  }, [])
 
   // Fresh start on mount + resize cursor. The backdrop follows the page theme,
   // so the nav uses its normal theme styling (no s7:introdark override).
@@ -2103,6 +2133,10 @@ function DeviceScrollIntro({ onReachEnd }: { onReachEnd?: () => void }) {
       // Intro copy: visible from the start (mount-fades in via CSS), fades out
       // together with the device across the outro.
       if (copyRef.current) copyRef.current.style.opacity = String(1 - outroT)
+
+      // The scroll dots fade out across the outro too, so they're gone by the
+      // time the Frontend section takes over the screen.
+      if (dotRailRef.current) dotRailRef.current.style.opacity = String(1 - outroT)
 
       // Device geometry morph: phone → tablet (morph1) → desktop (morph2). While
       // morph2 is inactive we're on the phone→tablet leg, which rests at full
@@ -2449,6 +2483,38 @@ function DeviceScrollIntro({ onReachEnd }: { onReachEnd?: () => void }) {
           </div>{/* .s7-intro-device */}
         </div>{/* .s7-intro-stage */}
       </div>
+
+      {/* Section dots — the four stages (iPhone → Tablet → Website → Frontend).
+          Portalled to <body> so `fixed` resolves against the viewport (the
+          section's framer-motion wrapper carries a transform that would
+          otherwise capture it). They fade with the outro (above) and unmount
+          with the intro at the hand-off. */}
+      {loaded && createPortal(
+        <div
+          ref={dotRailRef}
+          className="fixed top-1/2 right-8 z-50 -translate-y-1/2 flex flex-col gap-3"
+        >
+          {INTRO_DOT_STAGES.map((d, i) => (
+            <button
+              key={d.label}
+              onClick={() => window.scrollTo({ top: d.target, behavior: "smooth" })}
+              aria-label={`Go to ${d.label}`}
+              className="group grid place-items-center h-4 w-4"
+            >
+              <span
+                className="rounded-full transition-all duration-300"
+                style={{
+                  width: stage === i ? 9 : 6,
+                  height: stage === i ? 9 : 6,
+                  background: stage === i ? "var(--accent)" : "var(--foreground)",
+                  opacity: stage === i ? 1 : 0.28,
+                }}
+              />
+            </button>
+          ))}
+        </div>,
+        document.body,
+      )}
 
       {/* Scroll spacer in normal flow — makes the body tall enough for the scrub. */}
       <div style={{ height: INTRO_SCROLL }} />
@@ -3253,7 +3319,10 @@ export default function Work() {
               {/* Section header — guide style */}
               <div className={cn("flex items-baseline gap-5", isShort ? "mb-5" : "mb-10")}>
                 <span className="font-mono text-[11px] text-foreground/20 tracking-widest">
-                  {String(index + 1).padStart(2, "0")}
+                  {/* Dock sections are numbered 01–08 (Frontend…Analytics). The
+                      Animations intro is index 0 and its header is hidden behind
+                      the full-screen intro overlay, so its "00" is never seen. */}
+                  {String(index).padStart(2, "0")}
                 </span>
                 <h2 className="font-mono text-[11px] tracking-[0.18em] text-foreground/50 uppercase">
                   {section.label}

@@ -120,69 +120,26 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    let rafId: number | null = null
-    let debounceTimer: ReturnType<typeof setTimeout>
-    let isSnapping = false
-
-    const cancelSnap = () => {
-      if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null }
-      isSnapping = false
-    }
-
-    const smoothScrollTo = (targetY: number) => {
-      cancelSnap()
-      const startY = window.scrollY
-      const delta = targetY - startY
-      if (Math.abs(delta) < 4) return
-      isSnapping = true
-      const duration = 650
-      const t0 = performance.now()
-      const step = (now: number) => {
-        const t = Math.min((now - t0) / duration, 1)
-        const eased = 1 - Math.pow(1 - t, 3) // ease-out cubic
-        window.scrollTo(0, startY + delta * eased)
-        if (t < 1) {
-          rafId = requestAnimationFrame(step)
-        } else {
-          isSnapping = false
-          rafId = null
-        }
-      }
-      rafId = requestAnimationFrame(step)
-    }
-
-    const snapToNearest = () => {
-      const sp = window.scrollY / window.innerHeight
-      const nearest = SNAP_POINTS.reduce((a, b) => Math.abs(b - sp) < Math.abs(a - sp) ? b : a)
-      smoothScrollTo(nearest * window.innerHeight)
-    }
-
-    // Uncapped — scrollP > 1 drives section 2 entry
+    // Uncapped scroll tracking — scrollP drives every section animation and the
+    // nav. Snapping itself is now handled by native CSS scroll-snap (below).
     const onScroll = () => {
       if (window.scrollY > 0) neverScrolled.current = false
       const sp = window.scrollY / window.innerHeight
       setScrollP(sp)
       onScrollChange?.(sp)
-      if (!isSnapping) {
-        clearTimeout(debounceTimer)
-        debounceTimer = setTimeout(snapToNearest, 400)
-      }
     }
-
-    // Cancel in-progress snap if user grabs the wheel/touch again
-    const onUserInteract = () => cancelSnap()
-
     window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('wheel', onUserInteract, { passive: true })
-    window.addEventListener('touchstart', onUserInteract, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
-    return () => {
-      window.removeEventListener('scroll', onScroll)
-      window.removeEventListener('wheel', onUserInteract)
-      window.removeEventListener('touchstart', onUserInteract)
-      clearTimeout(debounceTimer)
-      cancelSnap()
-    }
+  // Firm scroll snapping between sections — matches the Clients page, scoped to
+  // the home page. `mandatory` never rests between sections; scroll-snap-stop on
+  // the anchors makes each a hard stop, so a fast scroll advances one at a time.
+  useEffect(() => {
+    const root = document.documentElement
+    const prev = root.style.scrollSnapType
+    root.style.scrollSnapType = 'y mandatory'
+    return () => { root.style.scrollSnapType = prev }
   }, [])
 
   /**
@@ -243,11 +200,29 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
   // On mobile portrait show 4 nodes; landscape/desktop show all 6
   const activePhaseNodes = isMobile && !isLandscape ? phaseNodes.slice(0, 4) : phaseNodes
 
+  // Section dots (right rail). Active = nearest snap point to the current scroll.
+  const activeSnap = SNAP_POINTS.reduce(
+    (best, sp, i) => (Math.abs(sp - scrollP) < Math.abs(SNAP_POINTS[best] - scrollP) ? i : best),
+    0
+  )
+  const goToSection = (i: number) =>
+    window.scrollTo({ top: SNAP_POINTS[i] * window.innerHeight, behavior: 'smooth' })
+
   return (
     // 500vh = 400vh of scroll travel, giving scrollP max ≈ 4.0
     // s1 exits ~0.75; s2 fully in ~1.54; s2 exits ~2.1
     // s2.5 enters ~2.08; s2.5 exits ~3.18; s3 fully in ~3.93
-    <div style={{ height: '500vh' }}>
+    <div style={{ height: '500vh', position: 'relative' }}>
+      {/* Snap anchors — one per section at its fully-rendered scroll position.
+          With mandatory snap + scroll-snap-stop, the window always rests on a
+          section and a fast scroll advances one section at a time. */}
+      {SNAP_POINTS.map((sp, i) => (
+        <div
+          key={i}
+          aria-hidden
+          style={{ position: 'absolute', top: `${sp * 100}vh`, left: 0, width: 1, height: 1, scrollSnapAlign: 'start', scrollSnapStop: 'always' }}
+        />
+      ))}
       <section className="sticky top-0 h-screen overflow-hidden relative">
 
         {/* ══════════════════════════════════════════════════════
@@ -848,20 +823,27 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
 
       </section>
 
-      {/* Scroll progress bar — fixed bottom, accent green */}
-      <div
-        className="fixed bottom-0 left-0 z-50 w-full"
-        style={{ height: '2px', background: 'color-mix(in srgb, var(--foreground) 8%, transparent)' }}
-      >
-        <div
-          style={{
-            height: '100%',
-            width: `${Math.min(scrollP / SNAP_POINTS[SNAP_POINTS.length - 1], 1) * 100}%`,
-            background: 'var(--accent)',
-            boxShadow: '0 0 6px rgba(232,255,71,0.55)',
-            transition: 'width 80ms linear',
-          }}
-        />
+      {/* Section dots — right rail, one per snap point; click to jump. Replaces
+          the old bottom progress bar (mirrors the Clients page). */}
+      <div className="fixed top-1/2 right-8 z-50 -translate-y-1/2 flex flex-col gap-3">
+        {SNAP_POINTS.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => goToSection(i)}
+            aria-label={`Go to section ${i + 1}`}
+            className="group grid place-items-center h-4 w-4"
+          >
+            <span
+              className="rounded-full transition-all duration-300"
+              style={{
+                width: activeSnap === i ? 9 : 6,
+                height: activeSnap === i ? 9 : 6,
+                background: activeSnap === i ? 'var(--accent)' : 'var(--foreground)',
+                opacity: activeSnap === i ? 1 : 0.28,
+              }}
+            />
+          </button>
+        ))}
       </div>
     </div>
   )
