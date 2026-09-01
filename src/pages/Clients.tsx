@@ -235,6 +235,13 @@ export default function Clients() {
           const opacity = clamp(1 - Math.abs(dist) / fadeHalf, 0, 1)
           // Content drifts up as we scroll past its centre, in from below before.
           const contentY = -clamp(dist / fadeHalf, -1, 1) * 24
+          // Perf: only mount a page's (WebGL/canvas) background while it's the
+          // active page or transitioning to/from it. A page is visible within
+          // ±fadeHalf of its centre (|dist|·last < 0.4); we mount a touch earlier
+          // (< 0.7) so the incoming effect has a beat to initialise before it
+          // fades in, then unmount it once its neighbour takes over. This keeps
+          // at most ~2 backgrounds running instead of all four at once.
+          const bgOn = Math.abs(dist) * last < 0.7
 
           return (
             <section
@@ -249,7 +256,7 @@ export default function Clients() {
               aria-hidden={active !== i}
             >
               {/* Page 1 gets its own animated wave background (behind content). */}
-              {i === 0 && (
+              {i === 0 && bgOn && (
                 <div className="absolute inset-0" style={{ zIndex: 0 }}>
                   <GradientWaves
                     horizonColor={featureHex}
@@ -279,19 +286,19 @@ export default function Clients() {
                   stars take their colour from the element's CSS `color`, so
                   --accent-label keeps them theme-green and legible in both
                   themes (it re-reads every frame, so it follows theme flips). */}
-              {i === 1 && (
+              {i === 1 && bgOn && (
                 <div className="absolute inset-0" style={{ zIndex: 0, color: 'var(--accent-label)' }}>
                   <GravityStarsBackground />
                 </div>
               )}
               {/* Page 3 gets the Vanta CELLS background (behind content). */}
-              {i === 2 && (
+              {i === 2 && bgOn && (
                 <div className="absolute inset-0" style={{ zIndex: 0 }}>
                   <CellsBackground color1={cellsColor1} color2={cellsColor2} size={5} speed={0.5} />
                 </div>
               )}
               {/* Page 4 gets the Scanner background (behind content). */}
-              {i === 3 && (
+              {i === 3 && bgOn && (
                 <div className="absolute inset-0" style={{ zIndex: 0 }}>
                   <Scanner
                     color1={scanColor1}
