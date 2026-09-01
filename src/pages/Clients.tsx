@@ -437,7 +437,7 @@ export default function Clients() {
       </div>
 
       {/* Progress dots — fixed to the viewport, one per section. */}
-      <div className="fixed top-1/2 right-8 z-50 -translate-y-1/2 flex flex-col gap-3">
+      <div className="fixed top-1/2 right-2 sm:right-8 z-50 -translate-y-1/2 flex flex-col gap-3">
         {sections.map((s, i) => (
           <button
             key={s.n}

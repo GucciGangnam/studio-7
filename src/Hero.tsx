@@ -825,7 +825,7 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
 
       {/* Section dots — right rail, one per snap point; click to jump. Replaces
           the old bottom progress bar (mirrors the Clients page). */}
-      <div className="fixed top-1/2 right-8 z-50 -translate-y-1/2 flex flex-col gap-3">
+      <div className="fixed top-1/2 right-2 sm:right-8 z-50 -translate-y-1/2 flex flex-col gap-3">
         {SNAP_POINTS.map((_, i) => (
           <button
             key={i}

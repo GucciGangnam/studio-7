@@ -2492,7 +2492,7 @@ function DeviceScrollIntro({ onReachEnd }: { onReachEnd?: () => void }) {
       {loaded && createPortal(
         <div
           ref={dotRailRef}
-          className="fixed top-1/2 right-8 z-50 -translate-y-1/2 flex flex-col gap-3"
+          className="fixed top-1/2 right-2 sm:right-8 z-50 -translate-y-1/2 flex flex-col gap-3"
         >
           {INTRO_DOT_STAGES.map((d, i) => (
             <button
