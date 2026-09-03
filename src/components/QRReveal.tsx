@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
 /**
  * QR matrix for https://www.studio7.software (v3, ECC level M — 29×29 modules).
@@ -45,11 +45,16 @@ const SIZE = QR.length
 const INK = 'color-mix(in srgb, #151515 50%, #f4f4f2 50%)'
 
 /**
- * Full-screen QR takeover. Hovering the nav trigger fades ALL page content away
- * to just the app background, with the site QR standing on it — no panel, no
- * card, no image chrome.
+ * Full-screen QR takeover. As the page content flies forward past the viewer,
+ * the QR rushes in from far away (tiny) to full size — coming toward the user
+ * on the Z axis. Sits directly on the app background: no panel, no image chrome.
  */
 export function QRReveal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const reduced = useRef(false)
+  useEffect(() => {
+    reduced.current = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+  }, [])
+
   // Escape closes (belt-and-braces alongside the trigger's blur/leave).
   useEffect(() => {
     if (!open) return
@@ -62,23 +67,26 @@ export function QRReveal({ open, onClose }: { open: boolean; onClose: () => void
     <div
       aria-hidden={!open}
       className="hidden sm:flex fixed inset-0 z-[65] items-center justify-center"
-      style={{
-        // Purely visual: never captures the pointer, so hovering the (smaller)
-        // trigger button underneath keeps working — move off it to restore.
-        pointerEvents: 'none',
-        opacity: open ? 1 : 0,
-        // Opaque app background: fading this in over the page reads as the whole
-        // screen's content fading to gone, leaving only the background + QR.
-        background: 'var(--background)',
-        transition: `opacity 0.45s cubic-bezier(0.4,0,0.2,1)`,
-      }}
+      // Purely visual: never captures the pointer, so hovering the (smaller)
+      // trigger button underneath keeps working — move off it to restore.
+      style={{ pointerEvents: 'none', perspective: '1200px' }}
     >
       <div
-        className="flex flex-col items-center"
+        className="relative flex flex-col items-center"
         style={{
-          transform: open ? 'scale(1)' : 'scale(0.97)',
+          // Rushes in from far (tiny) to the viewer (full). translateZ via scale
+          // keeps it cheap and composited.
+          transform: open ? 'scale(1)' : 'scale(0.04)',
           opacity: open ? 1 : 0,
-          transition: 'transform 0.5s cubic-bezier(0.16,1,0.3,1), opacity 0.4s ease',
+          // Transform timing MUST match App.tsx's zoom stage exactly (same 0.55s
+          // snappy ease-out, no delay) so the QR snaps in at the same speed the
+          // page snaps out — reaching their final states together. Opacity fades
+          // a touch quicker so the QR is visible while it's still approaching.
+          transition: reduced.current
+            ? 'none'
+            : open
+              ? 'transform 0.55s cubic-bezier(0.16,1,0.3,1), opacity 0.33s ease-out'
+              : 'transform 0.55s cubic-bezier(0.16,1,0.3,1), opacity 0.38s ease-in',
         }}
       >
         <div
