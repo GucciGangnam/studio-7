@@ -198,9 +198,18 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
   // Landscape on a mobile device: width < 1024 but wider than tall (phone rotated)
   const [isLandscape, setIsLandscape] = useState(() =>
     typeof window !== 'undefined' && window.innerWidth > window.innerHeight && window.innerWidth < 1024)
+  // Genuinely short landscape (a real phone on its side, ≲500px tall) — the case
+  // where section 2's words + copy + tiles won't all fit vertically. Used to
+  // hide the section-2 body copy ONLY there, so smaller/half-width laptop
+  // windows (also landscape & <1024 wide, but plenty tall) still show it.
+  const [isShortLandscape, setIsShortLandscape] = useState(() =>
+    typeof window !== 'undefined' && window.innerWidth > window.innerHeight && window.innerWidth < 1024 && window.innerHeight < 500)
   useEffect(() => {
-    const update = () =>
-      setIsLandscape(window.innerWidth > window.innerHeight && window.innerWidth < 1024)
+    const update = () => {
+      const landscape = window.innerWidth > window.innerHeight && window.innerWidth < 1024
+      setIsLandscape(landscape)
+      setIsShortLandscape(landscape && window.innerHeight < 500)
+    }
     window.addEventListener('resize', update)
     window.addEventListener('orientationchange', update)
     return () => {
@@ -382,7 +391,7 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
 
           {/* Copy */}
           <p
-            className={cn('text-[15px] text-foreground/65 max-w-xl leading-relaxed', isLandscape ? 'hidden' : 'mt-8')}
+            className={cn('text-[15px] text-foreground/65 max-w-xl leading-relaxed', isShortLandscape ? 'hidden' : 'mt-8')}
             style={s2(scrollP, 1.10, 1.30, 1.85, 2.00)}
           >
             We take your concept through the complete product lifecycle — requirements,
