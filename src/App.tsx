@@ -1,8 +1,9 @@
 import { useEffect, useLayoutEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, Smartphone } from 'lucide-react'
 import { useTheme } from './lib/theme'
 import { HoldThemeToggle } from './components/HoldThemeToggle'
+import { QRReveal } from './components/QRReveal'
 import Hero from './Hero'
 import Work from './pages/Work'
 import Services from './pages/Services'
@@ -42,6 +43,7 @@ function Nav({ heroScrollP }: { heroScrollP: number }) {
   const isHome = pathname === '/'
   const [logoHovered, setLogoHovered] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [qrOpen, setQrOpen] = useState(false)
   const { theme, toggleTheme } = useTheme()
 
   // While the Work intro (dark full-screen video) is on screen, keep the nav
@@ -210,6 +212,26 @@ function Nav({ heroScrollP }: { heroScrollP: number }) {
             </Link>
           )
         })}
+        {/* Phone — hover sweeps the screen away and reveals the site QR code.
+            Desktop only (it lives in the sm:flex nav). */}
+        <button
+          type="button"
+          aria-label="Show QR code for www.studio7.software"
+          onMouseEnter={() => setQrOpen(true)}
+          onMouseLeave={() => setQrOpen(false)}
+          onFocus={() => setQrOpen(true)}
+          onBlur={() => setQrOpen(false)}
+          className={[
+            'w-8 h-8 ml-1 grid place-items-center rounded-full border backdrop-blur-md transition-colors',
+            qrOpen
+              ? 'border-accent/60 text-accent bg-accent/[0.08]'
+              : 'border-foreground/[0.07] bg-foreground/[0.02] text-foreground/65 hover:text-foreground/95 hover:border-foreground/20 hover:bg-foreground/[0.04]',
+          ].join(' ')}
+          style={{ boxShadow: TAB_SHADOW }}
+        >
+          <Smartphone size={14} strokeWidth={1.6} />
+        </button>
+
         {/* Theme toggle — hold & release; anchored to the right edge so it reads
             as intentional even before the nav tabs fade in on the home page. */}
         <HoldThemeToggle
@@ -219,6 +241,8 @@ function Nav({ heroScrollP }: { heroScrollP: number }) {
           className="w-8 h-8 ml-1 border border-foreground/15 bg-foreground/[0.03] hover:border-foreground/30 backdrop-blur-md"
         />
       </nav>
+
+      <QRReveal open={qrOpen} onClose={() => setQrOpen(false)} />
     </div>
   )
 }
