@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
 import { useTheme } from './lib/theme'
@@ -129,6 +129,11 @@ function Nav({ heroScrollP }: { heroScrollP: number }) {
       {mobileMenuOpen && (
         <div
           className="sm:hidden fixed inset-0 z-[60] flex flex-col items-center justify-center gap-5"
+          // Tapping the backdrop (any empty area, not a link or the theme
+          // toggle) dismisses the menu — the natural instinct after using the
+          // controls. Children stop the event via currentTarget check, so the
+          // hold-to-toggle and links behave normally.
+          onClick={(e) => { if (e.target === e.currentTarget) closeMenu() }}
           style={{
             // Dim + blur the page content behind, rather than hiding it — so
             // the frosted-glass buttons have something to work against.
@@ -220,7 +225,10 @@ function Nav({ heroScrollP }: { heroScrollP: number }) {
 
 function ScrollToTop() {
   const { pathname } = useLocation()
-  useEffect(() => {
+  // useLayoutEffect (not useEffect) so the reset happens before the browser
+  // paints the new route — the scroll-driven pages read window.scrollY on mount
+  // to pick their section, so resetting after paint would flash the wrong one.
+  useLayoutEffect(() => {
     window.scrollTo(0, 0)
   }, [pathname])
   return null
@@ -228,6 +236,34 @@ function ScrollToTop() {
 
 function AppInner() {
   const [heroScrollP, setHeroScrollP] = useState(0)
+
+  // Warm the /work intro's opening frames during idle time on first load, so
+  // landing on /work feels instant instead of showing "loading frames…". Only a
+  // leading subset is prefetched (the intro's own loader streams the rest), and
+  // we skip it on data-saver / very slow connections.
+  useEffect(() => {
+    const conn = (navigator as unknown as { connection?: { saveData?: boolean; effectiveType?: string } }).connection
+    if (conn && (conn.saveData || /(^|-)2g$/.test(conn.effectiveType || ''))) return
+
+    const cache: HTMLImageElement[] = []
+    const warm = () => {
+      for (let i = 1; i <= 40; i++) {
+        const img = new Image()
+        img.decoding = 'async'
+        img.src = `/phone-frames/ezgif-frame-${String(i).padStart(3, '0')}.jpg`
+        cache.push(img)
+      }
+    }
+    const w = window as unknown as {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number
+      cancelIdleCallback?: (id: number) => void
+    }
+    const id = w.requestIdleCallback ? w.requestIdleCallback(warm, { timeout: 3000 }) : window.setTimeout(warm, 1500)
+    return () => {
+      if (w.requestIdleCallback && w.cancelIdleCallback) w.cancelIdleCallback(id)
+      else clearTimeout(id as number)
+    }
+  }, [])
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans">

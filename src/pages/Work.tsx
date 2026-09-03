@@ -2288,17 +2288,23 @@ function DeviceScrollIntro({ onReachEnd }: { onReachEnd?: () => void }) {
       n: number,
       targetRef: React.MutableRefObject<HTMLImageElement[]>,
       onFirst?: () => void,
-      onAll?: () => void,
+      onReady?: () => void,
+      // Fire onReady once this many frames are decoded, not all n. Frames are
+      // requested in order, so a small gate means the intro can start with a
+      // buffer of leading frames ready while the rest keep streaming in — much
+      // faster to first paint than waiting on the whole (~8.7MB) sequence.
+      gate = n,
     ) => {
       const imgs: HTMLImageElement[] = new Array(n)
       let count = 0
+      const readyAt = Math.min(gate, n)
       for (let i = 0; i < n; i++) {
         const img = new Image()
         img.decoding = "async"
         const done = () => {
           count++
           if (i === 0) onFirst?.()
-          if (count === n) onAll?.()
+          if (count === readyAt) onReady?.()
         }
         img.onload = done
         img.onerror = done
@@ -2310,7 +2316,8 @@ function DeviceScrollIntro({ onReachEnd }: { onReachEnd?: () => void }) {
 
     load("/phone-frames", PHONE_FRAMES, phoneImgsRef,
       () => { lastPhoneIdx.current = -1; renderRef.current() },
-      () => setLoaded(true))
+      () => setLoaded(true),
+      24)
     load("/tablet-frames", TABLET_FRAMES, tabletImgsRef,
       () => { lastTabletIdx.current = -1; renderRef.current() })
     load("/desktop-frames", DESK_FRAMES, deskImgsRef,
@@ -2426,10 +2433,13 @@ function DeviceScrollIntro({ onReachEnd }: { onReachEnd?: () => void }) {
 
           {/* Loading overlay — centred in the device pane */}
           {!loaded && (
-            <div style={{
-              position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center",
-              fontFamily: "Space Mono", fontSize: 13, color: "var(--muted-foreground)", zIndex: 1,
-            }}>
+            <div
+              className="animate-pulse"
+              style={{
+                position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center",
+                fontFamily: "Space Mono", fontSize: 13, color: "var(--muted-foreground)", zIndex: 1,
+              }}
+            >
               loading frames…
             </div>
           )}

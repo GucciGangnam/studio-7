@@ -1,0 +1,51 @@
+# Studio 7 — https://studio7.software
+# We welcome search engines and AI assistants alike.
+
+User-agent: *
+Allow: /
+Disallow: /dev
+Disallow: /components
+
+# --- AI crawlers & assistants: explicitly welcome ---
+# Studio 7 wants to be discoverable when people ask an LLM
+# "who can design and build my product?"
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+Sitemap: https://studio7.software/sitemap.xml
