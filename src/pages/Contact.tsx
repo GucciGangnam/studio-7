@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { Mail, ArrowRight, ArrowLeft, CheckCircle } from 'lucide-react'
+import { Globe, ArrowRight, ArrowLeft, CheckCircle } from 'lucide-react'
 
 const EASE_OUT = [0.16, 1, 0.3, 1] as const
 const EASE_FLIP = [0.4, 0, 0.2, 1] as const
@@ -34,7 +34,7 @@ function CardLogo() {
 function ContactRow({ value }: { value: string }) {
   return (
     <div className="flex items-center gap-2">
-      <Mail size={11} className="text-accent shrink-0" />
+      <Globe size={11} className="text-accent shrink-0" />
       <span className="font-mono text-[12px] tracking-[0.04em] text-foreground/40">{value}</span>
     </div>
   )
@@ -260,7 +260,7 @@ export default function Contact() {
                 className="flex items-end justify-between"
               >
                 <div className="flex flex-col gap-2">
-                  <ContactRow value="hello@studio7.co" />
+                  <ContactRow value="studio7.software" />
                 </div>
 
                 {/* CTA arrow */}
