@@ -705,7 +705,7 @@ export default function Services() {
                               transition={ct(mvp.isActive, 0.36)}
                               className="text-[44px] font-semibold tracking-[-0.035em] leading-none"
                             >
-                              $6,000
+                              $2,299
                             </motion.p>
                             <p className="mt-2 font-mono text-[11px] tracking-[0.1em] text-foreground/25">
                               complete package · full code & infrastructure handover
