@@ -132,6 +132,7 @@ export default function Contact() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [message, setMessage] = useState('')
+  const [company, setCompany] = useState('') // honeypot — hidden from humans
   const [errors, setErrors] = useState<Errors>({ name: false, email: false, message: false })
   const [submitted, setSubmitted] = useState(false)
   const [sending, setSending] = useState(false)
@@ -161,7 +162,7 @@ export default function Contact() {
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: name.trim(), email: email.trim(), message: message.trim() }),
+        body: JSON.stringify({ name: name.trim(), email: email.trim(), message: message.trim(), company }),
       })
       if (!res.ok) throw new Error(`Request failed (${res.status})`)
       setSubmitted(true)
@@ -178,6 +179,7 @@ export default function Contact() {
     setName('')
     setEmail('')
     setMessage('')
+    setCompany('')
     setErrors({ name: false, email: false, message: false })
     setSubmitted(false)
     setSendError(false)
@@ -327,6 +329,19 @@ export default function Contact() {
                         <ArrowLeft size={12} className="text-foreground/45" />
                       </button>
                     </div>
+
+                    {/* Honeypot — invisible to humans, tempting to bots. Not
+                        type=hidden (bots skip those); pushed off-screen instead. */}
+                    <input
+                      type="text"
+                      name="company"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      aria-hidden="true"
+                      value={company}
+                      onChange={e => setCompany(e.target.value)}
+                      style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, opacity: 0 }}
+                    />
 
                     {/* Name */}
                     <div className="relative">
