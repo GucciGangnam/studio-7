@@ -48,6 +48,23 @@ export function useTheme() {
     else root.removeAttribute("data-theme") // bare :root = dark
   }, [theme])
 
+  // `useTheme` holds per-component state, so a toggle in one component (e.g. the
+  // header switch) only updates that component's copy — it flips `data-theme` on
+  // <html>, but every OTHER consumer's local state would go stale until a reload.
+  // Most of the UI is CSS-var driven off `data-theme` so it never noticed, but a
+  // component that reads `theme` in JS (the Clients page picks its background
+  // colours from it) would desync. Observing the attribute keeps all consumers in
+  // sync: whoever flips it, everyone re-derives from the single source of truth.
+  useEffect(() => {
+    const root = document.documentElement
+    const observer = new MutationObserver(() => {
+      const next: Theme = root.getAttribute("data-theme") === "light" ? "light" : "dark"
+      setTheme(prev => (prev === next ? prev : next))
+    })
+    observer.observe(root, { attributes: true, attributeFilter: ["data-theme"] })
+    return () => observer.disconnect()
+  }, [])
+
   // Follow the OS while the user hasn't made an explicit choice.
   useEffect(() => {
     if (typeof window === "undefined" || typeof window.matchMedia !== "function") return
