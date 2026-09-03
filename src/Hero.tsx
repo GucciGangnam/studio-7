@@ -470,7 +470,7 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
               <ArrowUpRight size={16} className="text-accent/50 group-hover:text-accent transition-colors duration-200" strokeWidth={1.5} />
               <div>
                 <p className="font-mono text-[10px] tracking-[0.16em] text-accent/60 group-hover:text-accent uppercase font-medium transition-colors duration-200">View our work</p>
-                <p className="text-[13px] text-foreground/35 mt-1 group-hover:text-foreground/55 transition-colors duration-200">See what we've built</p>
+                <p className="text-[13px] text-foreground/35 mt-1 group-hover:text-foreground/55 transition-colors duration-200">See what we build</p>
               </div>
               <div className="h-px w-8 bg-accent/25 group-hover:w-full group-hover:bg-accent/50 transition-all duration-500" />
             </Link>

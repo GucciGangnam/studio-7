@@ -1,9 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Plane, FlaskConical, HardHat, Megaphone, type LucideIcon } from 'lucide-react'
-import GradientWaves from '@/components/GradientWaves'
-import { GravityStarsBackground } from '@/components/GravityStarsBackground'
-import CellsBackground from '@/components/CellsBackground'
-import Scanner from '@/components/Scanner'
+import Grainient from '@/components/Grainient'
 import { useTheme } from '@/lib/theme'
 
 /** Clamp a scroll position into a 0→1 progress value. */
@@ -28,21 +25,15 @@ const FADE_RATIO = 0.4
  * As progress advances, each upper layer fades in over the one beneath — so the
  * previous page fades out under the next, with no background bleed.
  */
-// Soft theme-green corner glows (behind the effect canvas) to keep Pages 2 & 4
-// from reading as mostly white/empty. Offset ellipses — not centred exactly in
-// the corner — with a smooth multi-stop falloff, over the page background. The
-// colour tracks the theme via var(--accent) + color-mix.
-const cornerGlow = (x: number, y: number) =>
-  `radial-gradient(ellipse 92% 80% at ${x}% ${y}%,` +
-  ` color-mix(in srgb, var(--accent) 42%, transparent) 0%,` +
-  ` color-mix(in srgb, var(--accent) 15%, transparent) 40%,` +
-  ` transparent 72%), var(--background)`
-
+// All four sections now share a single animated Grainient field (rendered once,
+// behind the pinned viewport). The sections themselves are transparent so that
+// one continuous background reads through every page — only their content
+// cross-fades as you scroll.
 const sections = [
-  { n: '01', title: 'Aviation',        tint: 'var(--background)' },
-  { n: '02', title: 'Health & Safety', tint: cornerGlow(15, 90) }, // bottom-left
-  { n: '03', title: 'Biotech',         tint: 'var(--background)' },
-  { n: '04', title: 'Advertising',     tint: cornerGlow(85, 90) }, // bottom-right
+  { n: '01', title: 'Aviation' },
+  { n: '02', title: 'Health & Safety' },
+  { n: '03', title: 'Biotech' },
+  { n: '04', title: 'Advertising' },
 ]
 
 /**
@@ -117,42 +108,18 @@ export default function Clients() {
   const trackRef = useRef<HTMLDivElement>(null)
   const [p, setP] = useState(0) // 0→1 scroll progress across the whole track
   const { theme } = useTheme()
+  const isLight = theme === 'light'
 
-  // Page 1's wave background is keyed to the active theme (values mirror the
-  // index.css tokens). The wave features — the horizon glow and the crests —
-  // both use the "accent as it reads on the page" (like --accent-label); the
-  // troughs (wave bodies) use the page background. Crest ≠ trough is what gives
-  // the waves their definition, and matching the horizon to the crest keeps the
-  // whole field high-contrast:
-  //   • dark  → bright lime features over near-black troughs (huge contrast)
-  //   • light → a neon lime-green over cream troughs. It's lighter than the
-  //     near-black dark-mode value, but the taller waves (amp, below) keep the
-  //     crest/trough definition so it still reads while looking vivid/neon.
-  const featureHex = theme === 'light' ? '#8fd600' : '#e8ff47'
-  const backgroundHex = theme === 'light' ? '#f4f4f2' : '#151515'
-
-  // Wave height. The crest tint is driven by wave height (pos.z in the shader):
-  // the crest↔trough mix factor is ~pos.z·0.08 + 0.5, so shallow waves keep it
-  // pinned near 0.5 and every pixel becomes a flat 50/50 blend of trough and
-  // crest — a muddy wash with no ridge definition. Taller waves let the factor
-  // swing to both extremes so crests and troughs actually separate. Both themes
-  // need this; 2.6 reads well in each.
-  const amp = 2.6
-
-  // Page 3 Vanta CELLS colours (hex numbers). Dark mode: bright accent cells on
-  // the near-black page background — high contrast, the look we want. Light mode:
-  // the cell shading darkens toward the cell colour, so a mid-tone accent turns
-  // the crevices near-black and fights the (black) text. So in light mode we use
-  // a pale lime on white — the whole field stays light and the text stays legible.
-  const cellsColor1 = theme === 'light' ? 0xbfe85a : 0xe8ff47
-  const cellsColor2 = theme === 'light' ? 0xf3f8e2 : 0x151515
-
-  // Page 4 Scanner colours: a green scan field. color1 = base, color2 = the
-  // accent bands, color3 = the bright peaks. Light mode stays pale/green (peaks
-  // near-white) so the black text reads; dark mode gets vivid lime on near-black.
-  const scanColor1 = theme === 'light' ? '#dceeb4' : '#264a0a'
-  const scanColor2 = theme === 'light' ? '#8fd600' : '#e8ff47'
-  const scanColor3 = theme === 'light' ? '#f7fbe8' : '#ffffff'
+  // The single Grainient field is keyed to the active theme (values mirror the
+  // index.css tokens). Three colours feed the gradient blend — a lime accent, a
+  // mid tone, and the page background — so the field stays inside the theme's
+  // tonal range and the (foreground-coloured) text keeps its contrast:
+  //   • dark  → lime highlights sweeping across a near-black field
+  //   • light → a soft cream-and-lime wash (lightMode remaps the palette to
+  //     light-on-white) so the near-black text stays legible.
+  const grainColor1 = isLight ? '#f4f4f2' : '#e8ff47' // lime accent / cream
+  const grainColor2 = isLight ? '#c7e08a' : '#243206' // mid lime / deep olive
+  const grainColor3 = isLight ? '#eef4dc' : '#141414' // pale lime / near-black
 
   useEffect(() => {
     // Read the track's position straight from each scroll event. It's a single
@@ -226,6 +193,44 @@ export default function Clients() {
       ))}
       {/* Pinned viewport holding the stacked sections. */}
       <div className="sticky top-0 h-screen w-full overflow-hidden">
+        {/* One shared Grainient field behind every page. It lives in the pinned
+            viewport (not per-section), so a single continuous background reads
+            across all four case studies while their content cross-fades. */}
+        <div className="absolute inset-0" style={{ zIndex: 0, background: 'var(--background)' }}>
+          <Grainient
+            color1={grainColor1}
+            color2={grainColor2}
+            color3={grainColor3}
+            lightMode={isLight}
+            timeSpeed={0.4}
+            colorBalance={isLight ? 0.05 : 0.12}
+            warpStrength={1.0}
+            warpFrequency={5.0}
+            warpSpeed={1.4}
+            warpAmplitude={55.0}
+            blendSoftness={0.06}
+            rotationAmount={500.0}
+            noiseScale={2.0}
+            grainAmount={0.08}
+            grainScale={2.0}
+            contrast={isLight ? 1.2 : 1.35}
+            saturation={isLight ? 0.9 : 1.0}
+            zoom={0.9}
+          />
+        </div>
+        {/* Legibility scrim: a soft centre-weighted wash of the page background
+            so the centred text keeps its contrast over the moving gradient. */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            zIndex: 1,
+            background:
+              'radial-gradient(ellipse 70% 62% at 50% 50%,' +
+              ' color-mix(in srgb, var(--background) 60%, transparent) 0%,' +
+              ' color-mix(in srgb, var(--background) 28%, transparent) 45%,' +
+              ' transparent 78%)',
+          }}
+        />
         {sections.map((s, i) => {
           // Each page fades fully out before the next fades in, leaving a brief
           // blank gap (see fadeHalf) — so no two pages, or their backgrounds,
@@ -235,13 +240,6 @@ export default function Clients() {
           const opacity = clamp(1 - Math.abs(dist) / fadeHalf, 0, 1)
           // Content drifts up as we scroll past its centre, in from below before.
           const contentY = -clamp(dist / fadeHalf, -1, 1) * 24
-          // Perf: only mount a page's (WebGL/canvas) background while it's the
-          // active page or transitioning to/from it. A page is visible within
-          // ±fadeHalf of its centre (|dist|·last < 0.4); we mount a touch earlier
-          // (< 0.7) so the incoming effect has a beat to initialise before it
-          // fades in, then unmount it once its neighbour takes over. This keeps
-          // at most ~2 backgrounds running instead of all four at once.
-          const bgOn = Math.abs(dist) * last < 0.7
 
           return (
             <section
@@ -249,87 +247,12 @@ export default function Clients() {
               className="absolute inset-0 flex flex-col items-center justify-center"
               style={{
                 opacity,
-                zIndex: i + 1,
-                background: s.tint,
+                // Above the shared Grainient field (z0) and its scrim (z1).
+                zIndex: i + 2,
                 pointerEvents: opacity > 0.5 ? 'auto' : 'none',
               }}
               aria-hidden={active !== i}
             >
-              {/* Page 1 gets its own animated wave background (behind content). */}
-              {i === 0 && bgOn && (
-                <div className="absolute inset-0" style={{ zIndex: 0 }}>
-                  <GradientWaves
-                    horizonColor={featureHex}
-                    waveColor={backgroundHex}
-                    crestColor={featureHex}
-                    speed={0.65}
-                    amplitude={amp}
-                    waveScale={0.75}
-                    waveRatio={0.3}
-                    swell={40}
-                    turbulence={60}
-                    tilt={1.3}
-                    zoom={1.15}
-                    height={2}
-                    fogDepth={21}
-                    detail="high"
-                    brightness={1.05}
-                    opacity={1.0}
-                    mouseInteraction={true}
-                    parallaxStrength={0.4}
-                    grain={false}
-                    grainIntensity={0.16}
-                  />
-                </div>
-              )}
-              {/* Page 2 gets the gravity-stars background (behind content). The
-                  stars take their colour from the element's CSS `color`, so
-                  --accent-label keeps them theme-green and legible in both
-                  themes (it re-reads every frame, so it follows theme flips). */}
-              {i === 1 && bgOn && (
-                <div className="absolute inset-0" style={{ zIndex: 0, color: 'var(--accent-label)' }}>
-                  <GravityStarsBackground />
-                </div>
-              )}
-              {/* Page 3 gets the Vanta CELLS background (behind content). */}
-              {i === 2 && bgOn && (
-                <div className="absolute inset-0" style={{ zIndex: 0 }}>
-                  <CellsBackground color1={cellsColor1} color2={cellsColor2} size={5} speed={0.5} />
-                </div>
-              )}
-              {/* Page 4 gets the Scanner background (behind content). */}
-              {i === 3 && bgOn && (
-                <div className="absolute inset-0" style={{ zIndex: 0 }}>
-                  <Scanner
-                    color1={scanColor1}
-                    color2={scanColor2}
-                    color3={scanColor3}
-                    speed={0.16}
-                    sweepSpeed={0.07}
-                    sweepWidth={1.6}
-                    sweepFalloff={6}
-                    scale={1.5}
-                    frequency={2}
-                    ripple={0.22}
-                    bandDensity={11}
-                    lineSharpness={4.5}
-                    glow={0.22}
-                    scanDirection="vertical"
-                    colorSpread={0}
-                    brightness={0.85}
-                    contrast={1.15}
-                    softness={2.0}
-                    vignette={0.45}
-                    scanline
-                    grain
-                    grainIntensity={0.05}
-                    opacity={0.4}
-                    mouseInteraction
-                    mouseRadius={0.5}
-                    mouseStrength={0.5}
-                  />
-                </div>
-              )}
               <div
                 className="relative z-10 flex flex-col items-center px-6 text-center"
                 style={{ transform: `translateY(${contentY}px)` }}
