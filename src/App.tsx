@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom'
 import { Menu, X, Smartphone } from 'lucide-react'
 import { useTheme } from './lib/theme'
@@ -38,13 +38,30 @@ const navItemP = (heroScrollP: number, i: number) => {
   return ep(heroScrollP, 0.08 + (last - i) * 0.03, 0.24 + (last - i) * 0.03)
 }
 
-function Nav({ heroScrollP }: { heroScrollP: number }) {
+function Nav({
+  heroScrollP,
+  qrOpen,
+  onQrOpen,
+  onQrClose,
+}: {
+  heroScrollP: number
+  qrOpen: boolean
+  onQrOpen: () => void
+  onQrClose: () => void
+}) {
   const { pathname } = useLocation()
   const isHome = pathname === '/'
   const [logoHovered, setLogoHovered] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [qrOpen, setQrOpen] = useState(false)
   const { theme, toggleTheme } = useTheme()
+
+  // While the QR takeover is open, dissolve the nav chrome too so only the QR
+  // remains. The phone button stays hoverable at opacity 0 (mouse hasn't left),
+  // so "move away to restore" still fires its onMouseLeave.
+  const navFade: React.CSSProperties = {
+    opacity: qrOpen ? 0 : 1,
+    transition: 'opacity 0.4s ease',
+  }
 
   // While the Work intro (dark full-screen video) is on screen, keep the nav
   // light-on-dark regardless of the page theme.
@@ -81,7 +98,7 @@ function Nav({ heroScrollP }: { heroScrollP: number }) {
     // pins the dark palette (surface-dark) so all nav chrome reads light.
     <div style={{ display: 'contents' }} className={introDark ? 'surface-dark' : undefined}>
       {/* Logo — lifts above overlay when menu is open */}
-      <div className={`fixed top-7 left-8 ${mobileMenuOpen ? 'z-[70]' : 'z-50'}`}>
+      <div className={`fixed top-7 left-8 ${mobileMenuOpen ? 'z-[70]' : 'z-50'}`} style={navFade}>
         <Link
           to="/"
           className="flex items-baseline select-none"
@@ -191,7 +208,7 @@ function Nav({ heroScrollP }: { heroScrollP: number }) {
       )}
 
       {/* Floating nav tabs — hidden on mobile */}
-      <nav className="hidden sm:flex fixed top-5 right-8 z-50 items-center gap-1">
+      <nav className="hidden sm:flex fixed top-5 right-8 z-50 items-center gap-1" style={navFade}>
         {navItems.map(({ label, to }, i) => {
           const active = pathname === to
           return (
@@ -217,10 +234,10 @@ function Nav({ heroScrollP }: { heroScrollP: number }) {
         <button
           type="button"
           aria-label="Show QR code for www.studio7.software"
-          onMouseEnter={() => setQrOpen(true)}
-          onMouseLeave={() => setQrOpen(false)}
-          onFocus={() => setQrOpen(true)}
-          onBlur={() => setQrOpen(false)}
+          onMouseEnter={onQrOpen}
+          onMouseLeave={onQrClose}
+          onFocus={onQrOpen}
+          onBlur={onQrClose}
           className={[
             'w-8 h-8 ml-1 grid place-items-center rounded-full border backdrop-blur-md transition-colors',
             qrOpen
@@ -241,8 +258,6 @@ function Nav({ heroScrollP }: { heroScrollP: number }) {
           className="w-8 h-8 ml-1 border border-foreground/15 bg-foreground/[0.03] hover:border-foreground/30 backdrop-blur-md"
         />
       </nav>
-
-      <QRReveal open={qrOpen} onClose={() => setQrOpen(false)} />
     </div>
   )
 }
@@ -260,6 +275,32 @@ function ScrollToTop() {
 
 function AppInner() {
   const [heroScrollP, setHeroScrollP] = useState(0)
+
+  // Phone-icon QR takeover. On hover the whole page rushes forward and past the
+  // viewer (scale up + fade) while the QR flies in from far — see QRReveal.
+  const [qrOpen, setQrOpen] = useState(false)
+  const [zoomOrigin, setZoomOrigin] = useState('50% 50%')
+  const reducedRef = useRef(false)
+  useEffect(() => {
+    reducedRef.current = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+  }, [])
+
+  const openQr = () => {
+    // Anchor the zoom to the centre of what's currently on screen so the page
+    // flies straight at the viewer regardless of scroll position.
+    setZoomOrigin(`${window.scrollX + window.innerWidth / 2}px ${window.scrollY + window.innerHeight / 2}px`)
+    setQrOpen(true)
+  }
+  const closeQr = () => setQrOpen(false)
+
+  // Freeze the scrollbar while the page is scaled up (the 500vh hero would
+  // otherwise throw giant scrollbars); scroll position is preserved.
+  useEffect(() => {
+    if (!qrOpen) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = prev }
+  }, [qrOpen])
 
   // Warm the /work intro's opening frames during idle time on first load, so
   // landing on /work feels instant instead of showing "loading frames…". Only a
@@ -292,17 +333,37 @@ function AppInner() {
   return (
     <div className="min-h-screen bg-background text-foreground font-sans">
       <ScrollToTop />
-      <Nav heroScrollP={heroScrollP} />
-      <Routes>
-        <Route path="/"         element={<Hero onScrollChange={setHeroScrollP} />} />
-        <Route path="/work"     element={<Work />}       />
-        <Route path="/services" element={<Services />}   />
-        <Route path="/clients"  element={<Clients />}    />
-        <Route path="/contact"  element={<Contact />}    />
-        <Route path="/dev"      element={<Dev />}        />
-        <Route path="/components" element={<Components />} />
-        <Route path="*"         element={<NotFound />}   />
-      </Routes>
+      <Nav heroScrollP={heroScrollP} qrOpen={qrOpen} onQrOpen={openQr} onQrClose={closeQr} />
+      {/* Zoom stage — the whole page flies toward and past the viewer on hover.
+          transform is `none` when closed so it never becomes a containing block
+          for the pages' sticky/fixed layers (which would snap them). */}
+      <div
+        style={{
+          transformOrigin: zoomOrigin,
+          transform: qrOpen ? 'scale(3.4)' : 'none',
+          opacity: qrOpen ? 0 : 1,
+          // Open and close use the SAME snappy fast-start ease-out (and must
+          // match QRReveal's exactly) so appearing snaps just like disappearing
+          // and the page flies out in lockstep with the QR flying in.
+          transition: reducedRef.current
+            ? 'none'
+            : 'transform 0.55s cubic-bezier(0.16,1,0.3,1), opacity 0.55s cubic-bezier(0.16,1,0.3,1)',
+          pointerEvents: qrOpen ? 'none' : undefined,
+          willChange: qrOpen ? 'transform, opacity' : undefined,
+        }}
+      >
+        <Routes>
+          <Route path="/"         element={<Hero onScrollChange={setHeroScrollP} />} />
+          <Route path="/work"     element={<Work />}       />
+          <Route path="/services" element={<Services />}   />
+          <Route path="/clients"  element={<Clients />}    />
+          <Route path="/contact"  element={<Contact />}    />
+          <Route path="/dev"      element={<Dev />}        />
+          <Route path="/components" element={<Components />} />
+          <Route path="*"         element={<NotFound />}   />
+        </Routes>
+      </div>
+      <QRReveal open={qrOpen} onClose={closeQr} />
     </div>
   )
 }
