@@ -72,6 +72,18 @@ const ep = (sp: number, start: number, end: number) =>
   Math.max(0, Math.min(1, (sp - start) / (end - start)))
 
 /**
+ * Two-sided visibility guard for the absolutely-stacked overlay sections.
+ * A layer sitting at opacity:0 (either not-yet-entered or already-exited) stays
+ * a live compositing layer, and macOS Safari fails to clear it inside the sticky
+ * + overflow:hidden container — leaving a faint ghost of that section's text
+ * bleeding through the visible one. Flipping to visibility:hidden outside each
+ * section's active window removes it from the paint entirely. `show*` bounds
+ * carry a margin around the real entry/exit ranges so nothing pops mid-animation.
+ */
+const vis = (sp: number, showStart: number, showEnd: number): 'visible' | 'hidden' =>
+  sp >= showStart && sp < showEnd ? 'visible' : 'hidden'
+
+/**
  * Section 2 — scroll-driven entry AND exit.
  * Entry: float up into place. Exit: slide up and fade out (top-down stagger).
  */
@@ -228,7 +240,7 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
         {/* ══════════════════════════════════════════════════════
             SECTION 1 — Studio 7 hero
         ══════════════════════════════════════════════════════ */}
-        <div className={cn('absolute inset-0 flex px-10 md:px-16 justify-center', isLandscape ? 'flex-row items-center' : 'flex-col lg:flex-row lg:items-center')}>
+        <div className={cn('absolute inset-0 flex px-10 md:px-16 justify-center', isLandscape ? 'flex-row items-center' : 'flex-col lg:flex-row lg:items-center')} style={{ visibility: vis(scrollP, 0, 0.85) }}>
 
           {/* Left: text */}
           <div className={cn('flex flex-col', isLandscape ? 'flex-1 pt-10' : 'lg:flex-1 pt-24 lg:pt-0')}>
@@ -334,7 +346,7 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
             SECTION 2 — Design. Develop. Deploy.
             Absolutely overlays section 1; invisible until s1 exits.
         ══════════════════════════════════════════════════════ */}
-        <div className="absolute inset-0 flex flex-col justify-center px-10 md:px-16" style={{ pointerEvents: 'none', visibility: scrollP >= 2.15 ? 'hidden' : 'visible' }}>
+        <div className="absolute inset-0 flex flex-col justify-center px-10 md:px-16" style={{ pointerEvents: 'none', visibility: vis(scrollP, 0.7, 2.15) }}>
 
           {/* Label */}
           <div style={s2(scrollP, 0.78, 0.96, 1.65, 1.80)}>
@@ -415,7 +427,7 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
             SECTION 2.5 — Unique to You
             Enters from right; exits to left. Cards scale in.
         ══════════════════════════════════════════════════════ */}
-        <div className={cn('absolute inset-0 flex px-10 md:px-16 overflow-hidden', isLandscape ? 'flex-row items-center gap-8' : 'flex-col lg:flex-row lg:items-center gap-4 lg:gap-16')} style={{ pointerEvents: 'none' }}>
+        <div className={cn('absolute inset-0 flex px-10 md:px-16 overflow-hidden', isLandscape ? 'flex-row items-center gap-8' : 'flex-col lg:flex-row lg:items-center gap-4 lg:gap-16')} style={{ pointerEvents: 'none', visibility: vis(scrollP, 2.0, 3.3) }}>
 
           {/* Left: text */}
           <div className={cn('flex flex-col', isLandscape ? 'flex-1 pt-0' : 'lg:flex-1 pt-16 lg:pt-0')}>
@@ -618,7 +630,7 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
         {/* ══════════════════════════════════════════════════════
             SECTION 3 — Full Stack Management
         ══════════════════════════════════════════════════════ */}
-        <div className={cn('absolute inset-0 flex px-10 md:px-16', isLandscape ? 'flex-row items-center gap-8' : 'flex-col lg:flex-row lg:items-center gap-6 lg:gap-16')} style={{ pointerEvents: 'none' }}>
+        <div className={cn('absolute inset-0 flex px-10 md:px-16', isLandscape ? 'flex-row items-center gap-8' : 'flex-col lg:flex-row lg:items-center gap-6 lg:gap-16')} style={{ pointerEvents: 'none', visibility: vis(scrollP, 3.3, Infinity) }}>
 
           {/* Left: text */}
           <div className={cn('flex flex-col', isLandscape ? 'flex-1 pt-0' : 'lg:flex-1 pt-16 lg:pt-0')}>
