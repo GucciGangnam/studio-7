@@ -117,13 +117,15 @@ export default function Clients() {
   //   • dark  → lime highlights sweeping across a near-black field
   //   • light → a lime-and-cream wash (lightMode remaps the palette toward white)
   //     so the near-black text stays legible.
-  // The two are tuned to meet in the middle: dark is pulled back from neon (a
-  // muted lime, lower saturation/contrast, more dark field), and light is pushed
-  // up from a faint wash (more saturated lime, higher contrast) so both read at a
-  // similar, moderate intensity. See the <Grainient> props below.
-  const grainColor1 = isLight ? '#cfe36a' : '#c6da38' // lime accent (muted)
-  const grainColor2 = isLight ? '#a9d23e' : '#1c2607' // mid lime / deep olive
-  const grainColor3 = isLight ? '#e6f0c8' : '#121212' // pale lime / near-black
+  // The two are tuned to meet in the middle. Dark is a muted lime glow over a
+  // mostly-dark field. Light needs care: lightMode paints each pixel white→colour
+  // by its *chroma*, so a saturated palette (or saturation > 1) makes it paint
+  // MORE green, not a lighter green. So light keeps two of the three stops pale
+  // (cream) with only the middle stop carrying the lime, and saturation stays
+  // below 1 — a cream field with a lime sweep, not a wall of green.
+  const grainColor1 = isLight ? '#eef2df' : '#c6da38' // pale cream / muted lime
+  const grainColor2 = isLight ? '#a9d23e' : '#1c2607' // lime sweep / deep olive
+  const grainColor3 = isLight ? '#e7efc9' : '#121212' // pale lime / near-black
 
   useEffect(() => {
     // Read the track's position straight from each scroll event. It's a single
@@ -207,7 +209,7 @@ export default function Clients() {
             color3={grainColor3}
             lightMode={isLight}
             timeSpeed={0.4}
-            colorBalance={isLight ? -0.04 : 0.2}
+            colorBalance={isLight ? 0.1 : 0.2}
             warpStrength={1.0}
             warpFrequency={5.0}
             warpSpeed={1.4}
@@ -217,8 +219,8 @@ export default function Clients() {
             noiseScale={2.0}
             grainAmount={0.08}
             grainScale={2.0}
-            contrast={isLight ? 1.35 : 1.1}
-            saturation={isLight ? 1.2 : 0.82}
+            contrast={isLight ? 1.1 : 1.1}
+            saturation={isLight ? 0.8 : 0.82}
             zoom={0.9}
           />
         </div>
