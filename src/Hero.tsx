@@ -108,7 +108,7 @@ const s25 = (sp: number, eStart: number, eEnd: number, xStart: number, xEnd: num
 
 /** Section 2.5 mock UI feature cards — pop up from below, staggered. Exit handled by parent. */
 const featureCard = (sp: number, i: number): React.CSSProperties => {
-  const p = ep(sp, 2.38 + i * 0.14, 2.56 + i * 0.14)
+  const p = ep(sp, 2.40 + i * 0.11, 2.60 + i * 0.11)
   return { opacity: p, transform: `translateY(${(1 - p) * 12}px)` }
 }
 
@@ -222,8 +222,10 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
 
   return (
     // 500vh = 400vh of scroll travel, giving scrollP max ≈ 4.0
-    // s1 exits ~0.75; s2 fully in ~1.54; s2 exits ~2.1
-    // s2.5 enters ~2.08; s2.5 exits ~3.18; s3 fully in ~3.93
+    // Each section's animation now spans the FULL gap to the next snap point so
+    // it scrubs evenly (rather than flashing in near the snap): s1 exits ~0.75;
+    // s2 fully in ~1.54 (snap 1.58); s2 exits ~2.1; s2.5 enters ~2.05, fully in
+    // ~2.8 (snap 2.88), exits ~3.1; s3 enters ~3.10, fully in ~3.88 (snap 3.95).
     <div style={{ height: '500vh', position: 'relative' }}>
       {/* Snap anchors — one per section at its fully-rendered scroll position.
           With mandatory snap + scroll-snap-stop, the window always rests on a
@@ -427,18 +429,18 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
             SECTION 2.5 — Unique to You
             Enters from right; exits to left. Cards scale in.
         ══════════════════════════════════════════════════════ */}
-        <div className={cn('absolute inset-0 flex px-10 md:px-16 overflow-hidden', isLandscape ? 'flex-row items-center gap-8' : 'flex-col lg:flex-row lg:items-center gap-4 lg:gap-16')} style={{ pointerEvents: 'none', visibility: vis(scrollP, 2.0, 3.3) }}>
+        <div className={cn('absolute inset-0 flex px-10 md:px-16 overflow-hidden', isLandscape ? 'flex-row items-center gap-8' : 'flex-col lg:flex-row lg:items-center gap-4 lg:gap-16')} style={{ pointerEvents: 'none', visibility: vis(scrollP, 1.95, 3.15) }}>
 
           {/* Left: text */}
           <div className={cn('flex flex-col', isLandscape ? 'flex-1 pt-0' : 'lg:flex-1 pt-16 lg:pt-0')}>
 
-            <div style={s25(scrollP, 2.08, 2.24, 3.00, 3.15)}>
+            <div style={s25(scrollP, 2.05, 2.28, 2.92, 3.06)}>
               <span className="font-mono text-[10px] tracking-[0.28em] text-foreground/50 uppercase">
                 Bespoke · Tailored · Yours
               </span>
             </div>
 
-            <div className={isLandscape ? 'mt-3' : 'mt-6'} style={s25(scrollP, 2.15, 2.35, 3.02, 3.18)}>
+            <div className={isLandscape ? 'mt-3' : 'mt-6'} style={s25(scrollP, 2.15, 2.42, 2.94, 3.08)}>
               <span style={{
                 fontSize: isLandscape ? 'clamp(32px, 4.5vw, 60px)' : 'clamp(44px, 6vw, 92px)',
                 fontWeight: 700,
@@ -454,7 +456,7 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
 
             <p
               className={cn('text-[15px] text-foreground/65 max-w-lg leading-relaxed', isLandscape ? 'mt-4 text-[13px]' : 'mt-8')}
-              style={s25(scrollP, 2.26, 2.46, 3.05, 3.20)}
+              style={s25(scrollP, 2.28, 2.55, 2.96, 3.10)}
             >
               Whatever you need, we build it. AI integration, customer support systems,
               analytics dashboards, payment flows — every feature is purpose-built around
@@ -465,7 +467,7 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
             <Link
               to="/work"
               className="group flex flex-col gap-2.5 mt-8"
-              style={s25(scrollP, 2.38, 2.58, 3.07, 3.22)}
+              style={s25(scrollP, 2.45, 2.72, 2.98, 3.12)}
             >
               <ArrowUpRight size={16} className="text-accent/50 group-hover:text-accent transition-colors duration-200" strokeWidth={1.5} />
               <div>
@@ -480,7 +482,7 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
           {/* Right: mock app UI shell */}
           <div
             className={cn('flex items-center justify-center', isLandscape ? 'flex-1' : 'lg:flex-1 w-full')}
-            style={s25(scrollP, 2.15, 2.38, 3.02, 3.18)}
+            style={s25(scrollP, 2.15, 2.45, 2.94, 3.08)}
           >
             <div
               className="surface-dark relative w-full max-w-[390px] lg:max-w-[390px] rounded-lg overflow-hidden border border-foreground/[0.08]"
@@ -630,18 +632,18 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
         {/* ══════════════════════════════════════════════════════
             SECTION 3 — Full Stack Management
         ══════════════════════════════════════════════════════ */}
-        <div className={cn('absolute inset-0 flex px-10 md:px-16', isLandscape ? 'flex-row items-center gap-8' : 'flex-col lg:flex-row lg:items-center gap-6 lg:gap-16')} style={{ pointerEvents: 'none', visibility: vis(scrollP, 3.3, Infinity) }}>
+        <div className={cn('absolute inset-0 flex px-10 md:px-16', isLandscape ? 'flex-row items-center gap-8' : 'flex-col lg:flex-row lg:items-center gap-6 lg:gap-16')} style={{ pointerEvents: 'none', visibility: vis(scrollP, 3.05, Infinity) }}>
 
           {/* Left: text */}
           <div className={cn('flex flex-col', isLandscape ? 'flex-1 pt-0' : 'lg:flex-1 pt-16 lg:pt-0')}>
 
-            <div style={s3(scrollP, 3.38, 3.52)}>
+            <div style={s3(scrollP, 3.10, 3.30)}>
               <span className="font-mono text-[10px] tracking-[0.28em] text-foreground/50 uppercase">
                 Lifecycle · Handover · Maintenance
               </span>
             </div>
 
-            <div className={isLandscape ? 'mt-3' : 'mt-6'} style={s3(scrollP, 3.44, 3.63)}>
+            <div className={isLandscape ? 'mt-3' : 'mt-6'} style={s3(scrollP, 3.16, 3.42)}>
               <span style={{
                 fontSize: isLandscape ? 'clamp(32px, 4.5vw, 60px)' : 'clamp(44px, 6vw, 92px)',
                 fontWeight: 700,
@@ -657,7 +659,7 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
 
             <p
               className={cn('mt-8 text-[15px] text-foreground/65 max-w-lg leading-relaxed', isLandscape ? 'hidden' : 'hidden lg:block')}
-              style={s3(scrollP, 3.54, 3.72)}
+              style={s3(scrollP, 3.30, 3.55)}
             >
               We take complete ownership of your product — from initial discovery
               through architecture, design, build, and launch. At completion you
@@ -675,7 +677,7 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
                 <div
                   key={label}
                   className="flex items-start gap-4"
-                  style={s3(scrollP, 3.63 + i * 0.07, 3.79 + i * 0.07)}
+                  style={s3(scrollP, 3.42 + i * 0.09, 3.60 + i * 0.09)}
                 >
                   <div className="mt-2 h-px w-4 bg-accent/60 shrink-0" />
                   <div>
@@ -690,7 +692,7 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
             <Link
               to="/contact"
               className="group flex flex-col gap-2.5 mt-6 lg:mt-8"
-              style={s3(scrollP, 3.84, 3.98)}
+              style={s3(scrollP, 3.66, 3.88)}
             >
               <ArrowUpRight size={16} className="text-accent/50 group-hover:text-accent transition-colors duration-200" strokeWidth={1.5} />
               <div>
@@ -705,7 +707,7 @@ export default function Hero({ onScrollChange }: { onScrollChange?: (sp: number)
           {/* Right: animated beam diagram */}
           <div
             className="flex lg:flex-1 items-center justify-start"
-            style={s3(scrollP, 3.60, 3.84)}
+            style={s3(scrollP, 3.34, 3.62)}
           >
             <div
               ref={beamContainerRef}
