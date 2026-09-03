@@ -115,11 +115,15 @@ export default function Clients() {
   // mid tone, and the page background — so the field stays inside the theme's
   // tonal range and the (foreground-coloured) text keeps its contrast:
   //   • dark  → lime highlights sweeping across a near-black field
-  //   • light → a soft cream-and-lime wash (lightMode remaps the palette to
-  //     light-on-white) so the near-black text stays legible.
-  const grainColor1 = isLight ? '#f4f4f2' : '#e8ff47' // lime accent / cream
-  const grainColor2 = isLight ? '#c7e08a' : '#243206' // mid lime / deep olive
-  const grainColor3 = isLight ? '#eef4dc' : '#141414' // pale lime / near-black
+  //   • light → a lime-and-cream wash (lightMode remaps the palette toward white)
+  //     so the near-black text stays legible.
+  // The two are tuned to meet in the middle: dark is pulled back from neon (a
+  // muted lime, lower saturation/contrast, more dark field), and light is pushed
+  // up from a faint wash (more saturated lime, higher contrast) so both read at a
+  // similar, moderate intensity. See the <Grainient> props below.
+  const grainColor1 = isLight ? '#cfe36a' : '#c6da38' // lime accent (muted)
+  const grainColor2 = isLight ? '#a9d23e' : '#1c2607' // mid lime / deep olive
+  const grainColor3 = isLight ? '#e6f0c8' : '#121212' // pale lime / near-black
 
   useEffect(() => {
     // Read the track's position straight from each scroll event. It's a single
@@ -203,7 +207,7 @@ export default function Clients() {
             color3={grainColor3}
             lightMode={isLight}
             timeSpeed={0.4}
-            colorBalance={isLight ? 0.05 : 0.12}
+            colorBalance={isLight ? -0.04 : 0.2}
             warpStrength={1.0}
             warpFrequency={5.0}
             warpSpeed={1.4}
@@ -213,8 +217,8 @@ export default function Clients() {
             noiseScale={2.0}
             grainAmount={0.08}
             grainScale={2.0}
-            contrast={isLight ? 1.2 : 1.35}
-            saturation={isLight ? 0.9 : 1.0}
+            contrast={isLight ? 1.35 : 1.1}
+            saturation={isLight ? 1.2 : 0.82}
             zoom={0.9}
           />
         </div>
@@ -226,8 +230,8 @@ export default function Clients() {
             zIndex: 1,
             background:
               'radial-gradient(ellipse 70% 62% at 50% 50%,' +
-              ' color-mix(in srgb, var(--background) 60%, transparent) 0%,' +
-              ' color-mix(in srgb, var(--background) 28%, transparent) 45%,' +
+              ' color-mix(in srgb, var(--background) 48%, transparent) 0%,' +
+              ' color-mix(in srgb, var(--background) 20%, transparent) 45%,' +
               ' transparent 78%)',
           }}
         />
